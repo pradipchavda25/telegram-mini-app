@@ -2,9 +2,9 @@ import React from 'react';
 
 const LeaderboardScreen = () => {
   const topUsers = [
-    { name: 'Sunusi Danjuma Ali', points: 440700, rank: 2, avatar: '👾' },
-    { name: 'Vj Rusmayana | Ai...', points: 452600, rank: 1, avatar: '🤵' },
-    { name: 'Chizo_1_germany ...', points: 431300, rank: 3, avatar: 'CC' },
+    { name: 'Sunusi Danjuma', points: 440700, rank: 2, avatar: '👾' },
+    { name: 'Vj Rusmayana', points: 452600, rank: 1, avatar: '🤵' },
+    { name: 'Chizo_1_german', points: 431300, rank: 3, avatar: 'CC' },
   ];
 
   const otherUsers = [
@@ -35,7 +35,7 @@ const LeaderboardScreen = () => {
               {user.avatar}
             </div>
             <p className="text-sm text-center mb-1">{user.name.length > 12 ? user.name.substring(0, 12) + '...' : user.name}</p>
-            <div className="bg-neutral-900 rounded-full px-3 py-1 text-sm mb-1">
+            <div className="bg-neutral-900 rounded-full px-3 py-1 text-[13px] mb-1">
               💎 {user.points.toLocaleString()}
             </div>
             <div className={`w-12 h-12 flex items-center justify-center text-2xl font-bold
@@ -56,27 +56,12 @@ const LeaderboardScreen = () => {
             </div>
             <span>{user.name}</span>
           </div>
-          <div className="bg-neutral-700 rounded-full px-3 py-1">
+          <div className="bg-neutral-700 text-[13px] rounded-full px-3 py-1">
             {user.points.toLocaleString()} 💎
           </div>
         </div>
       ))}
 
-      {/* Current User */}
-      <div className="fixed bottom-0 left-0 right-0 bg-neutral-900 p-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-xl mr-3">
-            PC
-          </div>
-          <div>
-            <p>Pradip Chavda | Sharpe AI</p>
-            <p className="text-xs text-neutral-400">🏆 -</p>
-          </div>
-        </div>
-        <div className="bg-neutral-700 rounded-full px-3 py-1">
-          500 💎
-        </div>
-      </div>
     </div>
   );
 };

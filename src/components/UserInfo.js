@@ -11,8 +11,8 @@ export default function UserInfo() {
             PR
           </div> */}
         <div className="ml-2">
-          <p className="font-semibold">{user ? `${user.first_name} ${user.last_name}` : 'Anonymous'}</p>
-          <p className="text-xs text-gray-400">Wallet: Not Created</p>
+          <p className="font-semibold text-[15px]">{user ? `${user.first_name} ${user.last_name}` : 'Anonymous'}</p>
+          <p className="text-[13px] text-gray-400">Wallet: Not Created</p>
         </div>
       </div>
       <div className="flex items-center">

@@ -26,7 +26,7 @@ const HomeScreen = () => {
             The more Diamonds you own, the more $SAI allocation you have.
           </p>
         </div>
-        <button onClick={() => setActiveTab("tab-9")} className="flex-grow mt-4 font-semibold bg-[#98ECFF] text-black py-2  w-full rounded-lg mr-2">
+        <button onClick={() => setActiveTab("tab-9")} className="flex-grow mt-4 font-medium bg-[#98ECFF] text-black py-2  w-full rounded-lg mr-2">
         Convert
           </button>
         {/* <button

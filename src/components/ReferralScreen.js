@@ -30,7 +30,7 @@ const ReferralScreen = () => {
           </div>
         </div>
         <div className="flex mt-3">
-          <button className="flex-grow bg-[#98ECFF] font-semibold text-black py-2 rounded-lg mr-2">
+          <button className="flex-grow bg-[#98ECFF] font-medium text-black py-2 rounded-lg mr-2">
             Invite Friend
           </button>
           <button className="w-10 h-10 bg-neutral-700 rounded-lg flex items-center justify-center">
