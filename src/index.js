@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import TelegramMiniApp from './App';
+import { StateProvider } from './context/StateContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <StateProvider>
     <TelegramMiniApp />
+    </StateProvider>
   </React.StrictMode>
 );
 

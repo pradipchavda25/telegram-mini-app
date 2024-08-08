@@ -7,7 +7,7 @@ function TasksPage() {
   const { webApp } = useTelegram();
   const [tasks, setTasks] = useState([
     { id: 1, title: "Join GMCAT Group", reward: 500, completed: false },
-    { id: 2, title: "Follow GM.AI on X", reward: 2000, completed: false },
+    { id: 2, title: "Follow Sharpe AI on X", reward: 2000, completed: false },
   ]);
 
   useEffect(() => {

@@ -39,7 +39,7 @@ function HomePage() {
 
   return (
     <Page>
-      <Navbar title="GM.AI" />
+      <Navbar title="Sharpe AI" />
       <Block>
         <List>
           <ListItem
