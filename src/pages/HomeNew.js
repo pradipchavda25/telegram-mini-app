@@ -45,7 +45,7 @@ export default function HomeNew() {
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
-      setScreenHistory((prevHistory) => [...prevHistory, newScreen]);
+      setScreenHistory(prevHistory => [...prevHistory, newScreen]);
       setCurrentTab(newScreen);
     }
   };
@@ -60,15 +60,19 @@ export default function HomeNew() {
 
   useEffect(() => {
     if (webApp) {
-      if (screenHistory.length > 1) {
+      const showBackButton = screenHistory.length > 1;
+      
+      if (showBackButton) {
         webApp.BackButton.show();
-        webApp.onEvent("backButtonClicked", handleBackButton);
+        webApp.onEvent('backButtonClicked', handleBackButton);
       } else {
         webApp.BackButton.hide();
       }
 
       return () => {
-        webApp.offEvent("backButtonClicked", handleBackButton);
+        if (showBackButton) {
+          webApp.offEvent('backButtonClicked', handleBackButton);
+        }
         webApp.BackButton.hide();
       };
     }
