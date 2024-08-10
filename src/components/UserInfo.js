@@ -21,7 +21,7 @@ export default function UserInfo() {
           />
         )}{" "}
         <div className="ml-2">
-          <p className="font-semibold text-[13px]">
+          <p className="font-semibold text-[11px]">
             {user ? `${user.first_name} ${user.last_name}` : "Anonymous"}
           </p>
           <p className="text-[10px] text-neutral-600">Wallet: Not Created</p>
