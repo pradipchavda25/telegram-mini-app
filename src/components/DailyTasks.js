@@ -1,10 +1,4 @@
-import {
-  Button,
-  Modal,
-  Placeholder,
-  Skeleton,
-  Spinner,
-} from "@telegram-apps/telegram-ui";
+import { Button, Modal, Placeholder, Skeleton, Spinner } from "@telegram-apps/telegram-ui";
 import React, { useEffect, useState } from "react";
 import UserInfo from "../components/UserInfo";
 import { FaTelegramPlane } from "react-icons/fa";
@@ -16,7 +10,7 @@ import { IoClose } from "react-icons/io5";
 import { FaRegCheckCircle } from "react-icons/fa";
 import Notification from "./notification/Notification";
 
-const BasicTaskScreen = () => {
+const DailyTasks = () => {
   const [skeletonVisible, setSkeletonVisible] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
@@ -36,6 +30,7 @@ const BasicTaskScreen = () => {
       setShowWarning(true); // Show warning notification after checking
     }, 2000); // Spinner will load for 2 seconds
   };
+
 
   const tasks = [
     {
@@ -63,7 +58,7 @@ const BasicTaskScreen = () => {
       link: "https://t.me/SharpeAI_Official", // Telegram link
     },
   ];
-
+  
   const handleButtonClick = (link) => {
     window.open(link);
   };
@@ -76,29 +71,29 @@ const BasicTaskScreen = () => {
           const Icon = task.icon;
           const taskContent = (
             <div
-              key={index}
-              className={`bg-[#0c0c0c] cursor-pointer border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center ${
-                task.completed ? "opacity-70" : ""
-              }`}
-            >
-              <div className="flex flex-row items-center gap-2">
-                <div className="bg-[#131313] border border-neutral-800 p-[6px] rounded-md">
-                  <Icon />
-                </div>
-                <div>
-                  <p className="font-medium text-[11px] pr-4">{task.name}</p>
-                </div>
+            key={index}
+            className={`bg-[#0c0c0c] cursor-pointer border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center ${
+              task.completed ? "opacity-70" : ""
+            }`}
+          >
+            <div className="flex flex-row items-center gap-2">
+              <div className="bg-[#131313] border border-neutral-800 p-[6px] rounded-md">
+                <Icon />
               </div>
-              {task.completed ? (
-                <div className="mr-1">
-                  <FaRegCheckCircle color="#22c55e" size={15} />
-                </div>
-              ) : (
-                <span className="border text-nowrap border-neutral-800 bg-neutral-950 rounded-full text-[10px] px-[6px] py-1">
-                  +{task.reward} 💎
-                </span>
-              )}
+              <div>
+                <p className="font-medium text-[11px] pr-4">{task.name}</p>
+              </div>
             </div>
+            {task.completed ? (
+              <div className="mr-1">
+                <FaRegCheckCircle color="#22c55e" size={15} />
+              </div>
+            ) : (
+              <span className="border text-nowrap border-neutral-800 bg-neutral-950 rounded-full text-[10px] px-[6px] py-1">
+                +{task.reward} 💎
+              </span>
+            )}
+          </div>
           );
 
           return (
@@ -125,15 +120,13 @@ const BasicTaskScreen = () => {
                       <Icon size={30} />
                     </div>
                     <div className="flex flex-col justify-center items-center gap-1">
-                      <p className="font-semibold text-[16px] text-center">
-                        {task.name}
-                      </p>
+                      <p className="font-semibold text-[18px]">{task.name}</p>
                       <span className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[12px] px-2 py-[6px]">
                         +{task.reward} 💎
                       </span>
                     </div>
                     <div className="flex flex-col w-full gap-1">
-                      <Button
+                    <Button
                         className="flex-grow cursor-pointer text-[14px] w-full px-1 font-medium bg-[#98ECFF] text-black py-0 rounded-[4px]"
                         onClick={() => handleButtonClick(task.link)}
                       >
@@ -161,7 +154,7 @@ const BasicTaskScreen = () => {
         <Notification
           show={showWarning}
           setShow={setShowWarning}
-          type="warning"
+          type="success"
           title="Warning"
           message="This is a relevant notification after the check"
         />
@@ -170,4 +163,4 @@ const BasicTaskScreen = () => {
   );
 };
 
-export default BasicTaskScreen;
+export default DailyTasks;

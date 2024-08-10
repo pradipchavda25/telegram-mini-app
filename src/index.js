@@ -1,16 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
-import TelegramMiniApp from './App';
-import { StateProvider } from './context/StateContext';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import TelegramMiniApp from "./App";
+import { StateProvider } from "./context/StateContext";
+import { AppRoot } from "@telegram-apps/telegram-ui";
+import "@telegram-apps/telegram-ui/dist/styles.css";
+import { TabProvider } from "./context/TabContext";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <StateProvider>
-    <TelegramMiniApp />
-    </StateProvider>
+    {/* <StateProvider> */}
+    <TabProvider>
+      <AppRoot>
+        <TelegramMiniApp />
+      </AppRoot>
+    </TabProvider>
+    {/* </StateProvider> */}
   </React.StrictMode>
 );
 
