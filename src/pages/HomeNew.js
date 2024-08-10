@@ -35,36 +35,39 @@ export default function HomeNew() {
   console.log("Current Tab:", currentTab);
   const { webApp, user } = useTelegram();
   
+  const handleTabChange = (newTab) => {
+    if (newTab !== currentTab) {
+      setTabHistory(prevHistory => [...prevHistory, newTab]);
+      setCurrentTab(newTab);
+    }
+  };
+
   const handleBackButton = () => {
     if (tabHistory.length > 1) {
       const newHistory = tabHistory.slice(0, -1);
       setTabHistory(newHistory);
       setCurrentTab(newHistory[newHistory.length - 1]);
-    } else {
-      webApp.close();
     }
   };
 
   useEffect(() => {
-    if (webApp) {
+    if (webApp && webApp.BackButton) {
       if (tabHistory.length > 1) {
-        webApp.BackButton.show().onClick(handleBackButton);
+        webApp.BackButton.isVisible = true;
+        webApp.BackButton.show();
+        webApp.BackButton.onClick(handleBackButton);
       } else {
+        webApp.BackButton.isVisible = false;
         webApp.BackButton.hide();
       }
 
       return () => {
         webApp.BackButton.offClick(handleBackButton);
+        webApp.BackButton.isVisible = false;
         webApp.BackButton.hide();
       };
     }
   }, [webApp, tabHistory]);
-
-  const handleTabChange = (newTab) => {
-    setTabHistory(prevHistory => [...prevHistory, newTab]);
-    setCurrentTab(newTab);
-  };
-
 
   const renderContent = () => {
     switch (currentTab) {
