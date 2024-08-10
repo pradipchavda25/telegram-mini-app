@@ -3,8 +3,13 @@ import sharpeLogo from "../images/sharpe-white-logo.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { useTab } from "../context/TabContext";
 
-const CompanyInfoScreen = () => {
+const CompanyInfoScreen = ({ onScreenChange }) => {
   const { setCurrentTab } = useTab();
+
+  const navigateToAnotherScreen = (tabName) => {
+    onScreenChange(tabName);
+    setCurrentTab(tabName);
+  };
 
   const ecosystemItems = [
     {
@@ -25,7 +30,7 @@ const CompanyInfoScreen = () => {
 
       {/* Menu Items */}
       <div className="space-y-2 mb-6">
-        <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center" onClick={() => setCurrentTab('sitecard')}>
+        <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center" onClick={() => navigateToAnotherScreen('sitecard')}>
           <div className="flex flex-row items-center gap-2">
             <div className="bg-[#131313] border border-neutral-800 p-2 rounded-md">
               <img
@@ -48,7 +53,7 @@ const CompanyInfoScreen = () => {
             style={{ marginRight: "8px" }}
           />
         </div>
-        <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center" onClick={() => setCurrentTab('tokenomics')}>
+        <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center" onClick={() => navigateToAnotherScreen('tokenomics')}>
           <div className="flex flex-row items-center gap-2">
             <div className="bg-[#131313] border border-neutral-800 p-2 rounded-md">
               <img
@@ -115,7 +120,7 @@ const CompanyInfoScreen = () => {
           <div
             key={index}
             className="bg-[#0c0c0c]  border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center"
-            onClick={() => setCurrentTab(item.tab)}
+            onClick={() => navigateToAnotherScreen(item.tab)}
           >
             <div className="flex flex-row items-center gap-2">
               <div className="bg-[#131313] border border-neutral-800 p-2 rounded-md">
