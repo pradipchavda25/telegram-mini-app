@@ -15,11 +15,13 @@ import { ModalClose } from "@telegram-apps/telegram-ui/dist/components/Overlays/
 import { IoClose } from "react-icons/io5";
 import { FaRegCheckCircle } from "react-icons/fa";
 import Notification from "./notification/Notification";
+import useTelegram from "../context/TelegramContext";
 
 const BasicTaskScreen = () => {
   const [skeletonVisible, setSkeletonVisible] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const { webApp, user } = useTelegram();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -65,7 +67,7 @@ const BasicTaskScreen = () => {
   ];
 
   const handleButtonClick = (link) => {
-    window.open(link);
+    webApp.openTelegramLink(link);
   };
 
   return (
