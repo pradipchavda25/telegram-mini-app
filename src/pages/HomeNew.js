@@ -36,16 +36,15 @@ export default function HomeNew() {
   console.log("Current Tab:", currentTab);
   const { webApp } = useTelegram();
 
-  // const handleTabChange = (newTab) => {
-  //   if (newTab !== currentTab) {
-  //     setTabHistory((prevHistory) => [...prevHistory, newTab]);
-  //     setCurrentTab(newTab);
-  //   }
-  // };
+  const mainTabs = ["home", "referral", "leaderboard", "info"];
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
-      setScreenHistory(prevHistory => [...prevHistory, newScreen]);
+      if (mainTabs.includes(newScreen)) {
+        setScreenHistory([newScreen]);
+      } else {
+        setScreenHistory(prevHistory => [...prevHistory, newScreen]);
+      }
       setCurrentTab(newScreen);
     }
   };
@@ -60,7 +59,7 @@ export default function HomeNew() {
 
   useEffect(() => {
     if (webApp) {
-      const showBackButton = screenHistory.length > 1;
+      const showBackButton = screenHistory.length > 1 && !mainTabs.includes(currentTab);
       
       if (showBackButton) {
         webApp.BackButton.show();
@@ -76,7 +75,7 @@ export default function HomeNew() {
         webApp.BackButton.hide();
       };
     }
-  }, [webApp, screenHistory]);
+  }, [webApp, screenHistory, currentTab]);
 
   const renderContent = () => {
     const props = { onScreenChange: handleScreenChange };
