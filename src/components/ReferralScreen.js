@@ -5,12 +5,15 @@ import { LuClipboardCopy } from "react-icons/lu";
 import { FaCheck } from "react-icons/fa";
 import { Button } from "@telegram-apps/telegram-ui";
 import { IoMdCheckmark } from "react-icons/io";
+import useTelegram from "../context/TelegramContext";
 
 const ReferralScreen = () => {
   const [copied, setCopied] = useState(false);
-
+  const { webApp, user } = useTelegram();
+  console.log('user', user);
+  
   const handleCopyClick = () => {
-    const textToCopy = "http://app.sharpe.ai"; // Replace with the actual referral link
+    const textToCopy = user ? user.id : "http://app.sharpe.ai"; // Replace with the actual referral link
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
       setTimeout(() => {
