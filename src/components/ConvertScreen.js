@@ -1,46 +1,63 @@
-import React from 'react';
+import React from "react";
+import { IoArrowDown } from "react-icons/io5";
+import sharpeLogo from "../images/sharpe-white-logo.svg";
+
+const stats = [
+  { name: "Snapshot diamonds", value: "💎 0" },
+  { name: "Converted diamonds", value: "💎 0" },
+];
 
 const ConvertScreen = () => {
   return (
     <div className="bg-neutral-950 text-white min-h-screen p-4">
       {/* Header */}
-      <p className="text-gray-400 text-sm mb-2">the more $SAI you will have.</p>
-      <div className="flex justify-between mb-4">
-        <div className="bg-neutral-900 rounded-full px-4 py-1 flex items-center">
-          <span className="mr-1">💎</span> 500
-        </div>
-        <div className="bg-neutral-900 rounded-full px-4 py-1 flex items-center">
-          <span className="mr-1">🕒</span> 0
-        </div>
-      </div>
-
-      {/* Diamonds Info */}
-      <div className="bg-neutral-900 rounded-lg p-4 mb-4 flex justify-between">
-        <div>
-          <p className="text-sm text-gray-400">Snapshot diamonds</p>
-          <p className="font-bold">💎 0</p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-400">Converted diamonds</p>
-          <p className="font-bold">💎 0</p>
+      <h1 className="text-2xl font-bold text-center mb-1">Convert to $SAI</h1>
+      <p className="text-neutral-400 text-[14px] text-center">
+        the more diamonds own,
+      </p>
+      <p className="text-neutral-400 text-[14px] mb-3 text-center">
+        the more $SAI you will have.
+      </p>
+      <div className="bg-[#0c0c0c] border rounded-[8px] border-neutral-950">
+        <div className="mx-auto rounded-[8px]">
+          <div className="grid grid-cols-2 rounded-[8px] gap-px">
+            {stats.map((stat) => (
+              <div key={stat.name} className="bg-neutral-900  px-2 py-2">
+                <p className="text-[12px] text-center text-neutral-400">
+                  {stat.name}
+                </p>
+                <p className="mt-1 flex justify-center gap-x-2">
+                  <span className="text-[16px] font-semibold tracking-tight text-center text-white">
+                    {stat.value}
+                  </span>
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Airdrop Snapshot */}
-      <div className="bg-neutral-900 rounded-lg p-4 mb-4">
-        <h2 className="text-xl font-bold mb-2">Airdrop Snapshot Phase One</h2>
-        <p className="text-sm text-gray-400 mb-2">
-          The conversion period will end in the next 00 Hours.
+      <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-4 mt-4 mb-4">
+        <h2 className="text-[18px] text-center font-semibold mb-2">
+          Airdrop Snapshot Phase One
+        </h2>
+        <p className="text-[12px] text-center text-neutral-400">
+          The conversion period will end in the next
         </p>
-        <div className="bg-neutral-800 rounded p-2 text-center">
-          <p className="text-green-400 text-2xl font-bold">00:00:00</p>
+        <p className="text-[12px] text-center font-bold text-neutral-400 mb-2">
+          00 Hours
+        </p>
+        <div className="bg-[#121212] border border-neutral-700 rounded p-2 text-center">
+          <p className="text-green-500 text-2xl font-semibold">00:00:00</p>
         </div>
       </div>
 
       {/* Conversion Info */}
-      <p className="text-center mb-4">
-        You need at least <span className="text-green-400 font-bold">20,000</span> diamonds to
-        convert them into $SAI.
+      <p className="text-[12px] px-6 text-center  mb-4">
+        You need at least{" "}
+        <span className="text-green-400 font-bold">20,000</span> diamonds to
+        convert them into <span className="text-green-500 font-bold">$SAI</span>
       </p>
 
       {/* Conversion Options */}
@@ -50,23 +67,31 @@ const ConvertScreen = () => {
           { diamonds: 2000, time: 2 },
           { diamonds: 5000, time: 7 },
           { diamonds: 10000, time: 17 },
-          { diamonds: 20000, time: null },
-          { diamonds: 50000, time: null },
+          { diamonds: 20000, time: 41 },
+          { diamonds: 50000, time: 124 },
         ].map((option, index) => (
-          <div key={index} className="bg-neutral-900 rounded-lg p-4 text-center">
-            <p className="font-bold">💎 {option.diamonds.toLocaleString()}</p>
+          <button
+          disabled
+            key={index}
+            className="bg-[#121212] cursor-pointer disabled:text-neutral-600 border rounded-md border-neutral-700 p-4 text-center"
+          >
+            <p className="font-bold text-[16px] text-center">
+              💎 {option.diamonds.toLocaleString()}
+            </p>
             {option.time && (
               <>
-                <p className="text-gray-400">↓</p>
-                <p>🕒 {option.time}</p>
+                <div className="flex justify-center py-1">
+                  <IoArrowDown color="grey" size={15} />
+                </div>
+                <p className="flex justify-center gap-1 items-center"><img src={sharpeLogo} alt="" style={{height: '20px', width: '20px'}} /> {option.time}</p>
               </>
             )}
-          </div>
+          </button>
         ))}
       </div>
 
       {/* Convert Button */}
-      <button className="w-full bg-gray-700 text-white py-3 rounded-lg font-bold">
+      <button disabled className="w-full text-[16px] cursor-pointer bg-[#98ECFF] disabled:text-white disabled:bg-neutral-800  text-black py-2 rounded-md font-medium">
         Convert
       </button>
     </div>

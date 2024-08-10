@@ -27,27 +27,30 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-import Conversion from './pages/Conversion';
-import Dashboard from './pages/Dashboard';
-import Earn from './pages/Earn';
-import Leaderboard from './pages/Leaderboard';
-import Referral from './pages/Referral';
-import GMAI from './pages/GMAI';
-import Wallet from './pages/Wallet';
+import '@telegram-apps/telegram-ui/dist/styles.css';
+
+// import Conversion from './pages/Conversion';
+// import Dashboard from './pages/Dashboard';
+// import Earn from './pages/Earn';
+// import Leaderboard from './pages/Leaderboard';
+// import Referral from './pages/Referral';
+// import GMAI from './pages/GMAI';
+// import Wallet from './pages/Wallet';
 import './App.css'
+import HomeNew from './pages/HomeNew';
 
 const App = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/conversion" element={<Conversion />} />
+                <Route path="/" element={<HomeNew />} />
+                {/* <Route path="/conversion" element={<Conversion />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/earn" element={<Earn />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/referral" element={<Referral />} />
                 <Route path="/gmai" element={<GMAI />} />
-                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/wallet" element={<Wallet />} /> */}
             </Routes>
         </Router>
     );
