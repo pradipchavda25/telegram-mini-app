@@ -1,6 +1,6 @@
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { SectionHeader } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useTelegram from "../context/TelegramContext";
 import HomeScreen from "../components/HomePage";
 import { useTab } from "../context/TabContext";
@@ -30,9 +30,41 @@ const tabs = [
 
 export default function HomeNew() {
   //   const [currentTab, setCurrentTab] = useState("home");
+  const [tabHistory, setTabHistory] = useState(["home"]);
   const { currentTab, setCurrentTab } = useTab();
   console.log("Current Tab:", currentTab);
   const { webApp, user } = useTelegram();
+  
+  const handleBackButton = () => {
+    if (tabHistory.length > 1) {
+      const newHistory = tabHistory.slice(0, -1);
+      setTabHistory(newHistory);
+      setCurrentTab(newHistory[newHistory.length - 1]);
+    } else {
+      webApp.close();
+    }
+  };
+
+  useEffect(() => {
+    if (webApp) {
+      if (tabHistory.length > 1) {
+        webApp.BackButton.show().onClick(handleBackButton);
+      } else {
+        webApp.BackButton.hide();
+      }
+
+      return () => {
+        webApp.BackButton.offClick(handleBackButton);
+        webApp.BackButton.hide();
+      };
+    }
+  }, [webApp, tabHistory]);
+
+  const handleTabChange = (newTab) => {
+    setTabHistory(prevHistory => [...prevHistory, newTab]);
+    setCurrentTab(newTab);
+  };
+
 
   const renderContent = () => {
     switch (currentTab) {
@@ -83,7 +115,7 @@ export default function HomeNew() {
             key={id}
             text={text}
             selected={id === currentTab}
-            onClick={() => setCurrentTab(id)}
+            onClick={() => handleTabChange(id)}
             className="focus:text-[#98ECFF] font-normal text-[18px]"
           >
             <Icon />

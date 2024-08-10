@@ -28,10 +28,16 @@ export default function UserInfo() {
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <span className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]" onClick={() => setCurrentTab('convert')}>
+        <span
+          className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
+          onClick={() => setCurrentTab("convert")}
+        >
           💎 500
         </span>
-        <span className="border flex flex-row gap-1 text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]" onClick={() => setCurrentTab('convert')}>
+        <span
+          className="border flex flex-row gap-1 text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
+          onClick={() => setCurrentTab("convert")}
+        >
           {" "}
           <img
             src={sharpeLogo}
