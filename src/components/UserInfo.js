@@ -4,9 +4,14 @@ import { Avatar } from "@telegram-apps/telegram-ui";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import { useTab } from "../context/TabContext";
 
-export default function UserInfo() {
+export default function UserInfo({onScreenChange}) {
   const { webApp, user } = useTelegram();
   const { setCurrentTab } = useTab();
+
+  const navigateToAnotherScreen = (tabName) => {
+    onScreenChange(tabName);
+    setCurrentTab(tabName);
+  };
 
   return (
     <div className="flex items-center bg-[#0c0c0c] px-2 py-2 justify-between">
@@ -30,13 +35,13 @@ export default function UserInfo() {
       <div className="flex items-center gap-1">
         <span
           className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
-          onClick={() => setCurrentTab("convert")}
+          onClick={() => navigateToAnotherScreen("convert")}
         >
           💎 500
         </span>
         <span
           className="border flex flex-row gap-1 text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
-          onClick={() => setCurrentTab("convert")}
+          onClick={() => navigateToAnotherScreen("convert")}
         >
           {" "}
           <img

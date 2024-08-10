@@ -9,12 +9,18 @@ import { useTab } from "../context/TabContext";
 import bannerBg from '../images/banner-bg.avif'
 import { MdArrowForwardIos } from "react-icons/md";
 
-const HomeScreen = () => {
+const HomeScreen = ({ onScreenChange }) => {
   const { setCurrentTab } = useTab();
+
+  const navigateToAnotherScreen = (tabName) => {
+    onScreenChange(tabName);
+    setCurrentTab(tabName);
+  };
+
 
   return (
     <div className="">
-    <UserInfo />
+    <UserInfo onScreenChange={onScreenChange} />
     <Banner
       background={
         <img
@@ -39,7 +45,8 @@ const HomeScreen = () => {
             The more Diamonds you own, the more $SAI allocation you have.
           </p>
         </div>
-        <button className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-medium bg-[#98ECFF] text-black py-[8px]  rounded-[4px]" onClick={() => setCurrentTab('convert')}
+        <button className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-medium bg-[#98ECFF] text-black py-[8px]  rounded-[4px]" onClick={() => navigateToAnotherScreen('convert')}
+
         >
           Convert
           <MdArrowForwardIos size={10} color="black" />
@@ -81,7 +88,7 @@ const HomeScreen = () => {
         return (
           <div
             key={index} // Use index or a unique property if available
-            onClick={() => setCurrentTab(task.tab)}
+            onClick={() => navigateToAnotherScreen(task.tab)}
             className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center"
           >
             <div className="flex flex-row items-center gap-2">

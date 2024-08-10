@@ -30,68 +30,78 @@ const tabs = [
 
 export default function HomeNew() {
   //   const [currentTab, setCurrentTab] = useState("home");
-  const [tabHistory, setTabHistory] = useState(["home"]);
+  // const [tabHistory, setTabHistory] = useState(["home"]);
+  const [screenHistory, setScreenHistory] = useState(["home"]);
   const { currentTab, setCurrentTab } = useTab();
   console.log("Current Tab:", currentTab);
   const { webApp } = useTelegram();
-  
-  const handleTabChange = (newTab) => {
-    if (newTab !== currentTab) {
-      setTabHistory(prevHistory => [...prevHistory, newTab]);
-      setCurrentTab(newTab);
+
+  // const handleTabChange = (newTab) => {
+  //   if (newTab !== currentTab) {
+  //     setTabHistory((prevHistory) => [...prevHistory, newTab]);
+  //     setCurrentTab(newTab);
+  //   }
+  // };
+
+  const handleScreenChange = (newScreen) => {
+    if (newScreen !== currentTab) {
+      setScreenHistory((prevHistory) => [...prevHistory, newScreen]);
+      setCurrentTab(newScreen);
     }
   };
 
   const handleBackButton = () => {
-    if (tabHistory.length > 1) {
-      const newHistory = tabHistory.slice(0, -1);
-      setTabHistory(newHistory);
+    if (screenHistory.length > 1) {
+      const newHistory = screenHistory.slice(0, -1);
+      setScreenHistory(newHistory);
       setCurrentTab(newHistory[newHistory.length - 1]);
     }
   };
 
   useEffect(() => {
     if (webApp) {
-      if (tabHistory.length > 1) {
+      if (screenHistory.length > 1) {
         webApp.BackButton.show();
-        webApp.onEvent('backButtonClicked', handleBackButton);
+        webApp.onEvent("backButtonClicked", handleBackButton);
       } else {
         webApp.BackButton.hide();
       }
 
       return () => {
-        webApp.offEvent('backButtonClicked', handleBackButton);
+        webApp.offEvent("backButtonClicked", handleBackButton);
         webApp.BackButton.hide();
       };
     }
-  }, [webApp, tabHistory]);
+  }, [webApp, screenHistory]);
 
   const renderContent = () => {
+    const props = { onScreenChange: handleScreenChange };
+
     switch (currentTab) {
       case "home":
-        return <HomeScreen />;
+        return <HomeScreen {...props} />;
       case "referral":
-        return <ReferralScreen />;
+        return <ReferralScreen {...props} />;
       case "onboarding":
-        return <OnboardingScreen />;
+        return <OnboardingScreen {...props} />;
       case "basictasks":
-        return <BasicTaskScreen />;
+        return <BasicTaskScreen {...props} />;
       case "dailytasks":
-        return <DailyTasks />;
+        return <DailyTasks {...props} />;
       case "convert":
-        return <ConvertScreen />;
+        return <ConvertScreen {...props} />;
       case "leaderboard":
-        return <LeaderboardScreen />;
+        return <LeaderboardScreen {...props} />;
       case "info":
-        return <CompanyInfoScreen />;
+        return <CompanyInfoScreen {...props} />;
       case "coincard":
-        return <CoinCard />;
+        return <CoinCard {...props} />;
       case "sitecard":
-        return <SolanaAICard />;
-        case "tokenomics":
-        return <TokenomicsScreen />;
-        case "saitoken":
-          return <SaiTokenScreen />;
+        return <SolanaAICard {...props} />;
+      case "tokenomics":
+        return <TokenomicsScreen {...props} />;
+      case "saitoken":
+        return <SaiTokenScreen {...props} />;
       default:
         return null;
     }
@@ -115,7 +125,7 @@ export default function HomeNew() {
             key={id}
             text={text}
             selected={id === currentTab}
-            onClick={() => handleTabChange(id)}
+            onClick={() => handleScreenChange(id)}
             className="focus:text-[#98ECFF] font-normal text-[18px]"
           >
             <Icon />

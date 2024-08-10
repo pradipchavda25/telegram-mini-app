@@ -4,9 +4,13 @@ import useTelegram from "../context/TelegramContext";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import React from "react";
 
-const LeaderboardScreen = () => {
+const LeaderboardScreen = ({onScreenChange}) => {
   const { webApp, user } = useTelegram();
   const { setCurrentTab } = useTab();
+
+  const navigateToAnotherScreen = (tabName) => {
+    onScreenChange(tabName);
+  };
   const topUsers = [
     { name: "Sunusi Danjuma", points: 440700, rank: 2, avatar: "👾" },
     { name: "Vj Rusmayana", points: 452600, rank: 1, avatar: "🤵" },
@@ -119,7 +123,7 @@ const LeaderboardScreen = () => {
         <div className="flex items-center gap-1">
           <span
             className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
-            onClick={() => setCurrentTab("convert")}
+            onClick={() => navigateToAnotherScreen("convert")}
           >
             💎 500
           </span>

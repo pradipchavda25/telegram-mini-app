@@ -19,7 +19,7 @@ import { IoClose } from "react-icons/io5";
 import { FaRegCheckCircle } from "react-icons/fa";
 import Notification from "./notification/Notification";
 
-const OnboardingScreen = () => {
+const OnboardingScreen = ({ onScreenChange }) => {
   const [skeletonVisible, setSkeletonVisible] = useState(true);
   const [isChecking, setIsChecking] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
@@ -31,6 +31,10 @@ const OnboardingScreen = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const navigateToAnotherScreen = () => {
+    onScreenChange('someOtherScreen');
+  };
 
   const handleCheckClick = () => {
     setIsChecking(true);
