@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 
 const useTelegram = () => {
-    const [telegram, setTelegram] = useState(null);
+    const [webApp, setWebApp] = useState(null);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         if (window.Telegram?.WebApp) {
-            const tg = window.Telegram?.WebApp;
-            setTelegram(tg);
-            setUser(tg.initDataUnsafe.user);
+            const tg = window.Telegram.WebApp;
+            setWebApp(tg);
+            setUser(tg.initDataUnsafe?.user);
+            
+            // Ensure the web app is ready
+            tg.ready();
         }
     }, []);
 
-    return { telegram, user };
+    return { webApp, user };
 };
 
 export default useTelegram;

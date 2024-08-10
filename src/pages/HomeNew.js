@@ -33,7 +33,7 @@ export default function HomeNew() {
   const [tabHistory, setTabHistory] = useState(["home"]);
   const { currentTab, setCurrentTab } = useTab();
   console.log("Current Tab:", currentTab);
-  const { webApp, user } = useTelegram();
+  const { webApp } = useTelegram();
   
   const handleTabChange = (newTab) => {
     if (newTab !== currentTab) {
@@ -51,19 +51,16 @@ export default function HomeNew() {
   };
 
   useEffect(() => {
-    if (webApp && webApp.BackButton) {
+    if (webApp) {
       if (tabHistory.length > 1) {
-        webApp.BackButton.isVisible = true;
         webApp.BackButton.show();
-        webApp.BackButton.onClick(handleBackButton);
+        webApp.onEvent('backButtonClicked', handleBackButton);
       } else {
-        webApp.BackButton.isVisible = false;
         webApp.BackButton.hide();
       }
 
       return () => {
-        webApp.BackButton.offClick(handleBackButton);
-        webApp.BackButton.isVisible = false;
+        webApp.offEvent('backButtonClicked', handleBackButton);
         webApp.BackButton.hide();
       };
     }
