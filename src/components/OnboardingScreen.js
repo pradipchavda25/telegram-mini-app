@@ -112,7 +112,7 @@ const OnboardingScreen = () => {
                       <Icon size={30} />
                     </div>
                     <div className="flex flex-col justify-center items-center gap-1">
-                      <p className="font-semibold text-[18px]">{task.name}</p>
+                      <p className="font-semibold text-center text-[16px]">{task.name}</p>
                       <span className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[12px] px-2 py-[6px]">
                         +{task.reward} 💎
                       </span>

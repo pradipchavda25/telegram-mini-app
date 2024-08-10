@@ -12,7 +12,7 @@ import HomeScreen from "../components/HomePage";
 import ConvertScreen from "../components/ConvertScreen";
 import BasicTaskScreen from "../components/BasicTaskScreen";
 import { useStateContext } from "../context/StateContext";
-import LeaderboardScreen from "../components/LeaderboardScreen ";
+import LeaderboardScreen from "../components/LeaderboardScreen";
 import ReferralScreen from "../components/ReferralScreen";
 import CompanyInfoScreen from "../components/CompanyInfoScreen";
 import OnboardingScreen from "../components/OnboardingScreen";

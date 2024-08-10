@@ -7,7 +7,7 @@ import { useTab } from "../context/TabContext";
 import OnboardingScreen from "../components/OnboardingScreen";
 import ReferralScreen from "../components/ReferralScreen";
 import BasicTaskScreen from "../components/BasicTaskScreen";
-import LeaderboardScreen from "../components/LeaderboardScreen ";
+import LeaderboardScreen from "../components/LeaderboardScreen";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import ConvertScreen from "../components/ConvertScreen";
 import CompanyInfoScreen from "../components/CompanyInfoScreen";
