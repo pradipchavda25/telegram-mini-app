@@ -67,7 +67,11 @@ const BasicTaskScreen = () => {
   ];
 
   const handleButtonClick = (link) => {
-    webApp.openTelegramLink(link);
+    if (webApp) {
+      webApp.openLink(link['try_instant_view=true']);
+    } else {
+      window.open(link);
+    }
   };
 
   return (
