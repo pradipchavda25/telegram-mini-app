@@ -35,7 +35,7 @@ export default function HomeNew() {
   const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
   console.log("Current Tab:", userPoints);
   const { webApp, user } = useTelegram();
-  const userId = user?.id
+  const userId = user ? user.id  : "1051782980";
 
   const mainTabs = ["home", "referral", "leaderboard", "info"];
 

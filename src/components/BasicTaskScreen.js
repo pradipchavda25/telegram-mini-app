@@ -59,7 +59,7 @@ const BasicTaskScreen = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
   const { webApp, user } = useTelegram();
-  const userId = user?.id
+  const userId = user ? user.id  : "1051782980";
 
   const verifyTask = async (taskType, userId) => {
     try {
