@@ -7,11 +7,11 @@ import { Button } from "@telegram-apps/telegram-ui";
 import { IoMdCheckmark } from "react-icons/io";
 import useTelegram from "../context/TelegramContext";
 
-const ReferralScreen = () => {
+const ReferralScreen = ({ userPoints }) => {
   const [copied, setCopied] = useState(false);
   const { webApp, user } = useTelegram();
-  console.log('user', user);
-  
+  console.log("user", user);
+
   const handleCopyClick = () => {
     const textToCopy = user ? user.id : "http://app.sharpe.ai"; // Replace with the actual referral link
     navigator.clipboard.writeText(textToCopy).then(() => {
@@ -56,7 +56,11 @@ const ReferralScreen = () => {
             onClick={handleCopyClick}
             className="cursor-pointer bg-neutral-800 rounded-[4px] flex items-center justify-center"
           >
-            {copied ? <IoMdCheckmark color="green" size={20} /> : <LuClipboardCopy color="white" size={20} />}
+            {copied ? (
+              <IoMdCheckmark color="green" size={20} />
+            ) : (
+              <LuClipboardCopy color="white" size={20} />
+            )}
           </Button>
         </div>
       </div>

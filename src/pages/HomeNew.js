@@ -32,9 +32,10 @@ export default function HomeNew() {
   //   const [currentTab, setCurrentTab] = useState("home");
   // const [tabHistory, setTabHistory] = useState(["home"]);
   const [screenHistory, setScreenHistory] = useState(["home"]);
-  const { currentTab, setCurrentTab } = useTab();
-  console.log("Current Tab:", currentTab);
-  const { webApp } = useTelegram();
+  const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
+  console.log("Current Tab:", userPoints);
+  const { webApp, user } = useTelegram();
+  const userId = user?.id
 
   const mainTabs = ["home", "referral", "leaderboard", "info"];
 
@@ -77,8 +78,31 @@ export default function HomeNew() {
     }
   }, [webApp, screenHistory, currentTab]);
 
+  const fetchUserPoints = async () => {
+    try {
+      const response = await fetch(`http://34.93.68.131:8002/get_points`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ unique_id: userId }),
+        });
+      const data = await response.json();
+      if (data) {
+        setUserPoints(data.points);
+      } else {
+        throw new Error(data.message || "Failed to fetch user points");
+      }
+    } catch (error) {
+      console.error("Error fetching user points:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserPoints();
+  }, [userId]);
+
   const renderContent = () => {
-    const props = { onScreenChange: handleScreenChange };
+    const props = { onScreenChange: handleScreenChange, userPoints: userPoints };
 
     switch (currentTab) {
       case "home":
@@ -117,7 +141,7 @@ export default function HomeNew() {
         className="bg-[#09090B] flex gap-2 items-center px-3 flex-row py-3 border-b border-neutral-800 sticky top-0 z-10"
       >
         <div className="flex gap-1">
-          <img src={sharpeLogo} alt="" />
+          {/* <img src={sharpeLogo} alt="" /> */}
           <p className="font-normal">Sharpe</p>
         </div>
       </SectionHeader>

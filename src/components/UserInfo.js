@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useTelegram from "../context/TelegramContext";
 import { Avatar } from "@telegram-apps/telegram-ui";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import { useTab } from "../context/TabContext";
 
-export default function UserInfo({onScreenChange}) {
+export default function UserInfo({ onScreenChange }) {
   const { webApp, user } = useTelegram();
-  const { setCurrentTab } = useTab();
+  const { currentTab, setCurrentTab, userPoints } = useTab();
 
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
@@ -37,7 +37,7 @@ export default function UserInfo({onScreenChange}) {
           className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
           onClick={() => navigateToAnotherScreen("convert")}
         >
-          💎 500
+          💎 {userPoints}
         </span>
         <span
           className="border flex flex-row gap-1 text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"

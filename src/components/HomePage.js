@@ -9,7 +9,7 @@ import { useTab } from "../context/TabContext";
 import bannerBg from '../images/banner-bg.avif'
 import { MdArrowForwardIos } from "react-icons/md";
 
-const HomeScreen = ({ onScreenChange }) => {
+const HomeScreen = ({ onScreenChange, userPoints }) => {
   const { setCurrentTab } = useTab();
 
   const navigateToAnotherScreen = (tabName) => {
@@ -20,7 +20,7 @@ const HomeScreen = ({ onScreenChange }) => {
 
   return (
     <div className="">
-    <UserInfo onScreenChange={onScreenChange} />
+    <UserInfo onScreenChange={onScreenChange} userPoints={userPoints} />
     <Banner
       background={
         <img
@@ -64,8 +64,8 @@ const HomeScreen = ({ onScreenChange }) => {
         },
         {
           name: "Basic Task",
-          progress: "0/19 tasks done",
-          reward: 16500,
+          progress: "0/3 tasks done",
+          reward: 1500,
           tab: "basictasks",
           icon: GoTasklist,
         },

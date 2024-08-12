@@ -49,14 +49,14 @@ const DailyTasks = () => {
       modalButtonText: "Join",
       link: "https://discord.com/invite/tFAvMTw6Hx", // Discord link
     },
-    {
-      name: "Join the Sharpe AI Telegram group",
-      reward: 500,
-      icon: FaTelegramPlane,
-      completed: true, // Task completed
-      modalButtonText: "Join",
-      link: "https://t.me/SharpeAI_Official", // Telegram link
-    },
+    // {
+    //   name: "Join the Sharpe AI Telegram group",
+    //   reward: 500,
+    //   icon: FaTelegramPlane,
+    //   completed: true, // Task completed
+    //   modalButtonText: "Join",
+    //   link: "https://t.me/SharpeAI_Official", // Telegram link
+    // },
   ];
   
   const handleButtonClick = (link) => {

@@ -2,12 +2,15 @@ import React from "react";
 import { IoArrowDown } from "react-icons/io5";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 
-const stats = [
-  { name: "Snapshot diamonds", value: "💎 0" },
-  { name: "Converted diamonds", value: "💎 0" },
-];
 
-const ConvertScreen = () => {
+
+const ConvertScreen = ({userPoints}) => {
+
+  const stats = [
+    { name: "Snapshot diamonds", value: `💎 ${userPoints}` },
+    { name: "Converted diamonds", value: "💎 0" },
+  ];
+  
   return (
     <div className="bg-neutral-950 text-white min-h-screen p-4">
       {/* Header */}

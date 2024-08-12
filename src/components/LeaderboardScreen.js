@@ -4,7 +4,7 @@ import useTelegram from "../context/TelegramContext";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import React from "react";
 
-const LeaderboardScreen = ({onScreenChange}) => {
+const LeaderboardScreen = ({onScreenChange, userPoints}) => {
   const { webApp, user } = useTelegram();
   const { setCurrentTab } = useTab();
 
@@ -125,7 +125,7 @@ const LeaderboardScreen = ({onScreenChange}) => {
             className="border text-center border-neutral-800 bg-[#131313] rounded-full text-[10px] px-[8px] py-[4px]"
             onClick={() => navigateToAnotherScreen("convert")}
           >
-            💎 500
+            💎 {userPoints}
           </span>
         </div>
       </div>
