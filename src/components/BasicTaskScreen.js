@@ -63,7 +63,7 @@ const BasicTaskScreen = () => {
 
   const verifyTask = async (taskType, userId) => {
     try {
-      const response = await fetch("http://34.93.68.131:8002/verify_telegram", {
+      const response = await fetch("https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: userId, unique_id: userId }),

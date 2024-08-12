@@ -80,7 +80,7 @@ export default function HomeNew() {
 
   const fetchUserPoints = async () => {
     try {
-      const response = await fetch(`http://34.93.68.131:8002/get_points`,
+      const response = await fetch(`https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
