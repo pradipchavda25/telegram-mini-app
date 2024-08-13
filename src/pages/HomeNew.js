@@ -34,13 +34,12 @@ const contentVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
 
-const AnimatedIcon = ({ Icon }) => (
+const AnimatedIcon = ({ Icon, color }) => (
   <motion.div
     whileHover={{
       scale: 1.2,
       rotate: 15,
       color: "#87D4FE", // Change color on hover
-      // boxShadow: "0 0 10px rgba(255, 215, 0, 0.5)" // Add a glow effect
     }}
     whileTap={{
       scale: 0.9,
@@ -53,10 +52,12 @@ const AnimatedIcon = ({ Icon }) => (
       damping: 10
     }}
     className="flex items-center justify-center"
+    style={{ color }} // Apply the color prop here
   >
     <Icon />
   </motion.div>
 );
+
 
 export default function HomeNew() {
   //   const [currentTab, setCurrentTab] = useState("home");
@@ -206,7 +207,7 @@ export default function HomeNew() {
               : "text-[18px]"
           }`}
         >
-          <AnimatedIcon Icon={Icon} />
+          <AnimatedIcon Icon={Icon} color={id === currentTab ? "#fff" : "#999"} />
         </Tabbar.Item>
       ))}
     </Tabbar>
