@@ -39,8 +39,8 @@ const AnimatedIcon = ({ Icon }) => (
     whileHover={{
       scale: 1.2,
       rotate: 15,
-      color: "#FFD700", // Change color on hover
-      boxShadow: "0 0 10px rgba(255, 215, 0, 0.5)" // Add a glow effect
+      color: "#87D4FE", // Change color on hover
+      // boxShadow: "0 0 10px rgba(255, 215, 0, 0.5)" // Add a glow effect
     }}
     whileTap={{
       scale: 0.9,
