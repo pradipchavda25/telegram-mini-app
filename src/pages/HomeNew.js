@@ -20,6 +20,7 @@ import CoinCard from "../components/CoinCard";
 import SolanaAICard from "../components/SolanaAIOperatingLayer";
 import TokenomicsScreen from "../components/Tokemonics";
 import SaiTokenScreen from "../components/SaiTokenScreen";
+import { motion } from "framer-motion";
 
 const tabs = [
   { id: "home", text: "Home", Icon: IoHomeOutline },
@@ -28,14 +29,42 @@ const tabs = [
   { id: "info", text: "Info", Icon: MdInfoOutline },
 ];
 
+const contentVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
+const AnimatedIcon = ({ Icon }) => (
+  <motion.div
+    whileHover={{
+      scale: 1.2,
+      rotate: 15,
+      color: "#FFD700", // Change color on hover
+      boxShadow: "0 0 10px rgba(255, 215, 0, 0.5)" // Add a glow effect
+    }}
+    whileTap={{
+      scale: 0.9,
+      rotate: -5
+    }}
+    transition={{
+      duration: 0.3,
+      type: "spring", // Use spring for a bouncy effect
+      stiffness: 300, // Adjust the stiffness for bounce effect
+      damping: 10
+    }}
+    className="flex items-center justify-center"
+  >
+    <Icon />
+  </motion.div>
+);
+
 export default function HomeNew() {
   //   const [currentTab, setCurrentTab] = useState("home");
   // const [tabHistory, setTabHistory] = useState(["home"]);
   const [screenHistory, setScreenHistory] = useState(["home"]);
   const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
-  console.log("Current Tab:", userPoints);
   const { webApp, user } = useTelegram();
-  const userId = user ? user.id  : "1051782980";
+  const userId = user ? user.id : "1051782980";
 
   const mainTabs = ["home", "referral", "leaderboard", "info"];
 
@@ -44,7 +73,7 @@ export default function HomeNew() {
       if (mainTabs.includes(newScreen)) {
         setScreenHistory([newScreen]);
       } else {
-        setScreenHistory(prevHistory => [...prevHistory, newScreen]);
+        setScreenHistory((prevHistory) => [...prevHistory, newScreen]);
       }
       setCurrentTab(newScreen);
     }
@@ -60,18 +89,19 @@ export default function HomeNew() {
 
   useEffect(() => {
     if (webApp) {
-      const showBackButton = screenHistory.length > 1 && !mainTabs.includes(currentTab);
-      
+      const showBackButton =
+        screenHistory.length > 1 && !mainTabs.includes(currentTab);
+
       if (showBackButton) {
         webApp.BackButton.show();
-        webApp.onEvent('backButtonClicked', handleBackButton);
+        webApp.onEvent("backButtonClicked", handleBackButton);
       } else {
         webApp.BackButton.hide();
       }
 
       return () => {
         if (showBackButton) {
-          webApp.offEvent('backButtonClicked', handleBackButton);
+          webApp.offEvent("backButtonClicked", handleBackButton);
         }
         webApp.BackButton.hide();
       };
@@ -80,12 +110,14 @@ export default function HomeNew() {
 
   const fetchUserPoints = async () => {
     try {
-      const response = await fetch(`https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ unique_id: userId }),
-        });
+        }
+      );
       const data = await response.json();
       if (data) {
         setUserPoints(data.points);
@@ -102,7 +134,10 @@ export default function HomeNew() {
   }, [userId]);
 
   const renderContent = () => {
-    const props = { onScreenChange: handleScreenChange, userPoints: userPoints };
+    const props = {
+      onScreenChange: handleScreenChange,
+      userPoints: userPoints,
+    };
 
     switch (currentTab) {
       case "home":
@@ -136,29 +171,45 @@ export default function HomeNew() {
 
   return (
     <div className="flex flex-col h-screen">
-      <SectionHeader
-        large
-        className="bg-[#09090B] flex gap-2 items-center px-3 flex-row py-3 border-b border-neutral-800 sticky top-0 z-10"
+    <SectionHeader
+      large
+      className="bg-[#09090B]/50 backdrop-blur-md border-b border-neutral-800 shadow-lg shadow-neutral-900/50 flex gap-2 items-center px-3 flex-row py-1 sticky top-0 z-10 rounded-lg"
+    >
+      <motion.div 
+        className="flex gap-1 items-center"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <div className="flex gap-1">
-          {/* <img src={sharpeLogo} alt="" /> */}
-          <p className="font-normal">Sharpe</p>
-        </div>
-      </SectionHeader>
-      <div className="flex-grow overflow-y-auto ">{renderContent()}</div>
-      <Tabbar className="bg-[#09090B] sticky bottom-0 z-10">
-        {tabs.map(({ id, text, Icon }) => (
-          <Tabbar.Item
-            key={id}
-            text={text}
-            selected={id === currentTab}
-            onClick={() => handleScreenChange(id)}
-            className="focus:text-[#98ECFF] font-normal text-[18px]"
-          >
-            <Icon />
-          </Tabbar.Item>
-        ))}
-      </Tabbar>
-    </div>
+        <img src={sharpeLogo} alt="" style={{height: '14px', width: '14px', display: 'flex', justifyContent: 'center', alignItems: 'center'}} />
+        <p className="font-normal text-[12px]">Sharpe</p>
+      </motion.div>
+    </SectionHeader>
+    <motion.div 
+      className="flex-grow overflow-y-auto"
+      variants={contentVariants}
+      initial="hidden"
+      animate="visible"
+      key={currentTab} // This will trigger animation when tab changes
+    >
+      {renderContent()}
+    </motion.div>
+    <Tabbar className="bg-[#09090B] border border-neutral-800 sticky bottom-0 z-10 rounded-lg">
+      {tabs.map(({ id, Icon }) => (
+        <Tabbar.Item
+          key={id}
+          selected={id === currentTab}
+          onClick={() => handleScreenChange(id)}
+          className={`tabbar-item-no-bg font-semibold ${
+            id === currentTab
+              ? "text-[#fff] text-[22px]"
+              : "text-[18px]"
+          }`}
+        >
+          <AnimatedIcon Icon={Icon} />
+        </Tabbar.Item>
+      ))}
+    </Tabbar>
+  </div>
   );
 }

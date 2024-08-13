@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import { MdArrowForwardIos } from "react-icons/md";
 import { useTab } from "../context/TabContext";
@@ -20,116 +21,118 @@ const CompanyInfoScreen = ({ onScreenChange }) => {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 300 },
+    },
+  };
+
   return (
-    <div className="bg-neutral-950 text-white min-h-screen p-4">
+    <motion.div
+      className="bg-neutral-950 text-white min-h-screen p-4"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Header */}
-      <div className="text-center mb-6">
+      <motion.div className="text-center mb-6" variants={itemVariants}>
         <h1 className="text-2xl font-bold mb-1">Sharpe AI</h1>
         <p className="text-neutral-400 text-[16px]">AI-powered Crypto Super App</p>
-      </div>
+      </motion.div>
 
       {/* Menu Items */}
-      <div className="space-y-2 mb-6">
-        <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center" onClick={() => navigateToAnotherScreen('sitecard')}>
-          <div className="flex flex-row items-center gap-2">
-            <div className="bg-[#131313] border border-neutral-800 p-2 rounded-md">
-              <img
-                src={sharpeLogo}
-                alt=""
-                style={{ height: "20px", width: "20px" }}
-              />
-            </div>
-            <div>
-              <p className="font-semibold text-[14px]">Overview</p>
-              <p className="text-[12px] text-neutral-400">
-                Get to know about gmAI
-              </p>
-            </div>
-          </div>
-
-          <MdArrowForwardIos
-            color="grey"
-            size={12}
-            style={{ marginRight: "8px" }}
-          />
-        </div>
-        <div className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center" onClick={() => navigateToAnotherScreen('tokenomics')}>
-          <div className="flex flex-row items-center gap-2">
-            <div className="bg-[#131313] border border-neutral-800 p-2 rounded-md">
-              <img
-                src={sharpeLogo}
-                alt=""
-                style={{ height: "20px", width: "20px" }}
-              />
-            </div>
-            <div>
-              <p className="font-semibold text-[14px]">Tokenomics</p>
-              <p className="text-[10px] text-neutral-400 pr-8">
-                Discover $SAI Tokenomics & token use case
-              </p>
-            </div>
-          </div>
-
-          <MdArrowForwardIos
-            color="grey"
-            size={12}
-            style={{ marginRight: "8px" }}
-          />
-        </div>
-      </div>
-
-      {/* Ecosystem */}
-      <h3 className="text-neutral-400 text-[14px] tracking-wide font-semibold mb-2">
-        ECOSYSTEM
-      </h3>
-      <div className="space-y-2">
-        {ecosystemItems.map((item, index) => (
-          // <div
-          //   key={index}
-          //   className="bg-neutral-900 rounded-lg p-4 flex items-center justify-between"
-          // >
-          //   <div className="flex items-center">
-          //     <div className="w-10 h-10 bg-neutral-700 rounded-lg flex items-center justify-center mr-3">
-          //       {item.icon}
-          //     </div>
-          //     <div>
-          //       <h2 className="font-bold flex items-center">
-          //         {item.name}
-          //         <span className="ml-2 text-[12px] bg-neutral-700 text-white px-2 py-1 rounded-full">
-          //           {item.tag}
-          //         </span>
-          //       </h2>
-          //       <p className="text-sm text-neutral-400">{item.description}</p>
-          //     </div>
-          //   </div>
-          //   <svg
-          //     xmlns="http://www.w3.org/2000/svg"
-          //     className="h-6 w-6"
-          //     fill="none"
-          //     viewBox="0 0 24 24"
-          //     stroke="currentColor"
-          //   >
-          //     <path
-          //       strokeLinecap="round"
-          //       strokeLinejoin="round"
-          //       strokeWidth={2}
-          //       d="M9 5l7 7-7 7"
-          //     />
-          //   </svg>
-          // </div>
-          <div
+      <motion.div className="space-y-2 mb-6" variants={itemVariants}>
+        {[
+          {
+            name: "Overview",
+            description: "Get to know about gmAI",
+            tab: 'sitecard'
+          },
+          {
+            name: "Tokenomics",
+            description: "Discover $SAI Tokenomics & token use case",
+            tab: 'tokenomics'
+          },
+        ].map((item, index) => (
+          <motion.div
             key={index}
-            className="bg-[#0c0c0c]  border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center"
+            className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center"
             onClick={() => navigateToAnotherScreen(item.tab)}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300 }}
           >
             <div className="flex flex-row items-center gap-2">
-              <div className="bg-[#131313] border border-neutral-800 p-2 rounded-md">
-              <img
-                src={sharpeLogo}
-                alt=""
-                style={{ height: "20px", width: "20px" }}
-              />
+              <motion.div
+                className="bg-[#131313] border border-neutral-800 p-2 rounded-md"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <img
+                  src={sharpeLogo}
+                  alt=""
+                  style={{ height: "20px", width: "20px" }}
+                />
+              </motion.div>
+              <div>
+                <p className="font-semibold text-[14px]">{item.name}</p>
+                <p className="text-[12px] text-neutral-400">
+                  {item.description}
+                </p>
               </div>
+            </div>
+            <MdArrowForwardIos
+              color="grey"
+              size={12}
+              style={{ marginRight: "8px" }}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Ecosystem */}
+      <motion.h3
+        className="text-neutral-400 text-[14px] tracking-wide font-semibold mb-2"
+        variants={itemVariants}
+      >
+        ECOSYSTEM
+      </motion.h3>
+      <motion.div className="space-y-2" variants={itemVariants}>
+        {ecosystemItems.map((item, index) => (
+          <motion.div
+            key={index}
+            className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center"
+            onClick={() => navigateToAnotherScreen(item.tab)}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <div className="flex flex-row items-center gap-2">
+              <motion.div
+                className="bg-[#131313] border border-neutral-800 p-2 rounded-md"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <img
+                  src={sharpeLogo}
+                  alt=""
+                  style={{ height: "20px", width: "20px" }}
+                />
+              </motion.div>
               <div>
                 <p className="font-semibold text-[14px] mb-1 flex items-center gap-1">
                   {item.name}
@@ -142,16 +145,15 @@ const CompanyInfoScreen = ({ onScreenChange }) => {
                 </p>
               </div>
             </div>
-
             <MdArrowForwardIos
               color="grey"
               size={12}
               style={{ marginRight: "8px" }}
             />
-          </div>
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
