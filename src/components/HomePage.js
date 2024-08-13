@@ -139,7 +139,7 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
               <motion.div
                 key={index}
                 onClick={() => navigateToAnotherScreen(task.tab)}
-                className="bg-gradient-to-r from-[#181818] to-black border rounded-md border-neutral-800 p-2 mb-2 flex justify-between items-center"
+                className="bg-gradient-to-r cursor-pointer from-[#181818] to-black border rounded-md border-neutral-800 p-2 mb-2 flex justify-between items-center"
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

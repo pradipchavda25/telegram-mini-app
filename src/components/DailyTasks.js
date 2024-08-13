@@ -150,6 +150,7 @@ const DailyTasks = () => {
               key={index}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
+              className="cursor-pointer"
             >
               <Skeleton className="rounded-md" visible={skeletonVisible}>
                 {task.completed ? (
