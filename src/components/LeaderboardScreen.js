@@ -134,11 +134,11 @@ const LeaderboardScreen = ({ onScreenChange }) => {
               🤖
             </motion.div>
             <div>
-              <p className="font-semibold text-[12px] flex flex-row items-center gap-1">
+              <p className="font-semibold text-[10px] flex flex-row items-center gap-1">
                 {user ? `${user.first_name} ${user.last_name}` : "Anonymous"}
                 <Chip
                   mode="elevated"
-                  className="bg-white p-1 text-[10px] rounded-sm flex items-center justify-center text-black h-[12px] w-max"
+                  className="bg-white p-1 text-[8px] rounded-sm flex items-center justify-center text-black h-[12px] w-max"
                 >
                   <span className="text-black font-bold flex items-center justify-center  text-[7px]">
                     You
