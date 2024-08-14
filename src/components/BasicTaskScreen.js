@@ -95,7 +95,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://x.com/JoinFirefly",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "JoinFirefly ",
+      twitterId: "JoinFirefly",
     },
     {
       id: "twitter_Sharpe_intern",
