@@ -356,7 +356,7 @@ const BasicTaskScreen = () => {
           boxShadow: "0px 0px 8px rgba(255, 255, 255, 0.2)",
           transition: { duration: 0.2 },
         }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.99 }}
       >
         <div className="flex flex-row items-center gap-2">
           <motion.div
