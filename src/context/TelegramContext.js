@@ -6,7 +6,6 @@ const useTelegram = () => {
     const [startParam, setStartParam] = useState(null);
 
     useEffect(() => {
-        console.log("useTelegram hook initialized");
         if (window.Telegram?.WebApp) {
             const tg = window.Telegram.WebApp;
             setWebApp(tg);
@@ -15,13 +14,7 @@ const useTelegram = () => {
             // Get the start parameter from URL
             const urlParams = new URLSearchParams(window.location.search);
             const param = urlParams.get('tgWebAppStartParam');
-            console.log("URL Parameters:", Object.fromEntries(urlParams));
-            console.log("tgWebAppStartParam from URL:", param);
             setStartParam(param);
-            
-            // Log the entire initData for debugging
-            console.log("Telegram WebApp initData:", tg.initData);
-            console.log("Telegram WebApp initDataUnsafe:", tg.initDataUnsafe);
             
             // Ensure the web app is ready
             tg.ready();

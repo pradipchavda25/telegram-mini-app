@@ -138,12 +138,12 @@ const ReferralScreen = ({ userPoints }) => {
           </p>
         </motion.div>
       </motion.div>
-      <div className="mt-4 p-4 bg-neutral-900 rounded">
+      {/* <div className="mt-4 p-4 bg-neutral-900 rounded">
         <h3 className="text-sm font-bold mb-2">Debug Information:</h3>
         <p className="text-sm">User ID: {user?.id || 'Not available'}</p>
         <p className="text-sm">Referral Code: {referralCode || 'Not generated'}</p>
         <p className="text-sm">Incoming Referral: {startParam || 'None'}</p>
-      </div>
+      </div> */}
     </motion.div>
   );
 };
