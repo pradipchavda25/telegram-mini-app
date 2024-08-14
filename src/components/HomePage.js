@@ -8,14 +8,22 @@ import { TbCalendarClock } from "react-icons/tb";
 import { useTab } from "../context/TabContext";
 import { MdArrowForwardIos } from "react-icons/md";
 import { IoDiamondOutline } from "react-icons/io5";
+import sharpeLogo from "../images/sharpe-white-logo.svg";
+import useTelegram from "../context/TelegramContext";
 
 const HomeScreen = ({ onScreenChange, userPoints }) => {
   const { setCurrentTab, completedTasks } = useTab();
+  const {  startParam } = useTelegram();
 
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
     setCurrentTab(tabName);
   };
+
+  const stats = [
+    { name: "Diamonds", value: `${userPoints}` },
+    { name: "$SAI", value: "0" },
+  ];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -45,6 +53,52 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
       variants={containerVariants}
     >
       <UserInfo onScreenChange={onScreenChange} userPoints={userPoints} />
+      <motion.div
+        className="bg-[#0c0c0c] border rounded-[8px] border-neutral-950 m-4"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        <div className="mx-auto rounded-[8px]">
+          <div className="grid grid-cols-2 rounded-[8px] gap-px">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.name}
+                className={`${
+                  index === 0
+                    ? "bg-gradient-to-r border-r border-neutral-800 rounded-l-lg"
+                    : index === 1
+                    ? "bg-gradient-to-l border-neutral-800 rounded-r-lg"
+                    : ""
+                } from-[#181818] to-black px-2 py-2`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                <p className="text-[15px] text-center text-neutral-500 font-medium">
+                  {stat.name}
+                </p>
+                <p className="mt-1 flex justify-center gap-x-2">
+                  <span className="text-[22px] flex items-center gap-1 font-semibold tracking-tight text-center text-white">
+                    {stat.value}
+                    {index === 0 && <IoDiamondOutline size={14} style={{marginTop: '2px'}} />}
+                    {index === 1 && (
+                      <motion.img
+                        src={sharpeLogo}
+                        alt=""
+                        style={{ height: "16px", width: "16px"}}
+                        initial={{ opacity: 0, rotate: -180 }}
+                        animate={{ opacity: 1, rotate: 0 }}
+                        transition={{ delay: 0.5, duration: 1 }}
+                      />
+                    )}
+                  </span>
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
       <motion.div variants={itemVariants}>
         <motion.div variants={itemVariants}>
           <Banner
@@ -90,7 +144,7 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
               <IoDiamondOutline size={10} /> to $SAI
             </p>
             <p className="text-[10px] text-neutral-400 pr-2">
-              The more Diamonds you own, the more $SAI allocation you have.
+              The more Diamonds you own, the more $SAI allocation you have. {startParam}
             </p>
           </div>
           <motion.button

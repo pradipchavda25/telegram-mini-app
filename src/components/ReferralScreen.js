@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BsSendPlus } from "react-icons/bs";
 import { TbUserPlus } from "react-icons/tb";
 import { LuClipboardCopy } from "react-icons/lu";
@@ -10,10 +10,27 @@ import { motion } from "framer-motion";
 
 const ReferralScreen = ({ userPoints }) => {
   const [copied, setCopied] = useState(false);
-  const { webApp, user } = useTelegram();
+  const { webApp, user, startParam } = useTelegram();
+  const [referralCode, setReferralCode] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setReferralCode(generateReferralCode(user.id));
+    }
+
+    // // Handle incoming referral
+    // if (startParam) {
+    //   handleIncomingReferral(startParam);
+    // }
+  }, [user, startParam]);
+
+  const generateReferralCode = (userId) => {
+    // Generate a unique code based on userId
+    return `REF${userId}`;
+  };
 
   const handleCopyClick = () => {
-    const textToCopy = user ? user.id : "http://app.sharpe.ai"; // Replace with the actual referral link
+    const textToCopy = user ? `https://t.me/TeleMiniTestBot?startapp=${referralCode}` : "http://app.sharpe.ai";
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
       setTimeout(() => {

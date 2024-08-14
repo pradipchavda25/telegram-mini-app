@@ -64,7 +64,7 @@ export default function UserInfo({ onScreenChange }) {
         </AnimatePresence>
         <motion.div className="ml-2" variants={itemVariants}>
           <motion.p
-            className="font-semibold text-[11px]"
+            className="font-semibold text-[12px]"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}
@@ -73,7 +73,7 @@ export default function UserInfo({ onScreenChange }) {
           </motion.p>
         </motion.div>
       </motion.div>
-      <motion.div className="flex items-center gap-1" variants={itemVariants}>
+      {/* <motion.div className="flex items-center gap-1" variants={itemVariants}>
         <motion.span
           className="text-center flex items-center gap-1 bg-[#1d1d1d] rounded-full text-[12px] px-[8px] py-[4px] cursor-pointer"
           whileHover={{ scale: 1.1, backgroundColor: "#2c2c2c" }}
@@ -117,7 +117,7 @@ export default function UserInfo({ onScreenChange }) {
             transition={{ delay: 0.6, duration: 0.3 }}
           />
         </motion.span>
-      </motion.div>
+      </motion.div> */}
     </motion.div>
   );
 }
