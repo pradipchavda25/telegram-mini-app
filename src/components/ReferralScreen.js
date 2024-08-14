@@ -30,7 +30,7 @@ const ReferralScreen = ({ userPoints }) => {
   };
 
   const handleCopyClick = () => {
-    const textToCopy = user ? `https://t.me/TeleMiniTestBot/app?startapp=${referralCode}` : "http://app.sharpe.ai";
+    const textToCopy = user ? `https://t.me/TeleMiniTestBot/hello123Test?startapp=${referralCode}` : "http://app.sharpe.ai";
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
       setTimeout(() => {
