@@ -10,8 +10,13 @@ const useTelegram = () => {
             const tg = window.Telegram.WebApp;
             setWebApp(tg);
             setUser(tg.initDataUnsafe?.user);
-            setStartParam(tg.startParam);
             
+            // Get the start parameter from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const startParam = urlParams.get('tgWebAppStartParam');
+            setStartParam(startParam);
+            
+            // Ensure the web app is ready
             tg.ready();
         }
     }, []);

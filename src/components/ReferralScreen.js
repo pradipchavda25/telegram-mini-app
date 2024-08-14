@@ -138,6 +138,9 @@ const ReferralScreen = ({ userPoints }) => {
           </p>
         </motion.div>
       </motion.div>
+      {startParam && (
+        <p className="text-white mt-4">Incoming Referral Code: {startParam}</p>
+      )}
     </motion.div>
   );
 };

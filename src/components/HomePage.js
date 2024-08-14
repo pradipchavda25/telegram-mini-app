@@ -14,7 +14,7 @@ import useTelegram from "../context/TelegramContext";
 const HomeScreen = ({ onScreenChange, userPoints }) => {
   const { setCurrentTab, completedTasks } = useTab();
   const {webApp, startParam } = useTelegram();
-  console.log('startParam', webApp.startParam, startParam);
+  // console.log('startParam', webApp.startParam, startParam);
   
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
