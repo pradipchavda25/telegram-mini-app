@@ -352,7 +352,7 @@ const BasicTaskScreen = () => {
         variants={taskVariants}
         custom={index}
         whileHover={{
-          scale: 0.5,
+          scale: 1,
           boxShadow: "0px 0px 8px rgba(255, 255, 255, 0.2)",
           transition: { duration: 0.2 },
         }}
