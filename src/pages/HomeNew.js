@@ -1,6 +1,5 @@
 import { Tabbar } from "@telegram-apps/telegram-ui";
-import { SectionHeader } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import useTelegram from "../context/TelegramContext";
 import HomeScreen from "../components/HomePage";
 import { useTab } from "../context/TabContext";
@@ -56,7 +55,7 @@ const AnimatedIcon = ({ Icon, color }) => (
     whileHover={{
       scale: 1.2,
       rotate: 15,
-      color: "#87D4FE", // Change color on hover
+      color: "#87D4FE",
     }}
     whileTap={{
       scale: 0.9,
@@ -64,29 +63,29 @@ const AnimatedIcon = ({ Icon, color }) => (
     }}
     transition={{
       duration: 0.3,
-      type: "spring", // Use spring for a bouncy effect
-      stiffness: 300, // Adjust the stiffness for bounce effect
+      type: "spring",
+      stiffness: 300,
       damping: 10,
     }}
     className="flex items-center justify-center"
-    style={{ color }} // Apply the color prop here
+    style={{ color }}
   >
     <Icon />
   </motion.div>
 );
 
 export default function HomeNew() {
-  //   const [currentTab, setCurrentTab] = useState("home");
-  // const [tabHistory, setTabHistory] = useState(["home"]);
   const [screenHistory, setScreenHistory] = useState(["home"]);
   const [showLogo, setShowLogo] = useState(true);
-  const [taskStatusData, setTaskStatusData] = useState(null);
+  const [taskStatusData, setTaskStatusData] = useState([]);
   const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
   const { webApp, user, startParam } = useTelegram();
   const [showReferralPopup, setShowReferralPopup] = useState(false);
   const [referralProcessed, setReferralProcessed] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [startParamLoaded, setStartParamLoaded] = useState(false);
+  const [isReferralHandled, setIsReferralHandled] = useState(false);
   const [notification, setNotification] = useState({
     show: false,
     type: "",
@@ -95,12 +94,73 @@ export default function HomeNew() {
   });
   const userId = user ? user.id : "1051782980";
   const mainTabs = ["home", "referral", "leaderboard", "info"];
-  console.log(
-    "showReferralPopup",
-    showReferralPopup,
-    referralProcessed,
-    startParam
-  );
+
+  useEffect(() => {
+    const checkStartParam = () => {
+      if (
+        webApp &&
+        webApp.initDataUnsafe &&
+        webApp.initDataUnsafe.start_param
+      ) {
+        setStartParamLoaded(true);
+      } else if (startParam !== null) {
+        setStartParamLoaded(true);
+      }
+    };
+
+    checkStartParam();
+
+    const intervalId = setInterval(() => {
+      checkStartParam();
+    }, 100);
+
+    const timeoutId = setTimeout(() => {
+      clearInterval(intervalId);
+      setStartParamLoaded(true);
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, [webApp, startParam]);
+
+  useEffect(() => {
+    if (startParamLoaded && startParam && !referralProcessed) {
+      if (!showLogo) {
+        setShowReferralPopup(true);
+      }
+    } else if (startParamLoaded && !startParam) {
+      setReferralProcessed(true);
+    }
+  }, [startParamLoaded, startParam, referralProcessed, showLogo]);
+
+  const initializeApp = useCallback(async () => {
+    console.log("Initializing app...");
+    console.log("startParamLoaded:", startParamLoaded);
+    console.log("startParam:", startParam);
+    console.log("userId:", userId);
+
+    if (startParamLoaded) {
+      if (startParam && userId && !referralProcessed) {
+        console.log("Waiting for referral confirmation");
+      } else {
+        console.log("No startParam or referral already processed");
+        setReferralProcessed(true);
+        await fetchData();
+      }
+      setIsInitialized(true);
+    }
+  }, [startParamLoaded, startParam, userId, referralProcessed]);
+
+  useEffect(() => {
+    initializeApp();
+  }, [initializeApp, startParamLoaded]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLogo(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
@@ -113,11 +173,6 @@ export default function HomeNew() {
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowLogo(false), 2000); // Set timeout for 2 seconds
-    return () => clearTimeout(timer); // Clear timeout if component unmounts
-  }, []);
-
   const handleBackButton = () => {
     if (screenHistory.length > 1) {
       const newHistory = screenHistory.slice(0, -1);
@@ -127,13 +182,10 @@ export default function HomeNew() {
   };
 
   useEffect(() => {
-    if (startParam && !referralProcessed) {
-      setShowReferralPopup(true);
-      setReferralProcessed(false); // Reset this to ensure the popup shows
-    } else if (!startParam) {
-      setReferralProcessed(true);
+    if (currentTab === 'home' && isReferralHandled) {
+      fetchTaskStatus();
     }
-  }, [startParam, referralProcessed]);
+  }, [currentTab, isReferralHandled]);
 
   useEffect(() => {
     if (webApp) {
@@ -155,26 +207,6 @@ export default function HomeNew() {
       };
     }
   }, [webApp, screenHistory, currentTab]);
-
-  const initializeApp = useCallback(async () => {
-    console.log("Initializing app...");
-    console.log("startParam:", startParam);
-    console.log("userId:", userId);
-
-    if (startParam && userId && !referralProcessed) {
-      console.log("Showing referral popup");
-      setShowReferralPopup(true);
-    } else {
-      console.log("No startParam or referral already processed");
-      setReferralProcessed(true);
-      await fetchData();
-    }
-    setIsInitialized(true);
-  }, [startParam, userId, referralProcessed]);
-
-  useEffect(() => {
-    initializeApp();
-  }, [initializeApp]);
 
   const fetchData = async () => {
     console.log("Fetching data...");
@@ -221,7 +253,7 @@ export default function HomeNew() {
   const handleReferralConfirmation = async (confirmed) => {
     console.log("Handling referral confirmation:", confirmed);
     setShowReferralPopup(false);
-    if (confirmed) {
+    if (confirmed && startParam) {
       try {
         console.log("Adding referral...");
         const response = await fetch(
@@ -230,54 +262,79 @@ export default function HomeNew() {
         );
         const data = await response.json();
         console.log("Referral added:", data);
-        setShowConfetti(true);
-        setNotification({
-          show: true,
-          type: "success",
-          title: "Referral Successful",
-          message: "You have successfully joined using a referral link!",
-        });
-        setTimeout(() => setShowConfetti(false), 3000);
+
+        if (data.msg === "Referee ID already exists.") {
+          setNotification({
+            show: true,
+            type: "info",
+            title: "Already Referred",
+            message: "You are already referred",
+          });
+        } else {
+          setShowConfetti(true);
+          setNotification({
+            show: true,
+            type: "success",
+            title: "Referral Successful",
+            message: "You have successfully joined using a referral link!",
+          });
+          setTimeout(() => setShowConfetti(false), 3000);
+        }
       } catch (error) {
         console.error("Error adding referral:", error);
         setNotification({
           show: true,
           type: "error",
           title: "Referral Failed",
-          message: "There was an error processing your referral. Please try again.",
+          message:
+            "There was an error processing your referral. Please try again.",
         });
       }
     }
+    setIsReferralHandled(true);
     setReferralProcessed(true);
-    await fetchData();
+    await fetchData(); // Fetch data after referral process
   };
 
-  const ReferralPopup = ({ onConfirm, onReject }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
-      <div className="bg-gradient-to-t border border-neutral-800 from-[#181818] to-black p-4 rounded-lg shadow-lg w-[300px]">
-        <h2 className="text-lg font-bold mb-2 text-white">
-          Join with Referral
-        </h2>
-        <p className="mb-3 text-[14px] text-gray-300">
-          Do you want to join using this referral link?
-        </p>
-        <div className="flex justify-end space-x-1">
-          <button
-            onClick={onReject}
-            className="px-3 py-1 cursor-pointer font- text-[13px] bg-[#2d2d2d] text-[#fff]  border border-neutral-800 rounded-[4px]"
-          >
-            Decline
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-3 py-1 cursor-pointer font- text-[13px] bg-[#426bff] text-[#fff]  border border-neutral-800 rounded-[4px]"
-          >
-            Accept
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  const ReferralPopup = ({ onConfirm, onReject }) => {
+    return (
+      <motion.div
+        className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div
+          className="bg-gradient-to-b border border-neutral-800 from-[#181818] to-black p-4 rounded-lg shadow-lg w-[300px]"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <h2 className="text-lg font-bold mb-2 text-white">Join with Referral</h2>
+          <p className="mb-3 text-[14px] text-gray-300">
+            Do you want to join using this referral link?
+          </p>
+          <div className="flex justify-end space-x-1">
+            <button
+              onClick={onReject}
+              className="px-3 py-1 cursor-pointer font-medium text-[13px] bg-[#2d2d2d] text-[#fff] border border-neutral-800 rounded-[4px]"
+            >
+              Decline
+            </button>
+            <button
+              onClick={onConfirm}
+              className="px-3 py-1 cursor-pointer font-medium text-[13px] bg-[#fff] text-[#000] border border-neutral-800 rounded-[4px]"
+            >
+              Accept
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  };
+  
 
   const renderContent = () => {
     const props = {
@@ -349,7 +406,7 @@ export default function HomeNew() {
             variants={contentVariants}
             initial="hidden"
             animate="visible"
-            key={currentTab} // This will trigger animation when tab changes
+            key={currentTab}
           >
             {renderContent()}
           </motion.div>
