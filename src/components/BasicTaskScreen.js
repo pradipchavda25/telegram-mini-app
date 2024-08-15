@@ -111,7 +111,7 @@ const BasicTaskScreen = ({taskStatusData}) => {
       reward: 500,
       icon: FaDiscord,
       modalButtonText: "Join",
-      link: `http://34.93.68.131:8002/join_discord?unique_id=${userId}`,
+      link: `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/join_discord?unique_id=${userId}`,
       verifier: TASK_TYPES.DISCORD,
       taskId: 'joined_discord'
     },
@@ -224,12 +224,12 @@ const BasicTaskScreen = ({taskStatusData}) => {
           options.body = JSON.stringify({ user_id: userId, unique_id: userId });
           break;
         case TASK_TYPES.DISCORD:
-          url = `http://34.93.68.131:8002/join_discord?unique_id=${userId}`;
+          url = `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/join_discord?unique_id=${userId}`;
           options.method = "GET";
           delete options.headers; // Remove headers for GET request
           break;
         case TASK_TYPES.TWITTER:
-          url = "http://34.93.68.131:8002/verify_tasks";
+          url = "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_tasks";
           options.body = JSON.stringify({ unique_id: userId, task_id: taskId });
           break;
         default:
