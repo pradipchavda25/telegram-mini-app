@@ -105,13 +105,9 @@ export default function HomeNew() {
     const fetchTaskStatus = async () => {
       try {
         const response = await fetch(
-          "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks",
+          `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ unique_id: userId }),
+            method: "GET",
           }
         );
         const data = await response.json();
@@ -234,7 +230,10 @@ export default function HomeNew() {
         </motion.div>
       ) : (
         <>
-          {(currentTab === "home" || currentTab === "basictasks" || currentTab === "onboarding" || currentTab === "dailytasks") && (
+          {(currentTab === "home" ||
+            currentTab === "basictasks" ||
+            currentTab === "onboarding" ||
+            currentTab === "dailytasks") && (
             <UserInfo
               onScreenChange={handleScreenChange}
               userPoints={userPoints}

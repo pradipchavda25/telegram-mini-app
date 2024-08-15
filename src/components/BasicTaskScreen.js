@@ -41,7 +41,7 @@ const taskVariants = {
   }),
 };
 
-const BasicTaskScreen = ({taskStatusData}) => {
+const BasicTaskScreen = ({ taskStatusData }) => {
   const { webApp, user } = useTelegram();
   const userId = user ? user.id : "1051782980"; // Default userId if not available
   const INITIAL_TASKS = [
@@ -113,7 +113,7 @@ const BasicTaskScreen = ({taskStatusData}) => {
       modalButtonText: "Join",
       link: `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/join_discord?unique_id=${userId}`,
       verifier: TASK_TYPES.DISCORD,
-      taskId: 'joined_discord'
+      taskId: "joined_discord",
     },
     {
       id: "telegram_task",
@@ -146,13 +146,9 @@ const BasicTaskScreen = ({taskStatusData}) => {
   const fetchTaskStatus = async (userId) => {
     try {
       const response = await fetch(
-        "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks",
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ unique_id: userId }),
+          method: "GET",
         }
       );
       const data = await response.json();
@@ -184,20 +180,20 @@ const BasicTaskScreen = ({taskStatusData}) => {
     }
   };
 
-
   useEffect(() => {
     const updateTasksStatus = async () => {
       setSkeletonVisible(true);
-      
+
       console.log("taskStatusData", taskStatusData);
-    
+
       setTasks((prevTasks) =>
         prevTasks.map((task) => ({
           ...task,
-          completed: task.taskId in taskStatusData ? taskStatusData[task.taskId] : false
+          completed:
+            task.taskId in taskStatusData ? taskStatusData[task.taskId] : false,
         }))
       );
-    
+
       setSkeletonVisible(false);
     };
 
@@ -272,12 +268,12 @@ const BasicTaskScreen = ({taskStatusData}) => {
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
-  
+
     try {
       if (selectedTask.verifier === TASK_TYPES.DISCORD) {
         // Use fetchTaskStatus to get the latest task status
         const taskStatus = await fetchTaskStatus(userId);
-  
+
         if (taskStatus && taskStatus.joined_discord) {
           // Discord task completed successfully
           setTasks((prevTasks) =>
@@ -299,7 +295,7 @@ const BasicTaskScreen = ({taskStatusData}) => {
             message: "Discord server joined successfully!",
           });
           setShowConfetti(true);
-  
+
           setTimeout(() => {
             setIsModalOpen(false);
             setShowCheckButton(false);
@@ -342,7 +338,7 @@ const BasicTaskScreen = ({taskStatusData}) => {
               message || `Task "${selectedTask.name}" completed successfully!`,
           });
           setShowConfetti(true);
-  
+
           setTimeout(() => {
             setIsModalOpen(false);
             setShowCheckButton(false);
