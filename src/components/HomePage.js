@@ -176,7 +176,6 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
             </p>
             <p className="text-[10px] text-neutral-400 pr-2">
               The more Diamonds you own, the more $SAI allocation you have.{" "}
-              {startParam}
             </p>
           </div>
           <motion.button

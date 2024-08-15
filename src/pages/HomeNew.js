@@ -1,6 +1,6 @@
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { SectionHeader } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useTelegram from "../context/TelegramContext";
 import HomeScreen from "../components/HomePage";
 import { useTab } from "../context/TabContext";
@@ -86,6 +86,7 @@ export default function HomeNew() {
   const [showReferralPopup, setShowReferralPopup] = useState(false);
   const [referralProcessed, setReferralProcessed] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [notification, setNotification] = useState({
     show: false,
     type: "",
@@ -155,54 +156,101 @@ export default function HomeNew() {
     }
   }, [webApp, screenHistory, currentTab]);
 
-  useEffect(() => {
-    if ((currentTab === "home" && referralProcessed) || !startParam) {
-      const fetchTaskStatus = async () => {
-        try {
-          const response = await fetch(
-            `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
-            {
-              method: "GET",
-            }
-          );
-          const data = await response.json();
-          setTaskStatusData(data);
-        } catch (error) {
-          console.error("Error fetching task status:", error);
-          setTaskStatusData(null);
-        }
-      };
-  
-      fetchTaskStatus();
+  const initializeApp = useCallback(async () => {
+    console.log("Initializing app...");
+    console.log("startParam:", startParam);
+    console.log("userId:", userId);
+
+    if (startParam && userId && !referralProcessed) {
+      console.log("Showing referral popup");
+      setShowReferralPopup(true);
+    } else {
+      console.log("No startParam or referral already processed");
+      setReferralProcessed(true);
+      await fetchData();
     }
-  }, [currentTab, userId, referralProcessed, startParam]);
-  
+    setIsInitialized(true);
+  }, [startParam, userId, referralProcessed]);
+
   useEffect(() => {
-    if (referralProcessed || !startParam) {
-      const fetchUserPoints = async () => {
-        try {
-          const response = await fetch(
-            `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ unique_id: userId }),
-            }
-          );
-          const data = await response.json();
-          if (data) {
-            setUserPoints(data.points);
-          } else {
-            throw new Error(data.message || "Failed to fetch user points");
-          }
-        } catch (error) {
-          console.error("Error fetching user points:", error);
-        }
-      };
-  
-      fetchUserPoints();
+    initializeApp();
+  }, [initializeApp]);
+
+  const fetchData = async () => {
+    console.log("Fetching data...");
+    await Promise.all([fetchTaskStatus(), fetchUserPoints()]);
+  };
+
+  const fetchTaskStatus = async () => {
+    console.log("Fetching task status...");
+    try {
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
+        { method: "GET" }
+      );
+      const data = await response.json();
+      setTaskStatusData(data);
+    } catch (error) {
+      console.error("Error fetching task status:", error);
+      setTaskStatusData(null);
     }
-  }, [userId, referralProcessed, startParam]);
+  };
+
+  const fetchUserPoints = async () => {
+    console.log("Fetching user points...");
+    try {
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ unique_id: userId }),
+        }
+      );
+      const data = await response.json();
+      if (data) {
+        setUserPoints(data.points);
+      } else {
+        throw new Error(data.message || "Failed to fetch user points");
+      }
+    } catch (error) {
+      console.error("Error fetching user points:", error);
+    }
+  };
+
+  const handleReferralConfirmation = async (confirmed) => {
+    console.log("Handling referral confirmation:", confirmed);
+    setShowReferralPopup(false);
+    if (confirmed) {
+      try {
+        console.log("Adding referral...");
+        const response = await fetch(
+          `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/add_refferal?referrer_id=${startParam}&referee_id=${userId}`,
+          { method: "GET" }
+        );
+        const data = await response.json();
+        console.log("Referral added:", data);
+        setShowConfetti(true);
+        setNotification({
+          show: true,
+          type: "success",
+          title: "Referral Successful",
+          message: "You have successfully joined using a referral link!",
+        });
+        setTimeout(() => setShowConfetti(false), 3000);
+      } catch (error) {
+        console.error("Error adding referral:", error);
+        setNotification({
+          show: true,
+          type: "error",
+          title: "Referral Failed",
+          message: "There was an error processing your referral. Please try again.",
+        });
+      }
+    }
+    setReferralProcessed(true);
+    await fetchData();
+  };
 
   const ReferralPopup = ({ onConfirm, onReject }) => (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
@@ -230,38 +278,6 @@ export default function HomeNew() {
       </div>
     </div>
   );
-
-  const handleReferralConfirmation = async (confirmed) => {
-    setShowReferralPopup(false);
-    if (confirmed) {
-      try {
-        const response = await fetch(
-          `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/add_refferal?referrer_id=${startParam}&referee_id=${userId}`,
-          { method: "GET" }
-        );
-        const data = await response.json();
-        console.log("Referral added:", data);
-        setShowConfetti(true);
-        setNotification({
-          show: true,
-          type: "success",
-          title: "Referral Successful",
-          message: "You have successfully joined using a referral link!",
-        });
-        setTimeout(() => setShowConfetti(false), 3000);
-      } catch (error) {
-        console.error("Error adding referral:", error);
-        setNotification({
-          show: true,
-          type: "error",
-          title: "Referral Failed",
-          message:
-            "There was an error processing your referral. Please try again.",
-        });
-      }
-    }
-    setReferralProcessed(true);
-  };
 
   const renderContent = () => {
     const props = {
@@ -302,7 +318,7 @@ export default function HomeNew() {
 
   return (
     <div className="flex flex-col h-screen">
-      {showLogo ? (
+      {showLogo || !isInitialized ? (
         <motion.div
           className="logo-div flex flex-1 justify-center flex-col items-center"
           variants={logoVariants}
