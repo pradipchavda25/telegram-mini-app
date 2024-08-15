@@ -54,12 +54,12 @@ const ConvertScreen = ({ userPoints }) => {
                     : index === 1
                     ? "bg-gradient-to-l border-neutral-800 rounded-r-lg"
                     : ""
-                } from-[#181818] to-black px-2 py-2`}
+                } from-[#181818] to-black px-1 py-2`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <p className="text-[12px] text-center text-neutral-300 font-medium">
+                <p className="text-[10px] text-center text-neutral-300 font-medium">
                   {stat.name}
                 </p>
                 <p className="mt-1 flex justify-center gap-x-2">
