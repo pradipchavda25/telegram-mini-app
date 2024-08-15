@@ -77,7 +77,8 @@ export default function HomeNew() {
   //   const [currentTab, setCurrentTab] = useState("home");
   // const [tabHistory, setTabHistory] = useState(["home"]);
   const [screenHistory, setScreenHistory] = useState(["home"]);
-  const [showLogo, setShowLogo] = useState(true); 
+  const [showLogo, setShowLogo] = useState(true);
+  const [taskStatusData, setTaskStatusData] = useState(null);
   const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
   const { webApp, user } = useTelegram();
   const userId = user ? user.id : "1051782980";
@@ -99,6 +100,30 @@ export default function HomeNew() {
     const timer = setTimeout(() => setShowLogo(false), 2000); // Set timeout for 2 seconds
     return () => clearTimeout(timer); // Clear timeout if component unmounts
   }, []);
+
+  useEffect(() => {
+    const fetchTaskStatus = async () => {
+      try {
+        const response = await fetch(
+          "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ unique_id: userId }),
+          }
+        );
+        const data = await response.json();
+        setTaskStatusData(data);
+      } catch (error) {
+        console.error("Error fetching task status:", error);
+        setTaskStatusData(null);
+      }
+    };
+
+    fetchTaskStatus();
+  }, [userId]);
 
   const handleBackButton = () => {
     if (screenHistory.length > 1) {
@@ -158,6 +183,7 @@ export default function HomeNew() {
     const props = {
       onScreenChange: handleScreenChange,
       userPoints: userPoints,
+      taskStatusData: taskStatusData,
     };
 
     switch (currentTab) {
@@ -208,7 +234,12 @@ export default function HomeNew() {
         </motion.div>
       ) : (
         <>
-      {/* <UserInfo onScreenChange={handleScreenChange} userPoints={userPoints} /> */}
+          {(currentTab === "home" || currentTab === "basictasks" || currentTab === "onboarding" || currentTab === "dailytasks") && (
+            <UserInfo
+              onScreenChange={handleScreenChange}
+              userPoints={userPoints}
+            />
+          )}
 
           <motion.div
             className="flex-grow overflow-y-auto"

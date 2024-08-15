@@ -129,7 +129,7 @@ const DailyTasks = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <UserInfo />
+      {/* <UserInfo /> */}
       <motion.div
         className="px-2 pb-2 mt-3"
         variants={{

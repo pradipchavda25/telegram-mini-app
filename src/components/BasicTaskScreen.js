@@ -26,8 +26,6 @@ const TASK_TYPES = {
   DISCORD: "discordJoin",
 };
 
-
-
 const taskVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i) => ({
@@ -43,7 +41,7 @@ const taskVariants = {
   }),
 };
 
-const BasicTaskScreen = () => {
+const BasicTaskScreen = ({taskStatusData}) => {
   const { webApp, user } = useTelegram();
   const userId = user ? user.id : "1051782980"; // Default userId if not available
   const INITIAL_TASKS = [
@@ -55,7 +53,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://twitter.com/SharpeLabs",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "SharpeLabs",
+      taskId: "followed_SharpeLabs",
     },
     {
       id: "twitter_sharpe_signals",
@@ -65,7 +63,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://twitter.com/SharpeSignals",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "SharpeSignals",
+      taskId: "followed_SharpeSignals",
     },
     {
       id: "twitter_brownian",
@@ -75,7 +73,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://x.com/Brownianxyz",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "Brownianxyz",
+      taskId: "followed_Brownianxyz",
     },
     {
       id: "twitter_Hive_intelligence",
@@ -85,7 +83,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://x.com/Hive_Intel",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "Hive_Intel",
+      taskId: "followed_HiveIntellegence",
     },
     {
       id: "twitter_firefly",
@@ -95,7 +93,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://x.com/JoinFirefly",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "JoinFirefly",
+      taskId: "followed_JoinFirefly",
     },
     {
       id: "twitter_Sharpe_intern",
@@ -105,7 +103,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Follow",
       link: "https://x.com/SharpeIntern",
       verifier: TASK_TYPES.TWITTER,
-      twitterId: "SharpeIntern",
+      taskId: "followed_SharpeIntern",
     },
     {
       id: "discord_task",
@@ -115,6 +113,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Join",
       link: `http://34.93.68.131:8002/join_discord?unique_id=${userId}`,
       verifier: TASK_TYPES.DISCORD,
+      taskId: 'joined_discord'
     },
     {
       id: "telegram_task",
@@ -124,6 +123,7 @@ const BasicTaskScreen = () => {
       modalButtonText: "Join",
       link: "https://t.me/SharpeAI_Official",
       verifier: TASK_TYPES.TELEGRAM,
+      taskId: "followed_telegram",
     },
   ];
   const [tasks, setTasks] = useState(INITIAL_TASKS);
@@ -139,66 +139,111 @@ const BasicTaskScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
   const [showCheckButton, setShowCheckButton] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const { completedTasks, setCompletedTasks } = useTab();
-  console.log("selectedTask", completedTasks);
+  const { setUserPoints, setCompletedTasks } = useTab();
 
-  const updateTaskStatus = useCallback(
-    (taskId, isCompleted) => {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskId ? { ...task, completed: isCompleted } : task
-        )
+  console.log("selectedTask", tasks);
+
+  const fetchTaskStatus = async (userId) => {
+    try {
+      const response = await fetch(
+        "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ unique_id: userId }),
+        }
       );
-      if (isCompleted) {
-        setCompletedTasks((prev) => ({
-          ...prev,
-          basictasks: prev.basictasks + 1,
-        }));
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching task status:", error);
+      return null;
+    }
+  };
+
+  const fetchUserPoints = async () => {
+    try {
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ unique_id: userId }),
+        }
+      );
+      const data = await response.json();
+      if (data) {
+        setUserPoints(data.points);
+      } else {
+        throw new Error(data.message || "Failed to fetch user points");
       }
-    },
-    [setCompletedTasks]
-  );
+    } catch (error) {
+      console.error("Error fetching user points:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    const updateTasksStatus = async () => {
+      setSkeletonVisible(true);
+      
+      console.log("taskStatusData", taskStatusData);
+    
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => ({
+          ...task,
+          completed: task.taskId in taskStatusData ? taskStatusData[task.taskId] : false
+        }))
+      );
+    
+      setSkeletonVisible(false);
+    };
+
+    updateTasksStatus();
+  }, [userId]);
 
   const sortedTasks = [...tasks].sort((a, b) => {
     if (a.completed === b.completed) return 0;
     return a.completed ? 1 : -1;
   });
 
-  const verifyTask = async (taskType, userId, twitterId) => {
+  const verifyTask = async (taskType, userId, taskId) => {
     try {
       let url = "";
-      let body = {};
+      let options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      };
+
       switch (taskType) {
         case TASK_TYPES.TELEGRAM:
           url =
             "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_telegram";
-          body = { user_id: userId, unique_id: userId };
+          options.body = JSON.stringify({ user_id: userId, unique_id: userId });
           break;
         case TASK_TYPES.DISCORD:
-          url = "http://34.93.68.131:8002/join_discord";
-          body = { user_id: userId, unique_id: userId };
+          url = `http://34.93.68.131:8002/join_discord?unique_id=${userId}`;
+          options.method = "GET";
+          delete options.headers; // Remove headers for GET request
           break;
         case TASK_TYPES.TWITTER:
-          url = "http://34.93.68.131:8002/verify_twitter";
-          body = { unique_id: userId, twitter_id: twitterId };
+          url = "http://34.93.68.131:8002/verify_tasks";
+          options.body = JSON.stringify({ unique_id: userId, task_id: taskId });
           break;
         default:
           throw new Error("Invalid task type");
       }
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
+      const response = await fetch(url, options);
       const data = await response.json();
 
       if (taskType === TASK_TYPES.TWITTER) {
         return {
           success: data.status === "success",
           message: data.message || "Task Completed Successfully.",
-          twitterId: twitterId, // Include this to identify which Twitter task was completed
+          taskId: taskId,
         };
       } else if (taskType === TASK_TYPES.TELEGRAM) {
         return {
@@ -207,12 +252,12 @@ const BasicTaskScreen = () => {
             ? "Task Completed Successfully."
             : "Failed to verify. Please try again.",
         };
-      } else {
+      } else if (taskType === TASK_TYPES.DISCORD) {
         return {
-          success: false,
-          message: false
+          success: data.joined,
+          message: data.joined
             ? "Task Completed Successfully."
-            : "Failed to verify. Please try again.",
+            : "Error joining discord server. Please try again!",
         };
       }
     } catch (error) {
@@ -224,78 +269,95 @@ const BasicTaskScreen = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const checkInitialTaskStatus = async () => {
-  //     const { success: telegramSuccess } = await verifyTask(
-  //       TASK_TYPES.TELEGRAM,
-  //       userId
-  //     );
-  //     updateTaskStatus("telegram_task", telegramSuccess);
-
-  //     const { success: discordSuccess } = await verifyTask(
-  //       TASK_TYPES.DISCORD,
-  //       userId
-  //     );
-  //     updateTaskStatus("discord_task", discordSuccess);
-
-  //     // Check Twitter tasks
-  //     for (const task of INITIAL_TASKS) {
-  //       if (task.verifier === TASK_TYPES.TWITTER) {
-  //         const { success, twitterId } = await verifyTask(TASK_TYPES.TWITTER, userId, task.twitterId);
-  //         updateTaskStatus(task.id, success);
-  //       }
-  //     }
-
-  //     setSkeletonVisible(false);
-  //   };
-
-  //   checkInitialTaskStatus();
-  // }, [updateTaskStatus]);
-
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
-
+  
     try {
-      const { success, message, twitterId } = await verifyTask(
-        selectedTask.verifier,
-        userId,
-        selectedTask.twitterId
-      );
-      if (success) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === selectedTask.id ? { ...task, completed: true } : task
-          )
-        );
-        setCompletedTasks((prev) => ({
-          ...prev,
-          basictasks: prev.basictasks + 1,
-        }));
-        updateTaskStatus(selectedTask.id, true);
-        setNotification({
-          show: true,
-          type: "success",
-          title: "Success",
-          message:
-            message || `Task "${selectedTask.name}" completed successfully!`,
-        });
-        setShowConfetti(true);
+      if (selectedTask.verifier === TASK_TYPES.DISCORD) {
+        // Use fetchTaskStatus to get the latest task status
+        const taskStatus = await fetchTaskStatus(userId);
+  
+        if (taskStatus && taskStatus.joined_discord) {
+          // Discord task completed successfully
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task.id === selectedTask.id ? { ...task, completed: true } : task
+            )
+          );
+          setCompletedTasks((prev) => ({
+            ...prev,
+            basictasks: prev.basictasks + 1,
+          }));
 
-        setTimeout(() => {
-          setIsModalOpen(false);
-          setShowCheckButton(false);
-          setSelectedTask(null);
-        }, 1500);
+          await fetchUserPoints();
+
+          setNotification({
+            show: true,
+            type: "success",
+            title: "Success",
+            message: "Discord server joined successfully!",
+          });
+          setShowConfetti(true);
+  
+          setTimeout(() => {
+            setIsModalOpen(false);
+            setShowCheckButton(false);
+            setSelectedTask(null);
+          }, 1500);
+        } else {
+          // Discord task not completed
+          setNotification({
+            show: true,
+            type: "warning",
+            title: "Task Not Completed",
+            message: "Discord server not joined!",
+          });
+        }
       } else {
-        setNotification({
-          show: true,
-          type: "warning",
-          title: "Task Not Completed",
-          message:
-            message ||
-            `Unable to verify task: ${selectedTask.name}. Please try again.`,
-        });
+        // For other task types, keep the existing verification logic
+        const { success, message, taskId } = await verifyTask(
+          selectedTask.verifier,
+          userId,
+          selectedTask.taskId
+        );
+        if (success) {
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task.id === selectedTask.id ? { ...task, completed: true } : task
+            )
+          );
+          setCompletedTasks((prev) => ({
+            ...prev,
+            basictasks: prev.basictasks + 1,
+          }));
+
+          await fetchUserPoints();
+
+          setNotification({
+            show: true,
+            type: "success",
+            title: "Success",
+            message:
+              message || `Task "${selectedTask.name}" completed successfully!`,
+          });
+          setShowConfetti(true);
+  
+          setTimeout(() => {
+            setIsModalOpen(false);
+            setShowCheckButton(false);
+            setSelectedTask(null);
+          }, 1500);
+        } else {
+          setNotification({
+            show: true,
+            type: "warning",
+            title: "Task Not Completed",
+            message:
+              message ||
+              `Unable to verify task: ${selectedTask.name}. Please try again.`,
+          });
+        }
       }
     } catch (error) {
       console.error(`Error verifying task: ${selectedTask.name}`, error);
@@ -391,7 +453,7 @@ const BasicTaskScreen = () => {
             animate={{ scale: 1, rotate: 0 }}
             transition={{ duration: 0.5, type: "spring" }}
           >
-            <FaRegCheckCircle color="#22c55e" size={15} />
+            <FaRegCheckCircle color="#22c55e" size={16} />
           </motion.div>
         ) : (
           <motion.span
@@ -416,7 +478,7 @@ const BasicTaskScreen = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      <UserInfo />
+      {/* <UserInfo /> */}
       <motion.div
         className="px-2 pb-2 mt-3"
         variants={{
@@ -586,8 +648,8 @@ const BasicTaskScreen = () => {
           >
             <Confetti
               mode="boom"
-              particleCount={410}
-              shapeSize={20}
+              particleCount={400}
+              shapeSize={22}
               launchSpeed={2}
               colors={["#98ecff", "#ff577f", "#ff884b", "#fff9b0"]}
             />

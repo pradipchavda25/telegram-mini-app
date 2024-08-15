@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Banner } from "@telegram-apps/telegram-ui";
 import UserInfo from "../components/UserInfo";
@@ -10,12 +10,29 @@ import { MdArrowForwardIos } from "react-icons/md";
 import { IoDiamondOutline } from "react-icons/io5";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import useTelegram from "../context/TelegramContext";
+import Slider from "./Slider";
 
-const HomeScreen = ({ onScreenChange, userPoints }) => {
+const basicTasks = [
+  "followed_Brownianxyz",
+  "joined_discord",
+  "followed_JoinFirefly",
+  "followed_SharpeSignals",
+  "followed_HiveIntellegence",
+  "followed_SharpeLabs",
+  "followed_SharpeIntern",
+  "followed_telegram",
+];
+
+const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
   const { setCurrentTab, completedTasks } = useTab();
-  const {webApp, startParam } = useTelegram();
+  const { webApp, startParam } = useTelegram();
   // console.log('startParam', webApp.startParam, startParam);
-  
+
+  const totalBasicTasks = basicTasks.length;
+  const completedBasicTasks = basicTasks.filter(
+    (task) => taskStatusData[task]
+  ).length;
+
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
     setCurrentTab(tabName);
@@ -53,7 +70,7 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
       animate="visible"
       variants={containerVariants}
     >
-      <UserInfo onScreenChange={onScreenChange} userPoints={userPoints} />
+      {/* <UserInfo onScreenChange={onScreenChange} userPoints={userPoints} /> */}
       <motion.div
         className="bg-[#0c0c0c] border rounded-[8px] border-neutral-950 m-4"
         initial={{ opacity: 0, scale: 0.95 }}
@@ -82,12 +99,17 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
                 <p className="mt-1 flex justify-center gap-x-2">
                   <span className="text-[22px] flex items-center gap-1 font-semibold tracking-tight text-center text-white">
                     {stat.value}
-                    {index === 0 && <IoDiamondOutline size={14} style={{marginTop: '2px'}} />}
+                    {index === 0 && (
+                      <IoDiamondOutline
+                        size={14}
+                        style={{ marginTop: "2px" }}
+                      />
+                    )}
                     {index === 1 && (
                       <motion.img
                         src={sharpeLogo}
                         alt=""
-                        style={{ height: "16px", width: "16px"}}
+                        style={{ height: "16px", width: "16px" }}
                         initial={{ opacity: 0, rotate: -180 }}
                         animate={{ opacity: 1, rotate: 0 }}
                         transition={{ delay: 0.5, duration: 1 }}
@@ -133,6 +155,14 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
           </Banner>
         </motion.div>
       </motion.div>
+      <motion.div
+        className="mx-4 mb-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        <Slider />
+      </motion.div>
       <motion.div className="p-2 px-3" variants={itemVariants}>
         <motion.div
           className="bg-gradient-to-r from-[#181818] to-black border border-neutral-800 rounded-md p-4 flex flex-row justify-between items-center"
@@ -145,7 +175,8 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
               <IoDiamondOutline size={10} /> to $SAI
             </p>
             <p className="text-[10px] text-neutral-400 pr-2">
-              The more Diamonds you own, the more $SAI allocation you have. {startParam}
+              The more Diamonds you own, the more $SAI allocation you have.{" "}
+              {startParam}
             </p>
           </div>
           <motion.button
@@ -176,7 +207,7 @@ const HomeScreen = ({ onScreenChange, userPoints }) => {
             },
             {
               name: "Basic Task",
-              progress: "0/3 tasks done",
+              progress: `${completedBasicTasks}/${totalBasicTasks} tasks done`,
               reward: 1500,
               tab: "basictasks",
               icon: GoTasklist,

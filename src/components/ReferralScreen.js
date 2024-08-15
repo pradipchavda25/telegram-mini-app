@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { BsSendPlus } from "react-icons/bs";
-import { TbUserPlus } from "react-icons/tb";
+import { TbCrown, TbGift, TbUserPlus } from "react-icons/tb";
 import { LuClipboardCopy } from "react-icons/lu";
 import { IoMdCheckmark } from "react-icons/io";
 import { IoDiamondOutline } from "react-icons/io5";
 import { Button } from "@telegram-apps/telegram-ui";
 import useTelegram from "../context/TelegramContext";
 import { motion } from "framer-motion";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const ReferralScreen = ({ userPoints }) => {
   const [copied, setCopied] = useState(false);
@@ -53,18 +58,54 @@ const ReferralScreen = ({ userPoints }) => {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
       >
-        {/* <motion.div 
-          className="w-12 h-12 bg-gradient-to-l border border-neutral-800 from-[#181818] to-black rounded-full flex items-center justify-center mb-2"
-          whileHover={{ scale: 1.1, rotate: 15 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <BsSendPlus color="white" size={20} />
-        </motion.div> */}
         <h1 className="text-xl font-bold mb-1">Referral</h1>
         <p className="text-neutral-400 text-[14px] px-8 text-center">
           Introduce Sharpe AI to friends and earn $SAI tokens.
         </p>
       </motion.div>
+
+       {/* New Info Cards */}
+       <motion.div
+        className="mb-4 space-y-2"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
+      >
+        <motion.div 
+          className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-2"
+          variants={cardVariants}
+          whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <h3 className="font-semibold text-[13px] mb-1 flex items-center">
+            <TbGift className="mr-1" size={14} /> Invite a friend
+          </h3>
+          <p className="text-[11px] text-neutral-400">
+            +1000 diamonds for both + 10% earnings + 2.5% from referrals
+          </p>
+        </motion.div>
+
+        <motion.div 
+          className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-2"
+          variants={cardVariants}
+          whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <h3 className="font-semibold text-[13px] mb-1 flex items-center">
+            <TbCrown className="mr-1" size={14} /> Invite with Telegram Premium
+          </h3>
+          <p className="text-[11px] text-neutral-400">
+            +5000 diamonds for both + 10% earnings + 2.5% from referrals
+          </p>
+        </motion.div>
+      </motion.div>
+
 
       {/* Invite Card */}
       <motion.div 

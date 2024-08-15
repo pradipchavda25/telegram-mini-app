@@ -64,7 +64,7 @@ export default function UserInfo({ onScreenChange }) {
         </AnimatePresence>
         <motion.div className="ml-2" variants={itemVariants}>
           <motion.p
-            className="font-semibold text-[12px]"
+            className="font-semibold text-[11px]"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}

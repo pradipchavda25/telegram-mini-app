@@ -192,8 +192,8 @@ const LeaderboardScreen = ({ onScreenChange }) => {
                   {user.avatar}
                 </motion.div>
                 <div>
-                  <p className="font-semibold text-[12px]">{user.name}</p>
-                  <p className="text-[12px] flex items-center gap-1 mt-[1px] text-neutral-400">
+                  <p className="font-semibold text-[10px] ">{user.name}</p>
+                  <p className="text-[10px] flex items-center gap-1 mt-[1px] text-neutral-400">
                     {user.points}
                     <motion.div>
                       <IoDiamondOutline size={10} />
