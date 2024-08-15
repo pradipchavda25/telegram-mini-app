@@ -1,70 +1,260 @@
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button, Modal, Placeholder, Skeleton, Spinner } from "@telegram-apps/telegram-ui";
+import {
+  Button,
+  Modal,
+  Placeholder,
+  Skeleton,
+  Spinner,
+} from "@telegram-apps/telegram-ui";
+import React, { useCallback, useEffect, useState } from "react";
+import UserInfo from "../components/UserInfo";
+import { FaTelegramPlane, FaDiscord, FaRegCheckCircle } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { ModalClose } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalClose/ModalClose";
 import { IoClose, IoDiamondOutline } from "react-icons/io5";
-import { FaRegCheckCircle } from "react-icons/fa";
-import { HiOutlineClipboardList } from "react-icons/hi";
-import UserInfo from "../components/UserInfo";
 import Notification from "./notification/Notification";
+import useTelegram from "../context/TelegramContext";
 import Confetti from "react-confetti-boom";
+// import Confetti from 'react-confetti'
+import useWindowSize from "react-use/lib/useWindowSize";
+import { useTab } from "../context/TabContext";
+import { AnimatePresence, motion } from "framer-motion";
+import { MdOutlineLogout } from "react-icons/md";
 
-const OnboardingScreen = ({ onScreenChange }) => {
-  const [skeletonVisible, setSkeletonVisible] = useState(true);
-  const [isChecking, setIsChecking] = useState(false);
-  const [notification, setNotification] = useState({ show: false, type: "", title: "", message: "" });
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const TASK_TYPES = {
+  SIGNUP: "signup",
+};
 
-  const tasks = [
+const taskVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.5,
+      type: "spring",
+      stiffness: 100,
+      damping: 10,
+    },
+  }),
+};
+
+const OnboardingScreen = ({ taskStatusData }) => {
+  const { webApp, user } = useTelegram();
+  const userId = user ? user.id : "1051782980"; // Default userId if not available
+  const INITIAL_TASKS = [
     {
-      name: "Create an account on the Sharpe AI platform",
+      id: "signed_up",
+      name: "Do Sign up and get points",
       reward: 500,
-      icon: HiOutlineClipboardList,
-      modalButtonText: "Create",
-      completed: false,
-      link: "http://app.sharpe.ai/",
+      icon: MdOutlineLogout,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
     },
   ];
+  const [tasks, setTasks] = useState(INITIAL_TASKS);
+  const [skeletonVisible, setSkeletonVisible] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "",
+    title: "",
+    message: "",
+  });
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [showCheckButton, setShowCheckButton] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const { setUserPoints, setCompletedTasks } = useTab();
+
+  const fetchUserPoints = async () => {
+    try {
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ unique_id: userId }),
+        }
+      );
+      const data = await response.json();
+      if (data) {
+        setUserPoints(data.points);
+      } else {
+        throw new Error(data.message || "Failed to fetch user points");
+      }
+    } catch (error) {
+      console.error("Error fetching user points:", error);
+    }
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSkeletonVisible(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    const updateTasksStatus = async () => {
+      setSkeletonVisible(true);
 
-  const handleCheckClick = () => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => ({
+          ...task,
+          completed: task.taskId in taskStatusData ? taskStatusData[task.taskId] : false,
+        }))
+      );
+
+      setSkeletonVisible(false);
+    };
+
+    updateTasksStatus();
+  }, [userId]);
+
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if (a.completed === b.completed) return 0;
+    return a.completed ? 1 : -1;
+  });
+
+  const verifyTask = async (taskType, userId, taskId) => {
+    try {
+      let url = "";
+      let options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      };
+
+      switch (taskType) {
+        case TASK_TYPES.SIGNUP:
+          url = "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_tasks";
+          options.body = JSON.stringify({ unique_id: userId, task_id: taskId });
+          break;
+        default:
+          throw new Error("Invalid task type");
+      }
+
+      const response = await fetch(url, options);
+      const data = await response.json();
+
+      if (taskType === TASK_TYPES.SIGNUP) {
+        return {
+          success: data.status === "success",
+          message: data.message || "Task Completed Successfully.",
+          taskId: taskId,
+        };
+      }
+    } catch (error) {
+      console.error(`Error verifying ${taskType}:`, error);
+      return {
+        success: false,
+        message: `Error verifying ${taskType}. Please try again.`,
+      };
+    }
+  };
+
+  const handleCheckClick = async () => {
+    if (!selectedTask) return;
     setIsChecking(true);
-    setTimeout(() => {
-      setIsChecking(false);
+
+    try {
+      const { success, message, taskId } = await verifyTask(
+        selectedTask.verifier,
+        userId,
+        selectedTask.taskId
+      );
+      if (success) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === selectedTask.id ? { ...task, completed: true } : task
+          )
+        );
+        setCompletedTasks((prev) => ({
+          ...prev,
+          basictasks: prev.basictasks + 1,
+        }));
+
+        await fetchUserPoints();
+
+        setNotification({
+          show: true,
+          type: "success",
+          title: "Success",
+          message:
+            message || `Task "${selectedTask.name}" completed successfully!`,
+        });
+        setShowConfetti(true);
+
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setShowCheckButton(false);
+          setSelectedTask(null);
+        }, 1500);
+      } else {
+        setNotification({
+          show: true,
+          type: "warning",
+          title: "Task Not Completed",
+          message:
+            message ||
+            `Unable to verify task: ${selectedTask.name}. Please try again.`,
+        });
+      }
+    } catch (error) {
+      console.error(`Error verifying task: ${selectedTask.name}`, error);
       setNotification({
         show: true,
-        type: "success",
-        title: "Task Completed",
-        message: "You have successfully created an account on the Sharpe AI platform!",
+        type: "error",
+        title: "Error",
+        message: `An error occurred while verifying the task. Please try again later.`,
       });
-      setShowConfetti(true);
-      setIsModalOpen(false);
-    }, 2000);
+    }
+    setIsChecking(false);
   };
 
   const handleButtonClick = (link) => {
-    window.open(link, "_blank");
+    if (webApp && webApp.openLink) {
+      webApp.openLink(link);
+    } else {
+      window.open(link, "_blank");
+    }
+    setShowCheckButton(true);
   };
 
-  const renderTaskContent = (task) => {
+  const handleOpenModal = (task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+    setShowCheckButton(false);
+  };
+
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
+
+  useEffect(() => {
+    if (skeletonVisible) {
+      const timer = setTimeout(() => {
+        setSkeletonVisible(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [skeletonVisible]);
+
+  const renderTaskContent = (task, index) => {
     const Icon = task.icon;
     return (
       <motion.div
         className={`bg-gradient-to-r from-[#181818] to-black border rounded-md border-neutral-800 p-2 mb-2 flex justify-between items-center ${
           task.completed ? "opacity-70" : ""
         }`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, type: "spring" }}
-        whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+        variants={taskVariants}
+        custom={index}
+        whileHover={{
+          scale: 1,
+          boxShadow: "0px 0px 8px rgba(255, 255, 255, 0.2)",
+          transition: { duration: 0.2 },
+        }}
+        whileTap={{ scale: 0.99 }}
       >
         <div className="flex flex-row items-center gap-2">
           <motion.div
@@ -72,7 +262,14 @@ const OnboardingScreen = ({ onScreenChange }) => {
             whileHover={{ rotate: 360 }}
             transition={{ duration: 0.5 }}
           >
-            <Icon />
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                transition: { duration: 2, repeat: Infinity },
+              }}
+            >
+              <Icon />
+            </motion.div>
           </motion.div>
           <div>
             <motion.p
@@ -92,7 +289,7 @@ const OnboardingScreen = ({ onScreenChange }) => {
             animate={{ scale: 1, rotate: 0 }}
             transition={{ duration: 0.5, type: "spring" }}
           >
-            <FaRegCheckCircle color="#22c55e" size={15} />
+            <FaRegCheckCircle color="#22c55e" size={16} />
           </motion.div>
         ) : (
           <motion.span
@@ -112,10 +309,10 @@ const OnboardingScreen = ({ onScreenChange }) => {
 
   return (
     <motion.div
-      className=""
+      className="bg-neutral-950"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.8 }}
     >
       {/* <UserInfo /> */}
       <motion.div
@@ -125,24 +322,32 @@ const OnboardingScreen = ({ onScreenChange }) => {
           show: {
             opacity: 1,
             transition: {
-              staggerChildren: 0.1,
+              staggerChildren: 0.2,
             },
           },
         }}
         initial="hidden"
         animate="show"
       >
-        <AnimatePresence>
-          {tasks.map((task, index) => (
+        <AnimatePresence mode="popLayout">
+          {sortedTasks.map((task, index) => (
             <motion.div
-              key={index}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="cursor-pointer"
+              key={task.id}
+              layout
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, y: -50 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 20,
+                mass: 1,
+                duration: 0.8,
+              }}
             >
               <Skeleton className="rounded-md" visible={skeletonVisible}>
                 {task.completed ? (
-                  renderTaskContent(task)
+                  renderTaskContent(task, index)
                 ) : (
                   <Modal
                     className="z-20 bg-gradient-to-r from-[#181818] to-black"
@@ -159,82 +364,93 @@ const OnboardingScreen = ({ onScreenChange }) => {
                         }
                       />
                     }
-                    open={isModalOpen}
-                    onOpenChange={setIsModalOpen}
+                    open={isModalOpen && selectedTask?.id === task.id}
+                    onOpenChange={(open) => {
+                      setIsModalOpen(open);
+                      if (!open) setSelectedTask(null);
+                    }}
                     trigger={
                       <motion.div
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ duration: 0.2 }}
+                        onClick={() => handleOpenModal(task)}
                       >
-                        {renderTaskContent(task)}
+                        {renderTaskContent(task, index)}
                       </motion.div>
                     }
                   >
-                    <Placeholder className="px-4 pt-4">
-                      <motion.div
-                        className="bg-[#131313] border border-neutral-800 p-3 rounded-md"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2, type: "spring" }}
-                      >
-                        <task.icon size={30} />
-                      </motion.div>
-                      <motion.div
-                        className="flex flex-col justify-center items-center gap-1"
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <p className="font-semibold text-[16px] text-center">
-                          {task.name}
-                        </p>
-                        <motion.span
-                          className="text-center flex items-center gap-1 border bg-[#131313] border-neutral-800 rounded-full text-[12px] px-[8px] py-[4px]"
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          +{task.reward}
-                          <IoDiamondOutline size={10} />
-                        </motion.span>
-                      </motion.div>
-                      <motion.div
-                        className="flex flex-col w-full gap-1"
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                      >
+                    {selectedTask && (
+                      <Placeholder className="px-4 pt-4">
                         <motion.div
-                          className="flex-grow flex"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          className="bg-[#131313] border border-neutral-800 p-3 rounded-md"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.2, type: "spring" }}
                         >
-                          <Button
-                            className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#2d2d2d] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                            onClick={() => handleButtonClick(task.link)}
-                          >
-                            {task.modalButtonText}
-                          </Button>
+                          <selectedTask.icon size={30} />
                         </motion.div>
                         <motion.div
-                          className="flex-grow flex"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+                          className="flex flex-col justify-center items-center gap-1"
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.3 }}
                         >
-                          <Button
-                            onClick={handleCheckClick}
-                            className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#191919] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                            disabled={isChecking}
+                          <p className="font-semibold text-[16px] text-center">
+                            {selectedTask.name}
+                          </p>
+                          <motion.span
+                            className="text-center flex items-center gap-1 border bg-[#131313] border-neutral-800 rounded-full text-[12px] px-[8px] py-[4px]"
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ duration: 0.2 }}
                           >
-                            {isChecking ? (
-                              <Spinner size="s" className="text-[#fff]" />
-                            ) : (
-                              "Check"
-                            )}
-                          </Button>
+                            +{selectedTask.reward}
+                            <IoDiamondOutline size={10} />
+                          </motion.span>
                         </motion.div>
-                      </motion.div>
-                    </Placeholder>
+                        <motion.div
+                          className="flex flex-col w-full gap-1"
+                          initial={{ scale: 0.9, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.4 }}
+                        >
+                          {/* {!showCheckButton ? (
+                            <motion.div
+                              className="flex-grow flex"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <Button
+                                className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#2d2d2d] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
+                                onClick={() =>
+                                  handleButtonClick(selectedTask.link)
+                                }
+                              >
+                                {selectedTask.modalButtonText}
+                              </Button>
+                            </motion.div>
+                          ) : ( */}
+                          <motion.div
+                            className="flex-grow flex"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <Button
+                              onClick={handleCheckClick}
+                              className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#191919] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
+                              disabled={isChecking}
+                            >
+                              {isChecking ? (
+                                <Spinner size="s" className="text-[#fff]" />
+                              ) : (
+                                "Check"
+                              )}
+                            </Button>
+                          </motion.div>
+                          {/* )} */}
+                        </motion.div>
+                      </Placeholder>
+                    )}
                   </Modal>
                 )}
               </Skeleton>
@@ -268,8 +484,8 @@ const OnboardingScreen = ({ onScreenChange }) => {
           >
             <Confetti
               mode="boom"
-              particleCount={410}
-              shapeSize={20}
+              particleCount={400}
+              shapeSize={22}
               launchSpeed={2}
               colors={["#98ecff", "#ff577f", "#ff884b", "#fff9b0"]}
             />
