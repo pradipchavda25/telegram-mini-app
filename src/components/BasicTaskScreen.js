@@ -570,42 +570,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: 0.4 }}
                         >
-                          {selectedTask.verifier !== TASK_TYPES.DISCORD ? (
-                            !showCheckButton ? (
-                              <motion.div
-                                className="flex-grow flex"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <Button
-                                  className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#2d2d2d] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                                  onClick={() =>
-                                    handleButtonClick(selectedTask.link)
-                                  }
-                                >
-                                  {selectedTask.modalButtonText}
-                                </Button>
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                className="flex-grow flex"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <Button
-                                  onClick={handleCheckClick}
-                                  className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#191919] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                                  disabled={isChecking}
-                                >
-                                  {isChecking ? (
-                                    <Spinner size="s" className="text-[#fff]" />
-                                  ) : (
-                                    "Check"
-                                  )}
-                                </Button>
-                              </motion.div>
-                            )
-                          ) : (
+                          {!showCheckButton ? (
                             <motion.div
                               className="flex-grow flex"
                               whileHover={{ scale: 1.02 }}
@@ -613,12 +578,29 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                             >
                               <Button
                                 className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#2d2d2d] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                                onClick={() => {
-                                  handleButtonClick(selectedTask.link);
-                                  handleCheckClick();
-                                }}
+                                onClick={() =>
+                                  handleButtonClick(selectedTask.link)
+                                }
                               >
                                 {selectedTask.modalButtonText}
+                              </Button>
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              className="flex-grow flex"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <Button
+                                onClick={handleCheckClick}
+                                className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#191919] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
+                                disabled={isChecking}
+                              >
+                                {isChecking ? (
+                                  <Spinner size="s" className="text-[#fff]" />
+                                ) : (
+                                  "Check"
+                                )}
                               </Button>
                             </motion.div>
                           )}

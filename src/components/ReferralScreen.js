@@ -31,7 +31,7 @@ const ReferralScreen = ({ userPoints }) => {
 
   const generateReferralCode = (userId) => {
     // Generate a unique code based on userId
-    return `REF${userId}`;
+    return `${userId}`;
   };
 
   const handleCopyClick = () => {

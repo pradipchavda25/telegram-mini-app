@@ -20,8 +20,10 @@ import CoinCard from "../components/CoinCard";
 import SolanaAICard from "../components/SolanaAIOperatingLayer";
 import TokenomicsScreen from "../components/Tokemonics";
 import SaiTokenScreen from "../components/SaiTokenScreen";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import UserInfo from "../components/UserInfo";
+import Confetti from "react-confetti-boom";
+import Notification from "../components/notification/Notification";
 
 const tabs = [
   { id: "home", text: "Home", Icon: IoHomeOutline },
@@ -80,10 +82,24 @@ export default function HomeNew() {
   const [showLogo, setShowLogo] = useState(true);
   const [taskStatusData, setTaskStatusData] = useState(null);
   const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
-  const { webApp, user } = useTelegram();
+  const { webApp, user, startParam } = useTelegram();
+  const [showReferralPopup, setShowReferralPopup] = useState(false);
+  const [referralProcessed, setReferralProcessed] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    type: "",
+    title: "",
+    message: "",
+  });
   const userId = user ? user.id : "1051782980";
-
   const mainTabs = ["home", "referral", "leaderboard", "info"];
+  console.log(
+    "showReferralPopup",
+    showReferralPopup,
+    referralProcessed,
+    startParam
+  );
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
@@ -101,29 +117,6 @@ export default function HomeNew() {
     return () => clearTimeout(timer); // Clear timeout if component unmounts
   }, []);
 
-  useEffect(() => {
-    if (currentTab === "home") {
-      const fetchTaskStatus = async () => {
-        try {
-          const response = await fetch(
-            `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
-            {
-              method: "GET",
-            }
-          );
-          const data = await response.json();
-          setTaskStatusData(data);
-        } catch (error) {
-          console.error("Error fetching task status:", error);
-          setTaskStatusData(null);
-        }
-      };
-  
-      fetchTaskStatus();
-    }
-  }, [currentTab, userId]);
-  
-
   const handleBackButton = () => {
     if (screenHistory.length > 1) {
       const newHistory = screenHistory.slice(0, -1);
@@ -131,6 +124,14 @@ export default function HomeNew() {
       setCurrentTab(newHistory[newHistory.length - 1]);
     }
   };
+
+  useEffect(() => {
+    if (startParam && user && !referralProcessed) {
+      setShowReferralPopup(true);
+    } else if (!startParam) {
+      setReferralProcessed(true);
+    }
+  }, [startParam, user, referralProcessed]);
 
   useEffect(() => {
     if (webApp) {
@@ -153,30 +154,113 @@ export default function HomeNew() {
     }
   }, [webApp, screenHistory, currentTab]);
 
-  const fetchUserPoints = async () => {
-    try {
-      const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ unique_id: userId }),
+  useEffect(() => {
+    if (currentTab === "home" && referralProcessed) {
+      const fetchTaskStatus = async () => {
+        try {
+          const response = await fetch(
+            `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
+            {
+              method: "GET",
+            }
+          );
+          const data = await response.json();
+          setTaskStatusData(data);
+        } catch (error) {
+          console.error("Error fetching task status:", error);
+          setTaskStatusData(null);
         }
-      );
-      const data = await response.json();
-      if (data) {
-        setUserPoints(data.points);
-      } else {
-        throw new Error(data.message || "Failed to fetch user points");
-      }
-    } catch (error) {
-      console.error("Error fetching user points:", error);
+      };
+
+      fetchTaskStatus();
     }
-  };
+  }, [currentTab, userId, referralProcessed]);
 
   useEffect(() => {
-    fetchUserPoints();
-  }, [userId]);
+    if (referralProcessed) {
+      const fetchUserPoints = async () => {
+        try {
+          const response = await fetch(
+            `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ unique_id: userId }),
+            }
+          );
+          const data = await response.json();
+          if (data) {
+            setUserPoints(data.points);
+          } else {
+            throw new Error(data.message || "Failed to fetch user points");
+          }
+        } catch (error) {
+          console.error("Error fetching user points:", error);
+        }
+      };
+
+      fetchUserPoints();
+    }
+  }, [userId, referralProcessed]);
+
+  const ReferralPopup = ({ onConfirm, onReject }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+      <div className="bg-gradient-to-t border border-neutral-800 from-[#181818] to-black p-4 rounded-lg shadow-lg w-[300px]">
+        <h2 className="text-lg font-bold mb-2 text-white">
+          Join with Referral
+        </h2>
+        <p className="mb-3 text-[14px] text-gray-300">
+          Do you want to join using this referral link?
+        </p>
+        <div className="flex justify-end space-x-1">
+          <button
+            onClick={onReject}
+            className="px-3 py-1 cursor-pointer font- text-[13px] bg-[#2d2d2d] text-[#fff]  border border-neutral-800 rounded-[4px]"
+          >
+            Decline
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-3 py-1 cursor-pointer font- text-[13px] bg-[#426bff] text-[#fff]  border border-neutral-800 rounded-[4px]"
+          >
+            Accept
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const handleReferralConfirmation = async (confirmed) => {
+    setShowReferralPopup(false);
+    if (confirmed) {
+      try {
+        const response = await fetch(
+          `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/add_refferal?referrer_id=${startParam}&referee_id=${userId}`,
+          { method: "GET" }
+        );
+        const data = await response.json();
+        console.log("Referral added:", data);
+        setShowConfetti(true);
+        setNotification({
+          show: true,
+          type: "success",
+          title: "Referral Successful",
+          message: "You have successfully joined using a referral link!",
+        });
+        setTimeout(() => setShowConfetti(false), 3000);
+      } catch (error) {
+        console.error("Error adding referral:", error);
+        setNotification({
+          show: true,
+          type: "error",
+          title: "Referral Failed",
+          message:
+            "There was an error processing your referral. Please try again.",
+        });
+      }
+    }
+    setReferralProcessed(true);
+  };
 
   const renderContent = () => {
     const props = {
@@ -271,6 +355,48 @@ export default function HomeNew() {
           </Tabbar>
         </>
       )}
+      {showReferralPopup && (
+        <ReferralPopup
+          onConfirm={() => handleReferralConfirmation(true)}
+          onReject={() => handleReferralConfirmation(false)}
+        />
+      )}
+
+      <AnimatePresence>
+        {notification.show && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+          >
+            <Notification
+              show={notification.show}
+              setShow={(show) => setNotification((prev) => ({ ...prev, show }))}
+              type={notification.type}
+              title={notification.title}
+              message={notification.message}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showConfetti && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Confetti
+              mode="boom"
+              particleCount={400}
+              shapeSize={20}
+              launchSpeed={1.5}
+              colors={["#98ecff", "#ff577f", "#ff884b", "#fff9b0"]}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
