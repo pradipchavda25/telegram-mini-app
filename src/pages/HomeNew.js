@@ -402,7 +402,7 @@ export default function HomeNew() {
           )}
 
           <motion.div
-            className="flex-grow overflow-y-auto"
+            className="flex-grow bg-neutral-950 overflow-y-auto"
             variants={contentVariants}
             initial="hidden"
             animate="visible"

@@ -65,7 +65,7 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
 
   return (
     <motion.div
-      className="relative"
+      className="relative bg-neutral-950 text-white min-h-screen"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

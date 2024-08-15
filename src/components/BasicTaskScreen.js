@@ -465,7 +465,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
 
   return (
     <motion.div
-      className=""
+      className="bg-neutral-950"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
