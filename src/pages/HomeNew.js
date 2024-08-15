@@ -102,24 +102,27 @@ export default function HomeNew() {
   }, []);
 
   useEffect(() => {
-    const fetchTaskStatus = async () => {
-      try {
-        const response = await fetch(
-          `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
-          {
-            method: "GET",
-          }
-        );
-        const data = await response.json();
-        setTaskStatusData(data);
-      } catch (error) {
-        console.error("Error fetching task status:", error);
-        setTaskStatusData(null);
-      }
-    };
-
-    fetchTaskStatus();
-  }, [userId]);
+    if (currentTab === "home") {
+      const fetchTaskStatus = async () => {
+        try {
+          const response = await fetch(
+            `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
+            {
+              method: "GET",
+            }
+          );
+          const data = await response.json();
+          setTaskStatusData(data);
+        } catch (error) {
+          console.error("Error fetching task status:", error);
+          setTaskStatusData(null);
+        }
+      };
+  
+      fetchTaskStatus();
+    }
+  }, [currentTab, userId]);
+  
 
   const handleBackButton = () => {
     if (screenHistory.length > 1) {
