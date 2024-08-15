@@ -136,18 +136,16 @@ export default function HomeNew() {
   }, [startParamLoaded, startParam, referralProcessed, showLogo]);
 
   const initializeApp = useCallback(async () => {
-    console.log("Initializing app...");
-    console.log("startParamLoaded:", startParamLoaded);
-    console.log("startParam:", startParam);
     console.log("userId:", userId);
-
     if (startParamLoaded) {
       if (startParam && userId && !referralProcessed) {
         console.log("Waiting for referral confirmation");
       } else {
         console.log("No startParam or referral already processed");
         setReferralProcessed(true);
-        await fetchData();
+        if (!startParam) {
+          await fetchData();
+        }
       }
       setIsInitialized(true);
     }
@@ -158,9 +156,14 @@ export default function HomeNew() {
   }, [initializeApp, startParamLoaded]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowLogo(false), 2000);
+    const timer = setTimeout(() => {
+      setShowLogo(false);
+      if (!startParam) {
+        fetchData();
+      }
+    }, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [startParam]);
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
@@ -182,10 +185,19 @@ export default function HomeNew() {
   };
 
   useEffect(() => {
-    if (currentTab === 'home' && isReferralHandled) {
+    if (currentTab === "home" && isReferralHandled && !showLogo) {
       fetchTaskStatus();
     }
-  }, [currentTab, isReferralHandled]);
+  }, [currentTab, isReferralHandled, showLogo]);
+
+  useEffect(() => {
+    // Check if startParam is not available (null or undefined)
+    if (startParam === undefined || startParam === null) {
+      setIsReferralHandled(true);
+    } else {
+      setIsReferralHandled(false);
+    }
+  }, [startParam]);
 
   useEffect(() => {
     if (webApp) {
@@ -214,7 +226,6 @@ export default function HomeNew() {
   };
 
   const fetchTaskStatus = async () => {
-    console.log("Fetching task status...");
     try {
       const response = await fetch(
         `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
@@ -229,7 +240,6 @@ export default function HomeNew() {
   };
 
   const fetchUserPoints = async () => {
-    console.log("Fetching user points...");
     try {
       const response = await fetch(
         `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
@@ -251,11 +261,9 @@ export default function HomeNew() {
   };
 
   const handleReferralConfirmation = async (confirmed) => {
-    console.log("Handling referral confirmation:", confirmed);
     setShowReferralPopup(false);
     if (confirmed && startParam) {
       try {
-        console.log("Adding referral...");
         const response = await fetch(
           `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/add_refferal?referrer_id=${startParam}&referee_id=${userId}`,
           { method: "GET" }
@@ -312,7 +320,9 @@ export default function HomeNew() {
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          <h2 className="text-lg font-bold mb-2 text-white">Join with Referral</h2>
+          <h2 className="text-lg font-bold mb-2 text-white">
+            Join with Referral
+          </h2>
           <p className="mb-3 text-[14px] text-gray-300">
             Do you want to join using this referral link?
           </p>
@@ -334,7 +344,6 @@ export default function HomeNew() {
       </motion.div>
     );
   };
-  
 
   const renderContent = () => {
     const props = {
