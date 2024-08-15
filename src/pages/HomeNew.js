@@ -126,12 +126,13 @@ export default function HomeNew() {
   };
 
   useEffect(() => {
-    if (startParam && user && !referralProcessed) {
+    if (startParam && !referralProcessed) {
       setShowReferralPopup(true);
+      setReferralProcessed(false); // Reset this to ensure the popup shows
     } else if (!startParam) {
       setReferralProcessed(true);
     }
-  }, [startParam, user, referralProcessed]);
+  }, [startParam, referralProcessed]);
 
   useEffect(() => {
     if (webApp) {
@@ -155,7 +156,7 @@ export default function HomeNew() {
   }, [webApp, screenHistory, currentTab]);
 
   useEffect(() => {
-    if (currentTab === "home" && referralProcessed) {
+    if ((currentTab === "home" && referralProcessed) || !startParam) {
       const fetchTaskStatus = async () => {
         try {
           const response = await fetch(
@@ -171,13 +172,13 @@ export default function HomeNew() {
           setTaskStatusData(null);
         }
       };
-
+  
       fetchTaskStatus();
     }
-  }, [currentTab, userId, referralProcessed]);
-
+  }, [currentTab, userId, referralProcessed, startParam]);
+  
   useEffect(() => {
-    if (referralProcessed) {
+    if (referralProcessed || !startParam) {
       const fetchUserPoints = async () => {
         try {
           const response = await fetch(
@@ -198,10 +199,10 @@ export default function HomeNew() {
           console.error("Error fetching user points:", error);
         }
       };
-
+  
       fetchUserPoints();
     }
-  }, [userId, referralProcessed]);
+  }, [userId, referralProcessed, startParam]);
 
   const ReferralPopup = ({ onConfirm, onReject }) => (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
