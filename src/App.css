@@ -5,3 +5,12 @@
 .tabbar-item-no-bg>div {
     background: none !important;
 }
+
+.list-disc {
+    list-style-type: disc;
+    padding-left: 1.5em;
+}
+
+.list-inside {
+    list-style-position: inside;
+}
