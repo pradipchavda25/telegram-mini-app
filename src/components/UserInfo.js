@@ -27,7 +27,7 @@ export default function UserInfo({ onScreenChange }) {
 
   return (
     <motion.div
-      className="flex items-center bg-gradient-to-t from-[#0d0d0d] to-black px-2 py-2 justify-between"
+      className="flex items-center bg-gradient-to-t from-[#171717] to-black px-2 py-2 justify-between border-b border-neutral-800"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -64,7 +64,7 @@ export default function UserInfo({ onScreenChange }) {
         </AnimatePresence>
         <motion.div className="ml-2" variants={itemVariants}>
           <motion.p
-            className="font-semibold text-[11px]"
+            className="font-semibold text-white text-[11px]"
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}

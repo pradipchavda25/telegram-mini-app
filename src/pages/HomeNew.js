@@ -389,7 +389,7 @@ export default function HomeNew() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-neutral-950">
       {showLogo || !isInitialized ? (
         <motion.div
           className="logo-div flex flex-1 justify-center flex-col items-center"
@@ -417,7 +417,7 @@ export default function HomeNew() {
           )}
 
           <motion.div
-            className="flex-grow bg-neutral-950 overflow-y-auto"
+            className="flex-grow overflow-y-auto"
             variants={contentVariants}
             initial="hidden"
             animate="visible"
