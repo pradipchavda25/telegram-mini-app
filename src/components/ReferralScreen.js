@@ -15,19 +15,35 @@ const cardVariants = {
 
 const ReferralScreen = ({ userPoints }) => {
   const [copied, setCopied] = useState(false);
+  const [totalFriends, setTotalFriends] = useState(0);
+  const [totalEarn, setTotalEarn] = useState(0);
   const { webApp, user, startParam } = useTelegram();
   const [referralCode, setReferralCode] = useState('');
+  const userId = user ? user.id : "1051782980";
 
   useEffect(() => {
     if (user) {
       setReferralCode(generateReferralCode(user.id));
     }
 
-    // // Handle incoming referral
-    // if (startParam) {
-    //   handleIncomingReferral(startParam);
-    // }
-  }, [user, startParam]);
+    fetchReferralData();
+
+  }, [user]);
+
+  const fetchReferralData = async () => {
+    try {
+      const response = await fetch(`https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`);
+      const data = await response.json();
+      
+      const friendCount = data.length;
+      const earnings = friendCount * 500;
+
+      setTotalFriends(friendCount);
+      setTotalEarn(earnings);
+    } catch (error) {
+      console.error("Failed to fetch referral data:", error);
+    }
+  };
 
   const generateReferralCode = (userId) => {
     // Generate a unique code based on userId
@@ -164,7 +180,7 @@ const ReferralScreen = ({ userPoints }) => {
           whileHover={{ scale: 1.03 }}
         >
           <p className="text-neutral-500 text-[14px] mb-1">Total Friends</p>
-          <p className="text-xl font-bold">0</p>
+          <p className="text-xl font-bold">{totalFriends}</p>
         </motion.div>
         <motion.div 
           className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-4"
@@ -175,16 +191,10 @@ const ReferralScreen = ({ userPoints }) => {
         >
           <p className="text-neutral-500 text-[14px] mb-1">Total Earn</p>
           <p className="text-xl font-bold flex items-center gap-1">
-            <IoDiamondOutline size={18}/>0
+          <IoDiamondOutline size={18}/>{totalEarn}
           </p>
         </motion.div>
       </motion.div>
-      {/* <div className="mt-4 p-4 bg-neutral-900 rounded">
-        <h3 className="text-sm font-bold mb-2">Debug Information:</h3>
-        <p className="text-sm">User ID: {user?.id || 'Not available'}</p>
-        <p className="text-sm">Referral Code: {referralCode || 'Not generated'}</p>
-        <p className="text-sm">Incoming Referral: {startParam || 'None'}</p>
-      </div> */}
     </motion.div>
   );
 };
