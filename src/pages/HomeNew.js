@@ -97,7 +97,7 @@ export default function HomeNew() {
     message: "",
   });
   const userId = user ? user.id : "1051782980";
-  const mainTabs = ["home", "referral", "leaderboard", "info"];
+  const mainTabs = ["home", "referral", "leaderboard", "info", "chat"];
 
   useEffect(() => {
     const checkStartParam = () => {
