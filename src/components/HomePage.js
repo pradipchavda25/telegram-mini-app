@@ -23,6 +23,10 @@ const basicTasks = [
   "followed_telegram",
 ];
 
+const onBoardingTasks = [
+  "signed_up",
+];
+
 const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
   const { setCurrentTab, completedTasks } = useTab();
   const { webApp, startParam } = useTelegram();
@@ -30,6 +34,11 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
 
   const totalBasicTasks = basicTasks.length;
   const completedBasicTasks = basicTasks.filter(
+    (task) => taskStatusData[task]
+  ).length;
+
+  const totalOnboardingTasks = onBoardingTasks.length;
+  const completedOnboardingTasks = onBoardingTasks.filter(
     (task) => taskStatusData[task]
   ).length;
 
@@ -199,7 +208,7 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
           {[
             {
               name: "Onboarding",
-              progress: "0/1 tasks done",
+              progress: `${completedOnboardingTasks}/${totalOnboardingTasks} tasks done`,
               reward: 500,
               tab: "onboarding",
               icon: FiUserCheck,
