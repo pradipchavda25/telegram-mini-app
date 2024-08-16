@@ -29,7 +29,7 @@ const ChatUI = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("http://34.143.238.77:8000/rag", {
+      const response = await fetch("https://miniapp-backend-4dd6ujjz7q-el.a.run.app/rag", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,6 +45,8 @@ const ChatUI = () => {
       }
 
       const data = await response.json();
+      console.log('data', data);
+      
       const newAIMessage = { type: "ai", text: data.response };
       setMessages((prevMessages) => [...prevMessages, newAIMessage]);
     } catch (error) {
@@ -136,7 +138,7 @@ const ChatUI = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-55px)] bg-gradient-to-r from-[#181818] to-black text-white flex flex-col">
+    <div className="h-[calc(100vh-59px)] bg-gradient-to-r from-[#181818] to-black text-white flex flex-col">
       <div className="flex-1 overflow-y-auto p-3" ref={chatContainerRef}>
         <AnimatePresence>
           {messages.length === 0 ? (

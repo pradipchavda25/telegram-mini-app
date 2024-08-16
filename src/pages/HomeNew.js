@@ -432,7 +432,7 @@ export default function HomeNew() {
                 selected={id === currentTab}
                 onClick={() => handleScreenChange(id)}
                 className={`tabbar-item-no-bg font-semibold ${
-                  id === currentTab ? "text-[#fff] text-[22px]" : "text-[18px]"
+                  id === currentTab ? "text-[#fff] text-[26px]" : "text-[22px]"
                 }`}
               >
                 <AnimatedIcon
