@@ -16,6 +16,7 @@ const useTelegram = () => {
             const param = urlParams.get('tgWebAppStartParam');
             setStartParam(param);
             window.Telegram.WebApp.setHeaderColor('#000');
+            window.Telegram.WebApp.setBackgroundColor('#000');
 
             // webApp.setHeaderColor('#000')
             // Ensure the web app is ready
