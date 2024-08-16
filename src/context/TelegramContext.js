@@ -15,7 +15,7 @@ const useTelegram = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const param = urlParams.get('tgWebAppStartParam');
             setStartParam(param);
-            webApp.setHeaderColor('#000')
+            // webApp.setHeaderColor('#000')
             // Ensure the web app is ready
             tg.ready();
         } else {
