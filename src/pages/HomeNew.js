@@ -10,7 +10,7 @@ import LeaderboardScreen from "../components/LeaderboardScreen";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import ConvertScreen from "../components/ConvertScreen";
 import CompanyInfoScreen from "../components/CompanyInfoScreen";
-import { IoHomeOutline } from "react-icons/io5";
+import { IoChatbubbleEllipsesOutline, IoHomeOutline } from "react-icons/io5";
 import { TbUsersPlus } from "react-icons/tb";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
@@ -23,12 +23,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import UserInfo from "../components/UserInfo";
 import Confetti from "react-confetti-boom";
 import Notification from "../components/notification/Notification";
+import ChatUI from "../components/ChatScreen";
+import { BsChatRightText } from "react-icons/bs";
+import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 
 const tabs = [
   { id: "home", text: "Home", Icon: IoHomeOutline },
   { id: "referral", text: "Referral", Icon: TbUsersPlus },
   { id: "leaderboard", text: "Leaderboard", Icon: MdOutlineLeaderboard },
   { id: "info", text: "Info", Icon: MdInfoOutline },
+  { id: "chat", text: "Chat", Icon: HiOutlineChatBubbleLeftRight },
 ];
 
 const contentVariants = {
@@ -377,6 +381,8 @@ export default function HomeNew() {
         return <TokenomicsScreen {...props} />;
       case "saitoken":
         return <SaiTokenScreen {...props} />;
+        case "chat":
+        return <ChatUI {...props} />;
       default:
         return null;
     }
