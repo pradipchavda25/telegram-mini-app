@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 const ReferralScreen = ({ userPoints }) => {
@@ -18,7 +18,7 @@ const ReferralScreen = ({ userPoints }) => {
   const [totalFriends, setTotalFriends] = useState(0);
   const [totalEarn, setTotalEarn] = useState(0);
   const { webApp, user, startParam } = useTelegram();
-  const [referralCode, setReferralCode] = useState('');
+  const [referralCode, setReferralCode] = useState("");
   const userId = user ? user.id : "1051782980";
 
   useEffect(() => {
@@ -27,14 +27,15 @@ const ReferralScreen = ({ userPoints }) => {
     }
 
     fetchReferralData();
-
   }, [user]);
 
   const fetchReferralData = async () => {
     try {
-      const response = await fetch(`https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`);
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`
+      );
       const data = await response.json();
-      
+
       const friendCount = data.length;
       const earnings = friendCount * 500;
 
@@ -51,7 +52,9 @@ const ReferralScreen = ({ userPoints }) => {
   };
 
   const handleCopyClick = () => {
-    const textToCopy = user ? `https://t.me/TeleMiniTestBot/hello123Test?startapp=${referralCode}` : "http://app.sharpe.ai";
+    const textToCopy = user
+      ? `https://t.me/TeleMiniTestBot/hello123Test?startapp=${referralCode}`
+      : "http://app.sharpe.ai";
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
       setTimeout(() => {
@@ -60,15 +63,25 @@ const ReferralScreen = ({ userPoints }) => {
     });
   };
 
+  const handleInviteFriendClick = () => {
+    const userRefLink = `https://t.me/TeleMiniTestBot/hello123Test?startapp=${referralCode}`;
+    const text = "Join me on Sharpe AI and earn rewards!";
+    const telegramLink = `https://t.me/share/url?url=${encodeURIComponent(
+      userRefLink
+    )}&text=${encodeURIComponent(text)}`;
+
+    webApp.openTelegramLink(telegramLink);
+  };
+
   return (
-    <motion.div 
+    <motion.div
       className="bg-neutral-950 text-white min-h-screen p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
       {/* Header */}
-      <motion.div 
+      <motion.div
         className="flex flex-col items-center mb-4"
         initial={{ y: -30 }}
         animate={{ y: 0 }}
@@ -80,20 +93,20 @@ const ReferralScreen = ({ userPoints }) => {
         </p>
       </motion.div>
 
-       {/* New Info Cards */}
-       <motion.div
+      {/* New Info Cards */}
+      <motion.div
         className="mb-4 space-y-2"
         initial="hidden"
         animate="visible"
         variants={{
           visible: {
             transition: {
-              staggerChildren: 0.1
-            }
-          }
+              staggerChildren: 0.1,
+            },
+          },
         }}
       >
-        <motion.div 
+        <motion.div
           className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-2"
           variants={cardVariants}
           whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
@@ -106,25 +119,10 @@ const ReferralScreen = ({ userPoints }) => {
             +1000 diamonds for both + 10% earnings + 2.5% from referrals
           </p>
         </motion.div>
-
-        <motion.div 
-          className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-2"
-          variants={cardVariants}
-          whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <h3 className="font-semibold text-[13px] mb-1 flex items-center">
-            <TbCrown className="mr-1" size={14} /> Invite with Telegram Premium
-          </h3>
-          <p className="text-[11px] text-neutral-400">
-            +5000 diamonds for both + 10% earnings + 2.5% from referrals
-          </p>
-        </motion.div>
       </motion.div>
 
-
       {/* Invite Card */}
-      <motion.div 
+      <motion.div
         className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-4 mb-4"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -132,7 +130,7 @@ const ReferralScreen = ({ userPoints }) => {
         whileHover={{ scale: 1.02 }}
       >
         <div className="flex items-center mb-2">
-          <motion.div 
+          <motion.div
             className="w-14 h-10 bg-gradient-to-l from-[#181818] rounded-lg border border-neutral-800 flex items-center justify-center mr-3"
             whileHover={{ scale: 1.1, rotate: 10 }}
             transition={{ type: "spring", stiffness: 300 }}
@@ -147,7 +145,10 @@ const ReferralScreen = ({ userPoints }) => {
           </div>
         </div>
         <div className="flex mt-3">
-          <Button className="flex-grow cursor-pointer text-[14px] px-4 font-medium bg-[#181818] text-white py-2 rounded-[4px] mr-[8px]">
+          <Button
+            className="flex-grow cursor-pointer text-[14px] px-4 font-medium bg-[#181818] text-white py-2 rounded-[4px] mr-[8px]"
+            onClick={handleInviteFriendClick}
+          >
             Invite Friend
           </Button>
           <Button
@@ -166,13 +167,13 @@ const ReferralScreen = ({ userPoints }) => {
       </motion.div>
 
       {/* Stats */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-2 gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <motion.div 
+        <motion.div
           className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-4"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -182,7 +183,7 @@ const ReferralScreen = ({ userPoints }) => {
           <p className="text-neutral-500 text-[14px] mb-1">Total Friends</p>
           <p className="text-xl font-bold">{totalFriends}</p>
         </motion.div>
-        <motion.div 
+        <motion.div
           className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-4"
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -191,7 +192,8 @@ const ReferralScreen = ({ userPoints }) => {
         >
           <p className="text-neutral-500 text-[14px] mb-1">Total Earn</p>
           <p className="text-xl font-bold flex items-center gap-1">
-          <IoDiamondOutline size={18}/>{totalEarn}
+            <IoDiamondOutline size={18} />
+            {totalEarn}
           </p>
         </motion.div>
       </motion.div>
