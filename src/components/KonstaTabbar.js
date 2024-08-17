@@ -19,14 +19,15 @@ const AnimatedIcon = ({ Icon, color }) => (
     className="flex items-center justify-center"
     style={{ color }}
   >
-    <Icon size={24} /> {/* Adjust size as needed */}
+    <Icon size={28} /> 
   </motion.div>
 );
 
 export default function KonstaTabbar({ currentTab, handleScreenChange }) {
   return (
     <Tabbar
-      className="sticky bottom-0 z-10 rounded-t-lg pt-2 pb-3"
+      className="sticky bottom-0 z-10 rounded-t-lg pt-2 pb-5"
+      style={{paddingBottom: '10px'}}
     >
       {tabs.map(({ id, text, Icon }) => (
         <TabbarLink

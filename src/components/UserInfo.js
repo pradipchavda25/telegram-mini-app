@@ -17,7 +17,7 @@ export default function UserInfoNavbar({ onScreenChange }) {
 
   return (
     <Navbar
-      style={{ width: "100%" }}
+      style={{ width: "100%", paddingTop: '5px', paddingBottom: '5px' }}
       left={
         <div className="flex items-center justify-start">
           <>
