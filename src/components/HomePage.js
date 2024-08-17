@@ -180,10 +180,10 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
           transition={{ type: "spring", stiffness: 300 }}
         >
           <div>
-            <p className="font-medium text-[12px] flex items-center gap-1">
+            <p className="font-medium text-[16px] flex items-center gap-1">
               <IoDiamondOutline size={10} /> to $SAI
             </p>
-            <p className="text-[10px] text-neutral-400 pr-2">
+            <p className="text-[14px] text-neutral-400 pr-2">
               The more Diamonds you own, the more $SAI allocation you have.{" "}
             </p>
           </div>
@@ -249,14 +249,14 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
                     <Icon />
                   </motion.div>
                   <div>
-                    <p className="font-semibold text-[14px]">{task.name}</p>
-                    <p className="text-[12px] text-neutral-400">
+                    <p className="font-semibold text-[16px]">{task.name}</p>
+                    <p className="text-[14px] text-neutral-400">
                       {task.progress}
                     </p>
                   </div>
                 </div>
                 <motion.span
-                  className="text-center flex items-center gap-1 bg-[#1d1d1d] rounded-full text-[12px] px-[8px] py-[4px]"
+                  className="text-center flex items-center gap-1 bg-[#1d1d1d] rounded-full text-[16px] px-[8px] py-[4px]"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >

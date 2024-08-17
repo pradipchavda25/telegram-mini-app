@@ -429,7 +429,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
           </motion.div>
           <div>
             <motion.p
-              className="font-medium text-white text-[11px] pr-4"
+              className="font-medium text-white text-[14px] pr-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -449,7 +449,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
           </motion.div>
         ) : (
           <motion.span
-            className="text-center flex text-white items-center gap-1 bg-[#1d1d1d] rounded-full text-[12px] px-[8px] py-[4px]"
+            className="text-center flex text-white items-center gap-1 bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px]"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
@@ -556,7 +556,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                             {selectedTask.name}
                           </p>
                           <motion.span
-                            className="text-center flex items-center gap-1 text-white border bg-[#131313] border-neutral-800 rounded-full text-[12px] px-[8px] py-[4px]"
+                            className="text-center flex items-center gap-1 text-white border bg-[#131313] border-neutral-800 rounded-full text-[14px] px-[8px] py-[4px]"
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.2 }}
                           >

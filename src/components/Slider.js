@@ -87,7 +87,7 @@ const Slider = () => {
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-white text-[13px] font-semibold"
+                className="text-white text-[16px] font-semibold"
               >
                 {slides[currentIndex].title}
               </motion.h3>
@@ -95,7 +95,7 @@ const Slider = () => {
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-neutral-400 text-[11px]"
+                className="text-neutral-400 text-[13px]"
               >
                 {slides[currentIndex].subtitle}
               </motion.p>
@@ -108,7 +108,7 @@ const Slider = () => {
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.2 }}
             onClick={slides[currentIndex].action}
-            className="text-[12px] py-1 px-2 hover:bg-[#2d2d2d] transition-colors font-normal bg-[#131313] text-[#fff] border border-neutral-800 rounded-full flex items-center space-x-1"
+            className="text-[14px] py-1 px-2 hover:bg-[#2d2d2d] transition-colors font-normal bg-[#131313] text-[#fff] border border-neutral-800 rounded-full flex items-center space-x-1"
           >
             <span>{slides[currentIndex].buttonText}</span>
             {/* <FiChevronRight size={12} /> */}
@@ -120,7 +120,7 @@ const Slider = () => {
           <motion.button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-1 h-1 rounded-full ${
+            className={`w-1 h-1  rounded-full ${
               currentIndex === index ? "bg-white" : "bg-neutral-600"
             }`}
             whileHover={{ scale: 1.2 }}
