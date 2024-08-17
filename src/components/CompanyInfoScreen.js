@@ -55,7 +55,7 @@ const CompanyInfoScreen = ({ onScreenChange }) => {
       </motion.div>
 
       {/* Menu Items */}
-      <motion.div className="space-y-2 mb-6" variants={itemVariants}>
+      <motion.div className="space-y-2 mb-4" variants={itemVariants}>
         {[
           {
             name: "Overview",
@@ -70,7 +70,7 @@ const CompanyInfoScreen = ({ onScreenChange }) => {
         ].map((item, index) => (
           <motion.div
             key={index}
-            className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 mb-2 flex justify-between items-center"
+            className="bg-[#0c0c0c] border rounded-md border-neutral-700 p-2 flex justify-between items-center"
             onClick={() => navigateToAnotherScreen(item.tab)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}

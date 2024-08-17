@@ -7,16 +7,20 @@ import { StateProvider } from "./context/StateContext";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import "@telegram-apps/telegram-ui/dist/styles.css";
 import { TabProvider } from "./context/TabContext";
+import { App } from "konsta/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     {/* <StateProvider> */}
+    <App theme="ios">
     <TabProvider>
       <AppRoot>
         <TelegramMiniApp />
       </AppRoot>
     </TabProvider>
+    </App>
+
     {/* </StateProvider> */}
   </React.StrictMode>
 );

@@ -26,6 +26,7 @@ import Notification from "../components/notification/Notification";
 import ChatUI from "../components/ChatScreen";
 import { BsChatRightText } from "react-icons/bs";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
+import KonstaTabbar from "../components/KonstaTabbar";
 
 const tabs = [
   { id: "home", text: "Home", Icon: IoHomeOutline },
@@ -55,25 +56,7 @@ const logoVariants = {
 };
 
 const AnimatedIcon = ({ Icon, color }) => (
-  <motion.div
-    // whileHover={{
-    //   scale: 1.2,
-    //   rotate: 15,
-    //   color: "#fff",
-    // }}
-    // whileTap={{
-    //   scale: 0.9,
-    //   rotate: -5,
-    // }}
-    // transition={{
-    //   duration: 0.3,
-    //   type: "spring",
-    //   stiffness: 300,
-    //   damping: 10,
-    // }}
-    className="flex items-center justify-center"
-    style={{ color }}
-  >
+  <motion.div className="flex items-center justify-center" style={{ color }}>
     <Icon color={color} />
   </motion.div>
 );
@@ -82,7 +65,14 @@ export default function HomeNew() {
   const [screenHistory, setScreenHistory] = useState(["home"]);
   const [showLogo, setShowLogo] = useState(true);
   const [taskStatusData, setTaskStatusData] = useState([]);
-  const { currentTab, setCurrentTab, userPoints, setUserPoints, totalFriends, setTotalFriends } = useTab();
+  const {
+    currentTab,
+    setCurrentTab,
+    userPoints,
+    setUserPoints,
+    totalFriends,
+    setTotalFriends,
+  } = useTab();
   const { webApp, user, startParam } = useTelegram();
   const [showReferralPopup, setShowReferralPopup] = useState(false);
   const [referralProcessed, setReferralProcessed] = useState(false);
@@ -226,7 +216,11 @@ export default function HomeNew() {
 
   const fetchData = async () => {
     console.log("Fetching data...");
-    await Promise.all([fetchTaskStatus(), fetchUserPoints(), fetchReferralData()]);
+    await Promise.all([
+      fetchTaskStatus(),
+      fetchUserPoints(),
+      fetchReferralData(),
+    ]);
   };
 
   const fetchTaskStatus = async () => {
@@ -371,7 +365,7 @@ export default function HomeNew() {
       onScreenChange: handleScreenChange,
       userPoints: userPoints,
       taskStatusData: taskStatusData,
-      totalFriends: totalFriends
+      totalFriends: totalFriends,
     };
 
     switch (currentTab) {
@@ -397,7 +391,7 @@ export default function HomeNew() {
         return <TokenomicsScreen {...props} />;
       case "saitoken":
         return <SaiTokenScreen {...props} />;
-        case "chat":
+      case "chat":
         return <ChatUI {...props} />;
       default:
         return null;
@@ -431,9 +425,8 @@ export default function HomeNew() {
               userPoints={userPoints}
             />
           )}
-
           <motion.div
-            className="flex-grow overflow-y-auto px-1"
+            className="flex-grow overflow-y-auto"
             variants={contentVariants}
             initial="hidden"
             animate="visible"
@@ -441,23 +434,10 @@ export default function HomeNew() {
           >
             {renderContent()}
           </motion.div>
-          <Tabbar className="bg-[#09090B] border border-neutral-800 sticky bottom-0 z-10 rounded-t-lg pt-2 pb-3">
-            {tabs.map(({ id, Icon }) => (
-              <Tabbar.Item
-                key={id}
-                selected={id === currentTab}
-                onClick={() => handleScreenChange(id)}
-                className={`tabbar-item-no-bg font-semibold ${
-                  id === currentTab ? "text-[#fff] text-[26px]" : "text-[22px]"
-                }`}
-              >
-                <AnimatedIcon
-                  Icon={Icon}
-                  color={id === currentTab ? "#fff" : "#999"}
-                />
-              </Tabbar.Item>
-            ))}
-          </Tabbar>
+          <KonstaTabbar
+            currentTab={currentTab}
+            handleScreenChange={handleScreenChange}
+          />
         </>
       )}
       {showReferralPopup && (
