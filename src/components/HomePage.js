@@ -33,7 +33,7 @@ const HomeScreen = ({
 }) => {
   const { setCurrentTab, completedTasks } = useTab();
   const { webApp, startParam } = useTelegram();
-  console.log("taskStatusData", taskStatusData);
+  console.log("totalFriends", totalFriends);
 
   const totalBasicTasks = basicTasks.length;
   const completedBasicTasks = basicTasks.filter(
@@ -55,7 +55,7 @@ const HomeScreen = ({
   };
 
   const stats = [
-    { name: "Quest Completed", value: `${trueTaskCount}` },
+    { name: "Quest Completed", value: `${trueTaskCount ? trueTaskCount : '-'}` },
     { name: "BROs Invited", value: `${totalFriends ? totalFriends : "-"}` },
   ];
 

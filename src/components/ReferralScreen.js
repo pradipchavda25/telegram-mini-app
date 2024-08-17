@@ -183,7 +183,7 @@ const ReferralScreen = ({ userPoints }) => {
           whileHover={{ scale: 1.03 }}
         >
           <p className="text-neutral-500 text-[14px] mb-1">Total Friends</p>
-          <p className="text-xl font-bold">{totalFriends}</p>
+          <p className="text-xl font-bold">{totalFriends ? totalFriends : '-'}</p>
         </motion.div>
         <motion.div
           className="bg-gradient-to-b from-[#181818] to-black border rounded-md border-neutral-800 p-4"
@@ -199,7 +199,7 @@ const ReferralScreen = ({ userPoints }) => {
               alt=""
               style={{ height: "30px", width: "30px" }}
             />
-            {earnings}
+            {earnings ? earnings :'-'}
           </p>
         </motion.div>
       </motion.div>
