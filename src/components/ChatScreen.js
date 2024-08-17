@@ -12,6 +12,7 @@ const ChatUI = () => {
   const chatContainerRef = useRef(null);
   const { user } = useTelegram();
   const userId = user ? user.id : "1051782980";
+  console.log("messages", messages);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -29,24 +30,27 @@ const ChatUI = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("https://miniapp-backend-4dd6ujjz7q-el.a.run.app/rag", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          message: inputText,
-        }),
-      });
+      const response = await fetch(
+        "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/rag",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            message: inputText,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const data = await response.json();
-      console.log('data', data);
-      
+      console.log("data", data);
+
       const newAIMessage = { type: "ai", text: data.response };
       setMessages((prevMessages) => [...prevMessages, newAIMessage]);
     } catch (error) {
@@ -62,7 +66,7 @@ const ChatUI = () => {
   };
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter' && inputText.trim() !== '') {
+    if (event.key === "Enter" && inputText.trim() !== "") {
       handleSendMessage();
     }
   };
@@ -70,53 +74,70 @@ const ChatUI = () => {
   const convertTextToJSX = (text) => {
     const lines = text.split("\n");
     let inList = false;
-
-    return lines.map((line, index) => {
+    let listItems = [];
+  
+    const result = lines.map((line, index) => {
       // Handle headings
-      if (line.match(/^\d+\./)) {
-        inList = false;
-        return (
-          <h3 key={index} className="font-bold mt-4 mb-2">
-            {line}
-          </h3>
-        );
-      }
-
-      // Handle list items
-      const listMatch = line.match(/^   [-*]\s(.+)/);
-      if (listMatch) {
-        if (!inList) {
-          inList = true;
-          return (
-            <ul key={index} className="list-disc list-inside mb-2">
-              <li>{processInlineLinks(listMatch[1])}</li>
+      const headingMatch = line.match(/^(\d+)\.\s(.+)/);
+      if (headingMatch) {
+        if (inList) {
+          inList = false;
+          const listElement = (
+            <ul key={`list-${index}`} className="list-disc list-inside mb-2">
+              {listItems}
             </ul>
           );
+          listItems = [];
+          return [listElement, <h3 key={index} className="font-bold mt-4 mb-2">{processInlineLinks(line)}</h3>];
         }
-        return <li key={index}>{processInlineLinks(listMatch[1])}</li>;
-      } else {
-        inList = false;
+        return <h3 key={index} className="font-bold mt-4 mb-2">{processInlineLinks(line)}</h3>;
       }
-
+  
+      // Handle list items
+      const listMatch = line.match(/^\s*[-*]\s(.+)/);
+      if (listMatch) {
+        inList = true;
+        listItems.push(<li key={`item-${index}`}>{processInlineLinks(listMatch[1])}</li>);
+        return null;
+      } else if (inList) {
+        inList = false;
+        const listElement = (
+          <ul key={`list-${index}`} className="list-disc list-inside mb-2">
+            {listItems}
+          </ul>
+        );
+        listItems = [];
+        return [listElement, <p key={index} className="mb-2">{processInlineLinks(line)}</p>];
+      }
+  
       // Regular text
-      return (
-        <p key={index} className="mb-2">
-          {processInlineLinks(line)}
-        </p>
-      );
+      return <p key={index} className="mb-2">{processInlineLinks(line)}</p>;
     });
+  
+    // If the text ends with a list, make sure to include it
+    if (inList) {
+      result.push(
+        <ul key="final-list" className="list-disc list-inside mb-2">
+          {listItems}
+        </ul>
+      );
+    }
+  
+    return result.flat();
   };
-
+  
   const processInlineLinks = (text) => {
-    // Handle both [[number]](url) and [text](url) formats
-    const linkRegex = /(\[\[?\d+\]?\])?\(?(https?:\/\/[^\s\)]+)\)?/g;
+    const linkRegex = /(\[(?:\[?\d+\]?|\w+)\])?\(?(https?:\/\/[^\s\)]+)\)?/g;
     const parts = text.split(linkRegex);
-
+  
     if (parts.length > 1) {
       return parts.map((part, i) => {
         if (i % 3 === 1) {
-          return part ? part.replace(/[\[\]]/g, "") : `[${i / 3 + 1}]`;
+          return part ? part.replace(/[\[\]]/g, "") : `[${Math.floor(i / 3) + 1}]`;
         } else if (i % 3 === 2) {
+          const linkText = parts[i - 1]
+            ? parts[i - 1].replace(/[\[\]]/g, "")
+            : `[${Math.floor((i - 1) / 3) + 1}]`;
           return (
             <a
               key={i}
@@ -125,9 +146,7 @@ const ChatUI = () => {
               rel="noopener noreferrer"
               className="text-blue-400 hover:underline"
             >
-              {parts[i - 1]
-                ? parts[i - 1].replace(/[\[\]]/g, "")
-                : `[${i / 3}]`}
+              [{linkText}]
             </a>
           );
         } else {
@@ -135,7 +154,7 @@ const ChatUI = () => {
         }
       });
     }
-
+  
     return text;
   };
 
@@ -180,7 +199,8 @@ const ChatUI = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-               Got something on your mind? Just ask away, and let’s get the conversation going!
+                Got something on your mind? Just ask away, and let’s get the
+                conversation going!
               </motion.p>
             </motion.div>
           ) : (

@@ -27,7 +27,7 @@ export default function KonstaTabbar({ currentTab, handleScreenChange }) {
   return (
     <Tabbar
       className="sticky bottom-0 z-10 rounded-t-lg pt-2 pb-5"
-      style={{paddingBottom: '10px'}}
+      style={{paddingBottom: '10px', background: '#101010'}}
     >
       {tabs.map(({ id, text, Icon }) => (
         <TabbarLink

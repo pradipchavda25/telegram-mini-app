@@ -17,8 +17,8 @@ export default function UserInfoNavbar({ onScreenChange }) {
 
   return (
     <Navbar
-      style={{ width: "100%", paddingTop: '5px', paddingBottom: '5px' }}
-      left={
+      style={{ width: "100%", paddingTop: '5px', paddingBottom: '5px', background: '#101010' }}
+      title={
         <div className="flex items-center justify-start">
           <>
             {user && user.photo_url ? (
