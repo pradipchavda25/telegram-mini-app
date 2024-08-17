@@ -61,6 +61,12 @@ const ChatUI = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter' && inputText.trim() !== '') {
+      handleSendMessage();
+    }
+  };
+
   const convertTextToJSX = (text) => {
     const lines = text.split("\n");
     let inList = false;
@@ -138,7 +144,7 @@ const ChatUI = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-79px)] bg-gradient-to-r from-[#181818] to-black text-white flex flex-col">
+    <div className="h-[calc(100vh-79px)] bg-neutral-950 text-white flex flex-col">
       <div className="flex-1 overflow-y-auto p-3" ref={chatContainerRef}>
         <AnimatePresence>
           {messages.length === 0 ? (
@@ -264,6 +270,7 @@ const ChatUI = () => {
           <input
             type="text"
             value={inputText}
+            onKeyPress={handleKeyPress}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Ask anything..."
             className="flex-grow text-[14px] bg-transparent border-none text-white outline-none placeholder-neutral-500 placeholder:text-[14px]"

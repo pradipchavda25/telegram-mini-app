@@ -1,45 +1,63 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiChevronRight, FiShare2, FiUsers, FiCheckSquare } from "react-icons/fi";
-
-const slides = [
-  {
-    title: "Share your OG Status",
-    subtitle: "In Telegram stories",
-    buttonText: "Share",
-    action: () => console.log("Share action"),
-    icon: FiShare2,
-  },
-  {
-    title: "Invite friends to join",
-    subtitle: "Sharpe AI community",
-    buttonText: "Invite",
-    action: () => console.log("Invite action"),
-    icon: FiUsers,
-  },
-  {
-    title: "Complete daily tasks",
-    subtitle: "Earn more Diamonds",
-    buttonText: "View Tasks",
-    action: () => console.log("View Tasks action"),
-    icon: FiCheckSquare,
-  },
-];
+import { FiUsers, FiCheckSquare } from "react-icons/fi";
+import { useTab } from "../context/TabContext";
+import { useSwipeable } from "react-swipeable";
+import { MdOutlineLeaderboard } from "react-icons/md";
 
 const Slider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { setCurrentTab } = useTab();
+
+  const slides = [
+    {
+      title: "Invite friends to join",
+      subtitle: "Sharpe AI community",
+      buttonText: "Invite",
+      action: () => setCurrentTab("referral"),
+      icon: FiUsers,
+    },
+    {
+      title: "Complete daily tasks",
+      subtitle: "Earn more Diamonds",
+      buttonText: "View Tasks",
+      action: () => setCurrentTab("basictasks"),
+      icon: FiCheckSquare,
+    },
+    {
+      title: "Check your rank!",
+      subtitle: "OG leaderboard",
+      buttonText: "Check",
+      action: () => setCurrentTab("leaderboard"),
+      icon: MdOutlineLeaderboard,
+    },
+  ];
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-  }, []);
+  }, [slides.length]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
+    );
+  }, [slides.length]);
 
   useEffect(() => {
     const intervalId = setInterval(nextSlide, 4000);
     return () => clearInterval(intervalId);
   }, [nextSlide]);
 
+  const handlers = useSwipeable({
+    onSwipedLeft: nextSlide,
+    onSwipedRight: prevSlide,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+  });
+
   return (
     <motion.div
+      {...handlers}
       className="relative w-full h-20 bg-gradient-to-b from-[#181818] to-black border border-neutral-800 rounded-md overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
