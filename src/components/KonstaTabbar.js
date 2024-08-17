@@ -27,7 +27,16 @@ export default function KonstaTabbar({ currentTab, handleScreenChange }) {
   return (
     <Tabbar
       className="bg-ios-dark-surface sticky bottom-0 z-10 rounded-t-lg pt-2 pb-5"
-      style={{paddingBottom: '10px', background: '#101010'}}
+      colors={{
+        bgIos: '#101010',
+        bgMaterial: '#101010',
+      }}
+      style={{
+        paddingBottom: '10px',
+        '--k-tabbar-link-active-color': '#fff',
+        '--k-tabbar-link-inactive-color': '#999',
+      }}
+
     >
       {tabs.map(({ id, text, Icon }) => (
         <TabbarLink

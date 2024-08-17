@@ -18,6 +18,12 @@ export default function UserInfoNavbar({ onScreenChange }) {
   return (
     <Navbar
       style={{ width: "100%", paddingTop: '5px', paddingBottom: '5px' }}
+      colors={{
+        bgIos: '#101010',
+        bgMaterial: '#101010',
+        textIos: '#ffffff',
+        textMaterial: '#ffffff',
+      }}
       title={
         <div className="flex items-center justify-start">
           <>
