@@ -11,24 +11,24 @@ const Slider = () => {
 
   const slides = [
     {
-      title: "Invite friends to join",
+      title: "Invite your BROs",
       subtitle: "Sharpe AI community",
       buttonText: "Invite",
       action: () => setCurrentTab("referral"),
       icon: FiUsers,
     },
     {
-      title: "Complete daily tasks",
-      subtitle: "Earn more Diamonds",
-      buttonText: "View Tasks",
+      title: "Complete Basic Tasks",
+      subtitle: "Earn more BROs",
+      buttonText: "View",
       action: () => setCurrentTab("basictasks"),
       icon: FiCheckSquare,
     },
     {
-      title: "Check your rank!",
+      title: "Learn more about Brownian",
       subtitle: "OG leaderboard",
       buttonText: "Check",
-      action: () => setCurrentTab("leaderboard"),
+      action: () => setCurrentTab("info"),
       icon: MdOutlineLeaderboard,
     },
   ];
@@ -91,14 +91,14 @@ const Slider = () => {
               >
                 {slides[currentIndex].title}
               </motion.h3>
-              <motion.p
+              {/* <motion.p
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
                 className="text-neutral-400 text-[13px]"
               >
                 {slides[currentIndex].subtitle}
-              </motion.p>
+              </motion.p> */}
             </div>
           </div>
           <motion.button

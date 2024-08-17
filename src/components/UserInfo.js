@@ -27,7 +27,7 @@ export default function UserInfo({ onScreenChange }) {
 
   return (
     <motion.div
-      className="flex items-center bg-gradient-to-t from-[#171717] to-black px-2 py-2 justify-between border-b border-neutral-800"
+      className="flex items-center bg-gradient-to-t from-[#171717] to-black px-2 py-3 justify-between border-b border-neutral-800"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

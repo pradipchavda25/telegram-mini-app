@@ -23,14 +23,17 @@ const basicTasks = [
   "followed_telegram",
 ];
 
-const onBoardingTasks = [
-  "signed_up",
-];
+const onBoardingTasks = ["signed_up"];
 
-const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
+const HomeScreen = ({
+  onScreenChange,
+  userPoints,
+  taskStatusData,
+  totalFriends,
+}) => {
   const { setCurrentTab, completedTasks } = useTab();
   const { webApp, startParam } = useTelegram();
-  // console.log('startParam', webApp.startParam, startParam);
+  console.log("taskStatusData", taskStatusData);
 
   const totalBasicTasks = basicTasks.length;
   const completedBasicTasks = basicTasks.filter(
@@ -42,14 +45,18 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
     (task) => taskStatusData[task]
   ).length;
 
+  const trueTaskCount = Object.values(taskStatusData).filter(
+    (status) => status === true
+  ).length;
+
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
     setCurrentTab(tabName);
   };
 
   const stats = [
-    { name: "Diamonds", value: `${userPoints}` },
-    { name: "$SAI", value: "0" },
+    { name: "Quest Completed", value: `${trueTaskCount}` },
+    { name: "BROs Invited", value: `${totalFriends ? totalFriends : "-"}` },
   ];
 
   const containerVariants = {
@@ -108,13 +115,13 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
                 <p className="mt-1 flex justify-center gap-x-2">
                   <span className="text-[22px] flex items-center gap-1 font-semibold tracking-tight text-center text-white">
                     {stat.value}
-                    {index === 0 && (
+                    {/* {index === 0 && (
                       <IoDiamondOutline
                         size={14}
                         style={{ marginTop: "2px" }}
                       />
-                    )}
-                    {index === 1 && (
+                    )} */}
+                    {/* {index === 1 && (
                       <motion.img
                         src={sharpeLogo}
                         alt=""
@@ -123,7 +130,7 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
                         animate={{ opacity: 1, rotate: 0 }}
                         transition={{ delay: 0.5, duration: 1 }}
                       />
-                    )}
+                    )} */}
                   </span>
                 </p>
               </motion.div>
@@ -134,7 +141,7 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
       <motion.div variants={itemVariants}>
         <motion.div variants={itemVariants}>
           <Banner
-            className="h-[110px] flex justify-center m-4 py-8 rounded-md items-center text-center bg-gradient-to-b from-[#141414] to-black relative overflow-hidden"
+            className="h-[110px] flex justify-center mx-3 my-2 py-8 rounded-md items-center text-center bg-gradient-to-b from-[#141414] to-black relative overflow-hidden"
             type="section"
           >
             <div className="w-full z-10 relative">
@@ -144,15 +151,20 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                Total Prize Pool
+                TOTAL $BRO EARNED
               </motion.p>
               <motion.p
-                className="text-2xl text-center font-bold"
+                className="text-2xl text-center flex flex-row items-center justify-center font-bold"
                 initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                10,000,000 $SAI
+                {userPoints}
+                <img
+                  src={sharpeLogo}
+                  alt=""
+                  style={{ height: "36px", width: "36px", marginTop: '4px' }}
+                />
               </motion.p>
             </div>
             <motion.div
@@ -165,14 +177,14 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
         </motion.div>
       </motion.div>
       <motion.div
-        className="mx-4 mb-2"
+        className="mx-3 mb-2"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
         <Slider />
       </motion.div>
-      <motion.div className="p-2 px-3" variants={itemVariants}>
+      {/* <motion.div className="p-2 px-3" variants={itemVariants}>
         <motion.div
           className="bg-gradient-to-r from-[#181818] to-black border border-neutral-800 rounded-md p-4 flex flex-row justify-between items-center"
           whileHover={{ scale: 1.02 }}
@@ -202,28 +214,28 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
             />
           </motion.button>
         </motion.div>
-      </motion.div>
+      </motion.div> */}
       <motion.div className="px-3 pb-2" variants={containerVariants}>
         <AnimatePresence>
           {[
             {
               name: "Onboarding",
               progress: `${completedOnboardingTasks}/${totalOnboardingTasks} tasks done`,
-              reward: 500,
+              reward: `${totalOnboardingTasks * 500}`,
               tab: "onboarding",
               icon: FiUserCheck,
             },
             {
               name: "Basic Task",
               progress: `${completedBasicTasks}/${totalBasicTasks} tasks done`,
-              reward: 1500,
+              reward: `${totalBasicTasks * 500}`,
               tab: "basictasks",
               icon: GoTasklist,
             },
             {
               name: "Daily Task",
               progress: "0/2 tasks done",
-              reward: 6500,
+              reward: 1000,
               tab: "dailytasks",
               icon: TbCalendarClock,
             },
@@ -256,12 +268,17 @@ const HomeScreen = ({ onScreenChange, userPoints, taskStatusData }) => {
                   </div>
                 </div>
                 <motion.span
-                  className="text-center flex items-center gap-1 bg-[#1d1d1d] rounded-full text-[16px] px-[8px] py-[4px]"
+                  className="text-center flex items-center bg-[#1d1d1d] rounded-full text-[16px] px-[8px] py-[4px]"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   +{task.reward}
-                  <IoDiamondOutline size={10} />
+                  {/* <IoDiamondOutline size={10} /> */}
+                  <img
+                    src={sharpeLogo}
+                    alt=""
+                    style={{ height: "24px", width: "24px" }}
+                  />
                 </motion.span>
               </motion.div>
             );

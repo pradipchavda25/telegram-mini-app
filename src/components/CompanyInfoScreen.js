@@ -50,8 +50,8 @@ const CompanyInfoScreen = ({ onScreenChange }) => {
     >
       {/* Header */}
       <motion.div className="text-center mb-6" variants={itemVariants}>
-        <h1 className="text-2xl font-bold mb-1">Sharpe AI</h1>
-        <p className="text-neutral-400 text-[16px]">AI-powered Crypto Super App</p>
+        <h1 className="text-2xl font-bold mb-1">Brownian</h1>
+        <p className="text-neutral-400 text-[16px]">Full-Stack AI LLM for Crypto</p>
       </motion.div>
 
       {/* Menu Items */}
@@ -59,14 +59,14 @@ const CompanyInfoScreen = ({ onScreenChange }) => {
         {[
           {
             name: "Overview",
-            description: "Get to know about gmAI",
+            description: "Get to know about sharpe AI",
             tab: 'sitecard'
           },
-          {
-            name: "Tokenomics",
-            description: "Discover $SAI Tokenomics & token use case",
-            tab: 'tokenomics'
-          },
+          // {
+          //   name: "Tokenomics",
+          //   description: "Discover $SAI Tokenomics & token use case",
+          //   tab: 'tokenomics'
+          // },
         ].map((item, index) => (
           <motion.div
             key={index}

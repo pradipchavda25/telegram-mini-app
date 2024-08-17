@@ -171,7 +171,7 @@ const ChatUI = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
               >
-                Welcome to Sharpe AI Assistant
+                Hey there! Welcome to Brownian
               </motion.h1>
 
               <motion.p
@@ -180,7 +180,7 @@ const ChatUI = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                I'm here to help you with any questions or tasks you may have
+               Got something on your mind? Just ask away, and let’s get the conversation going!
               </motion.p>
             </motion.div>
           ) : (

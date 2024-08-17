@@ -56,21 +56,21 @@ const logoVariants = {
 
 const AnimatedIcon = ({ Icon, color }) => (
   <motion.div
-    whileHover={{
-      scale: 1.2,
-      rotate: 15,
-      color: "#fff",
-    }}
-    whileTap={{
-      scale: 0.9,
-      rotate: -5,
-    }}
-    transition={{
-      duration: 0.3,
-      type: "spring",
-      stiffness: 300,
-      damping: 10,
-    }}
+    // whileHover={{
+    //   scale: 1.2,
+    //   rotate: 15,
+    //   color: "#fff",
+    // }}
+    // whileTap={{
+    //   scale: 0.9,
+    //   rotate: -5,
+    // }}
+    // transition={{
+    //   duration: 0.3,
+    //   type: "spring",
+    //   stiffness: 300,
+    //   damping: 10,
+    // }}
     className="flex items-center justify-center"
     style={{ color }}
   >
@@ -82,7 +82,7 @@ export default function HomeNew() {
   const [screenHistory, setScreenHistory] = useState(["home"]);
   const [showLogo, setShowLogo] = useState(true);
   const [taskStatusData, setTaskStatusData] = useState([]);
-  const { currentTab, setCurrentTab, userPoints, setUserPoints } = useTab();
+  const { currentTab, setCurrentTab, userPoints, setUserPoints, totalFriends, setTotalFriends } = useTab();
   const { webApp, user, startParam } = useTelegram();
   const [showReferralPopup, setShowReferralPopup] = useState(false);
   const [referralProcessed, setReferralProcessed] = useState(false);
@@ -226,7 +226,7 @@ export default function HomeNew() {
 
   const fetchData = async () => {
     console.log("Fetching data...");
-    await Promise.all([fetchTaskStatus(), fetchUserPoints()]);
+    await Promise.all([fetchTaskStatus(), fetchUserPoints(), fetchReferralData()]);
   };
 
   const fetchTaskStatus = async () => {
@@ -264,6 +264,23 @@ export default function HomeNew() {
     }
   };
 
+  const fetchReferralData = async () => {
+    try {
+      const response = await fetch(
+        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`
+      );
+      const data = await response.json();
+
+      const friendCount = data.length;
+      const earnings = friendCount * 500;
+
+      setTotalFriends(friendCount);
+      // setTotalEarn(earnings);
+    } catch (error) {
+      console.error("Failed to fetch referral data:", error);
+    }
+  };
+
   const handleReferralConfirmation = async (confirmed) => {
     setShowReferralPopup(false);
     if (confirmed && startParam) {
@@ -275,7 +292,7 @@ export default function HomeNew() {
         const data = await response.json();
         console.log("Referral added:", data);
 
-        if (data.msg === "Referee ID already exists.") {
+        if (data.msg === "User already exists!") {
           setNotification({
             show: true,
             type: "info",
@@ -354,6 +371,7 @@ export default function HomeNew() {
       onScreenChange: handleScreenChange,
       userPoints: userPoints,
       taskStatusData: taskStatusData,
+      totalFriends: totalFriends
     };
 
     switch (currentTab) {
@@ -373,8 +391,6 @@ export default function HomeNew() {
         return <LeaderboardScreen {...props} />;
       case "info":
         return <CompanyInfoScreen {...props} />;
-      case "coincard":
-        return <CoinCard {...props} />;
       case "sitecard":
         return <SolanaAICard {...props} />;
       case "tokenomics":
@@ -401,7 +417,7 @@ export default function HomeNew() {
           <img
             src={sharpeLogo}
             alt=""
-            style={{ height: "70px", width: "auto" }}
+            style={{ height: "90px", width: "auto" }}
           />
         </motion.div>
       ) : (
@@ -425,7 +441,7 @@ export default function HomeNew() {
           >
             {renderContent()}
           </motion.div>
-          <Tabbar className="bg-[#09090B] border border-neutral-800 sticky bottom-0 z-10 rounded-t-lg py-2">
+          <Tabbar className="bg-[#09090B] border border-neutral-800 sticky bottom-0 z-10 rounded-t-lg pt-2 pb-3">
             {tabs.map(({ id, Icon }) => (
               <Tabbar.Item
                 key={id}

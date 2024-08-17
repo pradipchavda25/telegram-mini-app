@@ -7,6 +7,8 @@ import { IoDiamondOutline } from "react-icons/io5";
 import { Button } from "@telegram-apps/telegram-ui";
 import useTelegram from "../context/TelegramContext";
 import { motion } from "framer-motion";
+import { useTab } from "../context/TabContext";
+import sharpeLogo from "../images/sharpe-white-logo.svg";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -15,36 +17,36 @@ const cardVariants = {
 
 const ReferralScreen = ({ userPoints }) => {
   const [copied, setCopied] = useState(false);
-  const [totalFriends, setTotalFriends] = useState(0);
-  const [totalEarn, setTotalEarn] = useState(0);
+  // const [totalFriends, setTotalFriends] = useState(0);
+  // const [totalEarn, setTotalEarn] = useState(0);
   const { webApp, user, startParam } = useTelegram();
   const [referralCode, setReferralCode] = useState("");
-  const userId = user ? user.id : "1051782980";
+  const { totalFriends, setTotalFriends } = useTab();
+
+  const earnings = totalFriends * 500;
 
   useEffect(() => {
     if (user) {
       setReferralCode(generateReferralCode(user.id));
     }
-
-    fetchReferralData();
   }, [user]);
 
-  const fetchReferralData = async () => {
-    try {
-      const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`
-      );
-      const data = await response.json();
+  // const fetchReferralData = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`
+  //     );
+  //     const data = await response.json();
 
-      const friendCount = data.length;
-      const earnings = friendCount * 500;
+  //     const friendCount = data.length;
+  //     const earnings = friendCount * 500;
 
-      setTotalFriends(friendCount);
-      setTotalEarn(earnings);
-    } catch (error) {
-      console.error("Failed to fetch referral data:", error);
-    }
-  };
+  //     setTotalFriends(friendCount);
+  //     setTotalEarn(earnings);
+  //   } catch (error) {
+  //     console.error("Failed to fetch referral data:", error);
+  //   }
+  // };
 
   const generateReferralCode = (userId) => {
     // Generate a unique code based on userId
@@ -75,7 +77,7 @@ const ReferralScreen = ({ userPoints }) => {
 
   return (
     <motion.div
-      className="bg-neutral-950 text-white min-h-screen p-4"
+      className="relative bg-neutral-950 text-white min-h-screen p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -116,7 +118,7 @@ const ReferralScreen = ({ userPoints }) => {
             <TbGift className="mr-1" size={14} /> Invite a friend
           </h3>
           <p className="text-[14px] pr-4 text-neutral-400">
-            +1000 diamonds for both + 10% earnings + 2.5% from referrals
+            Invite your bros and get more $BROs.
           </p>
         </motion.div>
       </motion.div>
@@ -131,7 +133,7 @@ const ReferralScreen = ({ userPoints }) => {
       >
         <div className="flex items-center mb-2">
           <motion.div
-            className="w-14 h-10 bg-gradient-to-l from-[#181818] rounded-lg border border-neutral-800 flex items-center justify-center mr-3"
+            className="w-10 h-10 bg-gradient-to-l from-[#181818] rounded-lg border border-neutral-800 flex items-center justify-center mr-3"
             whileHover={{ scale: 1.1, rotate: 10 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
@@ -140,7 +142,7 @@ const ReferralScreen = ({ userPoints }) => {
           <div>
             <h2 className="font-semibold text-[18px]">Invite a friend</h2>
             <p className="text-[12px] text-neutral-400 flex items-center gap-1">
-              100 diamonds to each invited friend reach 1000
+            Invite your bros and get more $BROs.
             </p>
           </div>
         </div>
@@ -153,7 +155,7 @@ const ReferralScreen = ({ userPoints }) => {
           </Button>
           <Button
             onClick={handleCopyClick}
-            className="cursor-pointer bg-gradient-to-r border border-neutral-600 from-[#181818] to-black rounded-[4px] flex items-center justify-center"
+            className="cursor-pointer  border border-neutral-600 bg-[#181818] rounded-[4px] flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -191,9 +193,13 @@ const ReferralScreen = ({ userPoints }) => {
           whileHover={{ scale: 1.03 }}
         >
           <p className="text-neutral-500 text-[14px] mb-1">Total Earn</p>
-          <p className="text-xl font-bold flex items-center gap-1">
-            <IoDiamondOutline size={18} />
-            {totalEarn}
+          <p className="text-xl font-bold flex items-center ">
+            <img
+              src={sharpeLogo}
+              alt=""
+              style={{ height: "30px", width: "30px" }}
+            />
+            {earnings}
           </p>
         </motion.div>
       </motion.div>

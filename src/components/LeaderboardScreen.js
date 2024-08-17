@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { IoDiamondOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@iconify/react";
+import sharpeLogo from "../images/sharpe-white-logo.svg";
 
 const LeaderboardScreen = ({ onScreenChange }) => {
   const { webApp, user } = useTelegram();
@@ -134,7 +135,7 @@ const LeaderboardScreen = ({ onScreenChange }) => {
               🤖
             </motion.div>
             <div>
-              <p className="font-semibold text-[10px] flex flex-row items-center gap-1">
+              <p className="font-semibold text-[14px] flex flex-row items-center gap-1">
                 {user ? `${user.first_name} ${user.last_name}` : "Anonymous"}
                 <Chip
                   mode="elevated"
@@ -145,15 +146,20 @@ const LeaderboardScreen = ({ onScreenChange }) => {
                   </span>
                 </Chip>
               </p>
-              <p className="text-[12px] flex items-center gap-1 mt-[1px] text-neutral-400">
+              <p className="text-[14px] flex items-center mt-[1px] text-neutral-400">
                 {userPoints}
                 <motion.div>
-                  <IoDiamondOutline size={10} />
+                  {/* <IoDiamondOutline size={10} /> */}
+                  <img
+                    src={sharpeLogo}
+                    alt=""
+                    style={{ height: "22px", width: "22px" }}
+                  />
                 </motion.div>
               </p>
             </div>
           </div>
-          <span className="text-center flex items-center gap-1 rounded-sm text-[12px] px-[8px] py-[4px]">
+          <span className="text-center flex items-center gap-1 rounded-sm text-[14px] px-[8px] py-[4px]">
             #3453
           </span>
         </motion.div>
@@ -192,11 +198,16 @@ const LeaderboardScreen = ({ onScreenChange }) => {
                   {user.avatar}
                 </motion.div>
                 <div>
-                  <p className="font-semibold text-[10px] ">{user.name}</p>
-                  <p className="text-[10px] flex items-center gap-1 mt-[1px] text-neutral-400">
+                  <p className="font-semibold text-[14px] ">{user.name}</p>
+                  <p className="text-[12px] flex items-center mt-[1px] text-neutral-400">
                     {user.points}
                     <motion.div>
-                      <IoDiamondOutline size={10} />
+                      {/* <IoDiamondOutline size={10} /> */}
+                      <img
+                        src={sharpeLogo}
+                        alt=""
+                        style={{ height: "20px", width: "20px" }}
+                      />
                     </motion.div>
                   </p>
                 </div>
@@ -245,17 +256,21 @@ const LeaderboardScreen = ({ onScreenChange }) => {
                   {user.avatar}
                 </motion.div>
                 <div>
-                  <p className="font-semibold text-[10px]">{user.name}</p>
-                  <p className="text-[12px] flex items-center gap-1 mt-[1px] text-neutral-400">
+                  <p className="font-semibold text-[14px]">{user.name}</p>
+                  <p className="text-[12px] flex items-center mt-[1px] text-neutral-400">
                     {user.points}
                     <motion.div>
-                      <IoDiamondOutline size={10} />
+                      <img
+                        src={sharpeLogo}
+                        alt=""
+                        style={{ height: "20px", width: "20px" }}
+                      />
                     </motion.div>
                   </p>
                 </div>
               </div>
               <motion.span
-                className="text-center flex items-center gap-1 rounded-sm text-[12px] px-[8px] py-[4px]"
+                className="text-center flex items-center gap-1 rounded-sm text-[14px] px-[8px] py-[4px]"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >

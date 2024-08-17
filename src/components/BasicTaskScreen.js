@@ -19,6 +19,7 @@ import Confetti from "react-confetti-boom";
 import useWindowSize from "react-use/lib/useWindowSize";
 import { useTab } from "../context/TabContext";
 import { AnimatePresence, motion } from "framer-motion";
+import sharpeLogo from "../images/sharpe-white-logo.svg";
 
 const TASK_TYPES = {
   TELEGRAM: "telegramJoin",
@@ -449,14 +450,19 @@ const BasicTaskScreen = ({ taskStatusData }) => {
           </motion.div>
         ) : (
           <motion.span
-            className="text-center flex text-white items-center gap-1 bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px]"
+            className="text-center flex items-center text-white bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px]"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
             whileHover={{ scale: 1.05 }}
           >
             +{task.reward}
-            <IoDiamondOutline size={10} />
+            {/* <IoDiamondOutline size={10} /> */}
+            <img
+              src={sharpeLogo}
+              alt=""
+              style={{ height: "22px", width: "22px" }}
+            />
           </motion.span>
         )}
       </motion.div>
@@ -556,12 +562,17 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                             {selectedTask.name}
                           </p>
                           <motion.span
-                            className="text-center flex items-center gap-1 text-white border bg-[#131313] border-neutral-800 rounded-full text-[14px] px-[8px] py-[4px]"
+                            className="text-center flex items-center text-white border bg-[#131313] border-neutral-800 rounded-full text-[14px] px-[8px] py-[4px]"
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.2 }}
                           >
                             +{selectedTask.reward}
-                            <IoDiamondOutline size={10} />
+                            {/* <IoDiamondOutline size={10} /> */}
+                            <img
+                              src={sharpeLogo}
+                              alt=""
+                              style={{ height: "22px", width: "22px" }}
+                            />
                           </motion.span>
                         </motion.div>
                         <motion.div
