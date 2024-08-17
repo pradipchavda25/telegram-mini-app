@@ -87,8 +87,8 @@ const ReferralScreen = ({ userPoints }) => {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
       >
-        <h1 className="text-xl font-bold mb-1">Referral</h1>
-        <p className="text-neutral-400 text-[14px] px-8 text-center">
+        <h1 className="text-2xl font-bold mb-1">Referral</h1>
+        <p className="text-neutral-400 text-[16px] px-10 text-center">
           Introduce Sharpe AI to friends and earn $SAI tokens.
         </p>
       </motion.div>
@@ -112,10 +112,10 @@ const ReferralScreen = ({ userPoints }) => {
           whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
           whileTap={{ scale: 0.98 }}
         >
-          <h3 className="font-semibold text-[13px] mb-1 flex items-center">
+          <h3 className="font-semibold text-[16px] mb-1 flex items-center">
             <TbGift className="mr-1" size={14} /> Invite a friend
           </h3>
-          <p className="text-[11px] text-neutral-400">
+          <p className="text-[14px] pr-4 text-neutral-400">
             +1000 diamonds for both + 10% earnings + 2.5% from referrals
           </p>
         </motion.div>
@@ -138,7 +138,7 @@ const ReferralScreen = ({ userPoints }) => {
             <TbUserPlus color="white" size={22} />
           </motion.div>
           <div>
-            <h2 className="font-semibold text-[16px]">Invite a friend</h2>
+            <h2 className="font-semibold text-[18px]">Invite a friend</h2>
             <p className="text-[12px] text-neutral-400 flex items-center gap-1">
               100 diamonds to each invited friend reach 1000
             </p>
