@@ -15,8 +15,8 @@ const useTelegram = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const param = urlParams.get('tgWebAppStartParam');
             setStartParam(param);
-            window.Telegram.WebApp.setHeaderColor('#000');
-            window.Telegram.WebApp.setBackgroundColor('#000');
+            window.Telegram.WebApp.setHeaderColor('#4E7396');
+            window.Telegram.WebApp.setBackgroundColor('#4E7396');
             // window.Telegram.WebApp.isExpanded('true')
             window.Telegram.WebApp.expand()
             // webApp.setHeaderColor('#000')
