@@ -123,6 +123,7 @@ const ChatUI = () => {
   };
   
   const processInlineLinks = (text) => {
+    /*
     const linkRegex = /(\[(?:\[?\d+\]?|\w+)\])?\(?(https?:\/\/[^\s\)]+)\)?/g;
     const parts = text.split(linkRegex);
   
@@ -152,6 +153,8 @@ const ChatUI = () => {
     }
   
     return text;
+  */
+    return text.replace(/\[\[(\d+)\]\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">[[$1]]</a>');
   };
 
   const handleClearHistory = () => {
