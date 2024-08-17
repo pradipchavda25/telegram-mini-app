@@ -59,7 +59,7 @@ const AnimatedIcon = ({ Icon, color }) => (
     whileHover={{
       scale: 1.2,
       rotate: 15,
-      color: "#87D4FE",
+      color: "#fff",
     }}
     whileTap={{
       scale: 0.9,
@@ -74,7 +74,7 @@ const AnimatedIcon = ({ Icon, color }) => (
     className="flex items-center justify-center"
     style={{ color }}
   >
-    <Icon />
+    <Icon color={color} />
   </motion.div>
 );
 
@@ -425,7 +425,7 @@ export default function HomeNew() {
           >
             {renderContent()}
           </motion.div>
-          <Tabbar className="bg-[#09090B] border border-neutral-800 sticky bottom-0 z-10 rounded-lg">
+          <Tabbar className="bg-[#09090B] border border-neutral-800 sticky bottom-0 z-10 rounded-t-lg py-2">
             {tabs.map(({ id, Icon }) => (
               <Tabbar.Item
                 key={id}

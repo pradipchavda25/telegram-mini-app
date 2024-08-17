@@ -138,7 +138,7 @@ const ChatUI = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-59px)] bg-gradient-to-r from-[#181818] to-black text-white flex flex-col">
+    <div className="h-[calc(100vh-79px)] bg-gradient-to-r from-[#181818] to-black text-white flex flex-col">
       <div className="flex-1 overflow-y-auto p-3" ref={chatContainerRef}>
         <AnimatePresence>
           {messages.length === 0 ? (
