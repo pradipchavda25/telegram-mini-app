@@ -77,7 +77,6 @@ const ChatUI = () => {
     let listItems = [];
   
     const result = lines.map((line, index) => {
-      // Handle headings
       const headingMatch = line.match(/^(\d+)\.\s(.+)/);
       if (headingMatch) {
         if (inList) {
@@ -93,7 +92,6 @@ const ChatUI = () => {
         return <h3 key={index} className="font-bold mt-4 mb-2">{processInlineLinks(line)}</h3>;
       }
   
-      // Handle list items
       const listMatch = line.match(/^\s*[-*]\s(.+)/);
       if (listMatch) {
         inList = true;
@@ -110,11 +108,9 @@ const ChatUI = () => {
         return [listElement, <p key={index} className="mb-2">{processInlineLinks(line)}</p>];
       }
   
-      // Regular text
       return <p key={index} className="mb-2">{processInlineLinks(line)}</p>;
     });
   
-    // If the text ends with a list, make sure to include it
     if (inList) {
       result.push(
         <ul key="final-list" className="list-disc list-inside mb-2">
