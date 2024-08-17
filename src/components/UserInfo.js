@@ -17,8 +17,8 @@ export default function UserInfoNavbar({ onScreenChange }) {
 
   return (
     <Navbar
-      style={{ width: "100%", paddingTop: '5px', paddingBottom: '5px', background: '#101010' }}
-      title={
+      style={{ width: "100%", paddingTop: '5px', paddingBottom: '5px' }}
+      left={
         <div className="flex items-center justify-start">
           <>
             {user && user.photo_url ? (
@@ -70,7 +70,7 @@ export default function UserInfoNavbar({ onScreenChange }) {
       //     </span>
       //   </Link>
       // }
-      className="bg-gradient-to-t from-[#171717] to-black border-b border-neutral-800"
+      className="bg-ios-dark-surface border-b border-neutral-800"
     />
   );
 }
