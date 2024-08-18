@@ -75,8 +75,32 @@ const ChatUI = () => {
     const lines = text.split("\n");
     let inList = false;
     let listItems = [];
+    let inCodeBlock = false;
+    let codeLines = [];
   
     const result = lines.map((line, index) => {
+      // Check for code block
+      if (line.trim().startsWith('```')) {
+        if (inCodeBlock) {
+          inCodeBlock = false;
+          const codeBlock = (
+            <pre key={`code-${index}`} className="bg-[#161616] border border-neutral-800 p-2 rounded mb-2 overflow-x-auto">
+              <code>{codeLines.join('\n')}</code>
+            </pre>
+          );
+          codeLines = [];
+          return codeBlock;
+        } else {
+          inCodeBlock = true;
+          return null;
+        }
+      }
+  
+      if (inCodeBlock) {
+        codeLines.push(line);
+        return null;
+      }
+  
       const headingMatch = line.match(/^(\d+)\.\s(.+)/);
       if (headingMatch) {
         if (inList) {
@@ -87,15 +111,15 @@ const ChatUI = () => {
             </ul>
           );
           listItems = [];
-          return [listElement, <h3 key={index} className="font-bold mt-4 mb-2">{processInlineLinks(line)}</h3>];
+          return [listElement, <h3 key={index} className="font-bold mt-4 mb-2">{processInlineCode(processInlineLinks(headingMatch[2]))}</h3>];
         }
-        return <h3 key={index} className="font-bold mt-4 mb-2">{processInlineLinks(line)}</h3>;
+        return <h3 key={index} className="font-bold mt-4 mb-2">{processInlineCode(processInlineLinks(headingMatch[2]))}</h3>;
       }
   
       const listMatch = line.match(/^\s*[-*]\s(.+)/);
       if (listMatch) {
         inList = true;
-        listItems.push(<li key={`item-${index}`}>{processInlineLinks(listMatch[1])}</li>);
+        listItems.push(<li key={`item-${index}`}>{processInlineCode(processInlineLinks(listMatch[1]))}</li>);
         return null;
       } else if (inList) {
         inList = false;
@@ -105,10 +129,10 @@ const ChatUI = () => {
           </ul>
         );
         listItems = [];
-        return [listElement, <p key={index} className="mb-2">{processInlineLinks(line)}</p>];
+        return [listElement, <p key={index} className="mb-2">{processInlineCode(processInlineLinks(line))}</p>];
       }
   
-      return <p key={index} className="mb-2">{processInlineLinks(line)}</p>;
+      return <p key={index} className="mb-2">{processInlineCode(processInlineLinks(line))}</p>;
     });
   
     if (inList) {
@@ -122,19 +146,26 @@ const ChatUI = () => {
     return result.flat();
   };
   
+  const processInlineCode = (text) => {
+    if (typeof text === 'string') {
+      const parts = text.split('`');
+      return parts.map((part, index) => 
+        index % 2 === 0 ? part : <code key={index} className="bg-[#161616] border border-neutral-800 px-1 rounded">{part}</code>
+      );
+    }
+    return text;
+  };
+  
   const processInlineLinks = (text) => {
-    /*
     const linkRegex = /(\[(?:\[?\d+\]?|\w+)\])?\(?(https?:\/\/[^\s\)]+)\)?/g;
     const parts = text.split(linkRegex);
   
     if (parts.length > 1) {
       return parts.map((part, i) => {
-        if (i % 3 === 1) {
-          return part ? part.replace(/[\[\]]/g, "") : `[${Math.floor(i / 3) + 1}]`;
-        } else if (i % 3 === 2) {
+        if (i % 3 === 2) {
           const linkText = parts[i - 1]
             ? parts[i - 1].replace(/[\[\]]/g, "")
-            : `[${Math.floor((i - 1) / 3) + 1}]`;
+            : `${Math.floor((i - 1) / 3) + 1}`;
           return (
             <a
               key={i}
@@ -146,15 +177,14 @@ const ChatUI = () => {
               [{linkText}]
             </a>
           );
-        } else {
+        } else if (i % 3 !== 1) {
           return part;
         }
-      });
+        // Skip parts that are i % 3 === 1
+      }).filter(Boolean); // Remove undefined elements
     }
   
     return text;
-  */
-    return text.replace(/\[\[(\d+)\]\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">[[$1]]</a>');
   };
 
   const handleClearHistory = () => {
