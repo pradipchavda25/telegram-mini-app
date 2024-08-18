@@ -69,11 +69,14 @@ const OnboardingScreen = ({ taskStatusData }) => {
   const [showCheckButton, setShowCheckButton] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const { setUserPoints, setCompletedTasks } = useTab();
+  const ApiBaseUrl = process.env.NODE_ENV === 'production' 
+  ? process.env.REACT_APP_PUBLIC_API_URL 
+  : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
 
   const fetchUserPoints = async () => {
     try {
       const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+        `${ApiBaseUrl}/get_points`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -123,7 +126,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
 
       switch (taskType) {
         case TASK_TYPES.SIGNUP:
-          url = "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_tasks";
+          url = `${ApiBaseUrl}/verify_tasks`;
           options.body = JSON.stringify({ unique_id: userId, task_id: taskId });
           break;
         default:
@@ -149,10 +152,32 @@ const OnboardingScreen = ({ taskStatusData }) => {
     }
   };
 
+  const triggerHapticFeedback = (type) => {
+    if (webApp && webApp.HapticFeedback) {
+      switch (type) {
+        case 'success':
+          webApp.HapticFeedback.notificationOccurred('success');
+          break;
+        case 'error':
+          webApp.HapticFeedback.notificationOccurred('error');
+          break;
+        case 'warning':
+          webApp.HapticFeedback.notificationOccurred('warning');
+          break;
+        case 'impact':
+          webApp.HapticFeedback.impactOccurred('medium');
+          break;
+        default:
+          webApp.HapticFeedback.selectionChanged();
+      }
+    }
+  };
+
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
-
+    triggerHapticFeedback('impact'); // Trigger haptic feedback when starting to check
+  
     try {
       const { success, message, taskId } = await verifyTask(
         selectedTask.verifier,
@@ -169,9 +194,9 @@ const OnboardingScreen = ({ taskStatusData }) => {
           ...prev,
           basictasks: prev.basictasks + 1,
         }));
-
+  
         await fetchUserPoints();
-
+  
         setNotification({
           show: true,
           type: "success",
@@ -180,7 +205,8 @@ const OnboardingScreen = ({ taskStatusData }) => {
             message || `Task "${selectedTask.name}" completed successfully!`,
         });
         setShowConfetti(true);
-
+        triggerHapticFeedback('success'); // Trigger success haptic feedback
+  
         setTimeout(() => {
           setIsModalOpen(false);
           setShowCheckButton(false);
@@ -195,6 +221,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
             message ||
             `Unable to verify task: ${selectedTask.name}. Please try again.`,
         });
+        triggerHapticFeedback('warning'); // Trigger warning haptic feedback
       }
     } catch (error) {
       console.error(`Error verifying task: ${selectedTask.name}`, error);
@@ -204,9 +231,10 @@ const OnboardingScreen = ({ taskStatusData }) => {
         title: "Error",
         message: `An error occurred while verifying the task. Please try again later.`,
       });
+      triggerHapticFeedback('error'); // Trigger error haptic feedback
     }
     setIsChecking(false);
-  };
+  };  
 
   const handleButtonClick = (link) => {
     if (webApp && webApp.openLink) {
@@ -221,6 +249,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
     setSelectedTask(task);
     setIsModalOpen(true);
     setShowCheckButton(false);
+    triggerHapticFeedback('impact'); 
   };
 
   useEffect(() => {

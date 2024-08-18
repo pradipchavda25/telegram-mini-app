@@ -36,18 +36,18 @@ const HomeScreen = ({
   console.log("totalFriends", totalFriends);
 
   const totalBasicTasks = basicTasks.length;
-  const completedBasicTasks = basicTasks.filter(
-    (task) => taskStatusData[task]
-  ).length;
-
+  const completedBasicTasks = taskStatusData
+    ? basicTasks.filter((task) => taskStatusData[task]).length
+    : 0;
+  
   const totalOnboardingTasks = onBoardingTasks.length;
-  const completedOnboardingTasks = onBoardingTasks.filter(
-    (task) => taskStatusData[task]
-  ).length;
-
-  const trueTaskCount = Object.values(taskStatusData).filter(
-    (status) => status === true
-  ).length;
+  const completedOnboardingTasks = taskStatusData
+    ? onBoardingTasks.filter((task) => taskStatusData[task]).length
+    : 0;
+  
+  const trueTaskCount = taskStatusData
+    ? Object.values(taskStatusData).filter((status) => status === true).length
+    : 0;
 
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
@@ -81,7 +81,7 @@ const HomeScreen = ({
 
   return (
     <motion.div
-      className="relative bg-neutral-950 text-white min-h-screen"
+      className="relative text-white min-h-screen"
       initial="hidden"
       animate="visible"
       variants={containerVariants}

@@ -45,6 +45,10 @@ const taskVariants = {
 const BasicTaskScreen = ({ taskStatusData }) => {
   const { webApp, user } = useTelegram();
   const userId = user ? user.id : "1051782980"; // Default userId if not available
+  const ApiBaseUrl = process.env.NODE_ENV === 'production' 
+  ? process.env.REACT_APP_PUBLIC_API_URL 
+  : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
+  
   const INITIAL_TASKS = [
     {
       id: "twitter_sharpe_ai",
@@ -112,7 +116,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
       reward: 500,
       icon: FaDiscord,
       modalButtonText: "Join",
-      link: `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/join_discord?unique_id=${userId}`,
+      link: `${ApiBaseUrl}/join_discord?unique_id=${userId}`,
       verifier: TASK_TYPES.DISCORD,
       taskId: "joined_discord",
     },
@@ -145,7 +149,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
   const fetchTaskStatus = async (userId) => {
     try {
       const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
+        `${ApiBaseUrl}/get_tasks?unique_id=${userId}`,
         {
           method: "GET",
         }
@@ -161,7 +165,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
   const fetchUserPoints = async () => {
     try {
       const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+        `${ApiBaseUrl}/get_points`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -213,16 +217,16 @@ const BasicTaskScreen = ({ taskStatusData }) => {
       switch (taskType) {
         case TASK_TYPES.TELEGRAM:
           url =
-            "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_telegram";
+            `${ApiBaseUrl}/verify_telegram`;
           options.body = JSON.stringify({ user_id: userId, unique_id: userId });
           break;
         case TASK_TYPES.DISCORD:
-          url = `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/join_discord?unique_id=${userId}`;
+          url = `${ApiBaseUrl}/join_discord?unique_id=${userId}`;
           options.method = "GET";
           delete options.headers; // Remove headers for GET request
           break;
         case TASK_TYPES.TWITTER:
-          url = "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/verify_tasks";
+          url = `${ApiBaseUrl}/verify_tasks`;
           options.body = JSON.stringify({ unique_id: userId, task_id: taskId });
           break;
         default:

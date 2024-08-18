@@ -88,6 +88,9 @@ export default function HomeNew() {
   });
   const userId = user ? user.id : "1051782980";
   const mainTabs = ["home", "referral", "leaderboard", "info", "chat"];
+  const ApiBaseUrl = process.env.NODE_ENV === 'production' 
+  ? process.env.REACT_APP_PUBLIC_API_URL 
+  : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
 
   useEffect(() => {
     const checkStartParam = () => {
@@ -226,7 +229,7 @@ export default function HomeNew() {
   const fetchTaskStatus = async () => {
     try {
       const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_tasks?unique_id=${userId}`,
+        `${ApiBaseUrl}/get_tasks?unique_id=${userId}`,
         { method: "GET" }
       );
       const data = await response.json();
@@ -240,7 +243,7 @@ export default function HomeNew() {
   const fetchUserPoints = async () => {
     try {
       const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_points`,
+        `${ApiBaseUrl}/get_points`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -261,7 +264,7 @@ export default function HomeNew() {
   const fetchReferralData = async () => {
     try {
       const response = await fetch(
-        `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/get_refferals?referrer_id=${userId}`
+        `${ApiBaseUrl}/get_refferals?referrer_id=${userId}`
       );
       const data = await response.json();
 
@@ -280,7 +283,7 @@ export default function HomeNew() {
     if (confirmed && startParam) {
       try {
         const response = await fetch(
-          `https://miniapp-backend-4dd6ujjz7q-el.a.run.app/add_refferal?referrer_id=${startParam}&referee_id=${userId}`,
+          `${ApiBaseUrl}/add_refferal?referrer_id=${startParam}&referee_id=${userId}`,
           { method: "GET" }
         );
         const data = await response.json();
