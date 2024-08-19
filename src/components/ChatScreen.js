@@ -1,127 +1,55 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { IoArrowUpOutline, IoTrashOutline } from "react-icons/io5";
-import { FaRegUser } from "react-icons/fa";
-import sharpeLogo from "../images/sharpe-white-logo.svg";
+import { React, useState, useRef, useEffect } from "react";
+import {
+  Page,
+  Messagebar,
+  Messages,
+  Message,
+  MessagesTitle,
+  Link,
+  Icon,
+  Preloader,
+} from "konsta/react";
+import { ArrowUpCircleFill } from "framework7-icons/react";
 import useTelegram from "../context/TelegramContext";
+import sharpeLogo from "../images/sharpe-white-logo.svg";
+import { motion, AnimatePresence } from "framer-motion";
 
-const ChatUI = () => {
-  const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const chatContainerRef = useRef(null);
-  const { user } = useTelegram();
-  const userId = user ? user.id : "1051782980";
-  console.log("messages", messages);
+const convertTextToJSX = (text) => {
+  const lines = text.split("\n");
+  let inList = false;
+  let listItems = [];
+  let inCodeBlock = false;
+  let codeLines = [];
 
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSendMessage = async () => {
-    if (inputText.trim() === "") return;
-
-    const newUserMessage = { type: "user", text: inputText };
-    setMessages([...messages, newUserMessage]);
-    setInputText("");
-    setIsTyping(true);
-
-    try {
-      const response = await fetch(
-        "https://miniapp-backend-4dd6ujjz7q-el.a.run.app/rag",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: userId,
-            message: inputText,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log("data", data);
-
-      const newAIMessage = { type: "ai", text: data.response };
-      setMessages((prevMessages) => [...prevMessages, newAIMessage]);
-    } catch (error) {
-      console.error("Error calling API:", error);
-      const errorMessage = {
-        type: "ai",
-        text: "Sorry, I encountered an error. Please try again.",
-      };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setIsTyping(false);
-    }
-  };
-
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter" && inputText.trim() !== "") {
-      handleSendMessage();
-    }
-  };
-
-  const convertTextToJSX = (text) => {
-    const lines = text.split("\n");
-    let inList = false;
-    let listItems = [];
-    let inCodeBlock = false;
-    let codeLines = [];
-  
-    const result = lines.map((line, index) => {
-      // Check for code block
-      if (line.trim().startsWith('```')) {
-        if (inCodeBlock) {
-          inCodeBlock = false;
-          const codeBlock = (
-            <pre key={`code-${index}`} className="bg-[#161616] border border-neutral-800 p-2 rounded mb-2 overflow-x-auto">
-              <code>{codeLines.join('\n')}</code>
-            </pre>
-          );
-          codeLines = [];
-          return codeBlock;
-        } else {
-          inCodeBlock = true;
-          return null;
-        }
-      }
-  
+  const result = lines.map((line, index) => {
+    // Check for code block
+    if (line.trim().startsWith("```")) {
       if (inCodeBlock) {
-        codeLines.push(line);
+        inCodeBlock = false;
+        const codeBlock = (
+          <pre
+            key={`code-${index}`}
+            className="bg-[#161616] border border-neutral-800 p-2 rounded mb-2 overflow-x-auto"
+          >
+            <code>{codeLines.join("\n")}</code>
+          </pre>
+        );
+        codeLines = [];
+        return codeBlock;
+      } else {
+        inCodeBlock = true;
         return null;
       }
-  
-      const headingMatch = line.match(/^(\d+)\.\s(.+)/);
-      if (headingMatch) {
-        if (inList) {
-          inList = false;
-          const listElement = (
-            <ul key={`list-${index}`} className="list-disc list-inside mb-2">
-              {listItems}
-            </ul>
-          );
-          listItems = [];
-          return [listElement, <h3 key={index} className="font-bold mt-4 mb-2">{processInlineCode(processInlineLinks(headingMatch[2]))}</h3>];
-        }
-        return <h3 key={index} className="font-bold mt-4 mb-2">{processInlineCode(processInlineLinks(headingMatch[2]))}</h3>;
-      }
-  
-      const listMatch = line.match(/^\s*[-*]\s(.+)/);
-      if (listMatch) {
-        inList = true;
-        listItems.push(<li key={`item-${index}`}>{processInlineCode(processInlineLinks(listMatch[1]))}</li>);
-        return null;
-      } else if (inList) {
+    }
+
+    if (inCodeBlock) {
+      codeLines.push(line);
+      return null;
+    }
+
+    const headingMatch = line.match(/^(\d+)\.\s(.+)/);
+    if (headingMatch) {
+      if (inList) {
         inList = false;
         const listElement = (
           <ul key={`list-${index}`} className="list-disc list-inside mb-2">
@@ -129,39 +57,89 @@ const ChatUI = () => {
           </ul>
         );
         listItems = [];
-        return [listElement, <p key={index} className="mb-2">{processInlineCode(processInlineLinks(line))}</p>];
+        return [
+          listElement,
+          <h3 key={index} className="font-bold mt-4 mb-2">
+            {processInlineCode(processInlineLinks(headingMatch[2]))}
+          </h3>,
+        ];
       }
-  
-      return <p key={index} className="mb-2">{processInlineCode(processInlineLinks(line))}</p>;
-    });
-  
-    if (inList) {
-      result.push(
-        <ul key="final-list" className="list-disc list-inside mb-2">
+      return (
+        <h3 key={index} className="font-bold mt-4 mb-2">
+          {processInlineCode(processInlineLinks(headingMatch[2]))}
+        </h3>
+      );
+    }
+
+    const listMatch = line.match(/^\s*[-*]\s(.+)/);
+    if (listMatch) {
+      inList = true;
+      listItems.push(
+        <li key={`item-${index}`}>
+          {processInlineCode(processInlineLinks(listMatch[1]))}
+        </li>
+      );
+      return null;
+    } else if (inList) {
+      inList = false;
+      const listElement = (
+        <ul key={`list-${index}`} className="list-disc list-inside mb-2">
           {listItems}
         </ul>
       );
+      listItems = [];
+      return [
+        listElement,
+        <p key={index} className="mb-2">
+          {processInlineCode(processInlineLinks(line))}
+        </p>,
+      ];
     }
-  
-    return result.flat();
-  };
-  
-  const processInlineCode = (text) => {
-    if (typeof text === 'string') {
-      const parts = text.split('`');
-      return parts.map((part, index) => 
-        index % 2 === 0 ? part : <code key={index} className="bg-[#161616] border border-neutral-800 px-1 rounded">{part}</code>
-      );
-    }
-    return text;
-  };
-  
-  const processInlineLinks = (text) => {
-    const linkRegex = /(\[(?:\[?\d+\]?|\w+)\])?\(?(https?:\/\/[^\s\)]+)\)?/g;
-    const parts = text.split(linkRegex);
-  
-    if (parts.length > 1) {
-      return parts.map((part, i) => {
+
+    return (
+      <p key={index} className="mb-2">
+        {processInlineCode(processInlineLinks(line))}
+      </p>
+    );
+  });
+
+  if (inList) {
+    result.push(
+      <ul key="final-list" className="list-disc list-inside mb-2">
+        {listItems}
+      </ul>
+    );
+  }
+
+  return result.flat();
+};
+
+const processInlineCode = (text) => {
+  if (typeof text === "string") {
+    const parts = text.split("`");
+    return parts.map((part, index) =>
+      index % 2 === 0 ? (
+        part
+      ) : (
+        <code
+          key={index}
+          className="bg-[#161616] border border-neutral-800 px-1 rounded"
+        >
+          {part}
+        </code>
+      )
+    );
+  }
+  return text;
+};
+
+const processInlineLinks = (text) => {
+  const linkRegex = /(\[(?:\[?\d+\]?|\w+)\])?\(?(https?:\/\/[^\s\)]+)\)?/g;
+  const parts = text.split(linkRegex);
+
+  if (parts.length > 1) {
+    return parts
+      .map((part, i) => {
         if (i % 3 === 2) {
           const linkText = parts[i - 1]
             ? parts[i - 1].replace(/[\[\]]/g, "")
@@ -181,21 +159,114 @@ const ChatUI = () => {
           return part;
         }
         // Skip parts that are i % 3 === 1
-      }).filter(Boolean); // Remove undefined elements
+      })
+      .filter(Boolean); // Remove undefined elements
+  }
+
+  return text;
+};
+
+export default function ChatUI() {
+  const [messageText, setMessageText] = useState("");
+  const [messagesData, setMessagesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useTelegram();
+  const userId = user ? user.id : "1051782980";
+  const ApiBaseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_PUBLIC_API_URL
+      : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
+
+  const pageRef = useRef();
+  const initiallyScrolled = useRef(false);
+
+  const scrollToBottom = () => {
+    const pageElement = pageRef.current.current || pageRef.current.el;
+    pageElement.scrollTo({
+      top: pageElement.scrollHeight - pageElement.offsetHeight,
+      behavior: initiallyScrolled.current ? "smooth" : "auto",
+    });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+    initiallyScrolled.current = true;
+  }, [messagesData]);
+
+  const handleSendClick = async () => {
+    const text = messageText.replace(/\n/g, "<br>").trim();
+    if (text.length === 0) return;
+
+    const newMessage = { text, type: "sent" };
+    setMessagesData([...messagesData, newMessage]);
+    setMessageText("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${ApiBaseUrl}/rag`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          message: text,
+        }),
+      });
+
+      const data = await response.json();
+      const botResponse = {
+        type: "received",
+        text: convertTextToJSX(data.response),
+        name: "Brownian AI",
+        avatar: "../images/image.png",
+      };
+
+      setMessagesData((prevMessages) => [...prevMessages, botResponse]);
+    } catch (error) {
+      console.error("Error fetching response:", error);
+      const errorMessage = {
+        type: "received",
+        text: "Sorry, there was an error processing your request.",
+        name: "Brownian AI",
+        avatar: "../images/image.png",
+      };
+      setMessagesData((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
-  
-    return text;
   };
 
-  const handleClearHistory = () => {
-    setMessages([]);
-  };
+  const inputOpacity = messageText ? 1 : 0.3;
+  const isClickable = messageText.trim().length > 0;
 
-  return (
-    <div className="h-[calc(100vh-79px)] bg-neutral-950 text-white flex flex-col">
-      <div className="flex-1 overflow-y-auto p-3" ref={chatContainerRef}>
+  const currentDate = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+    .formatToParts(new Date())
+    .map((part) => {
+      if (["weekday", "month", "day"].includes(part.type)) {
+        return <b key={part.type}>{part.value}</b>;
+      }
+      return part.value;
+    });
+
+    return (
+      <Page
+        className="ios:bg-black ios:dark:bg-black"
+        ref={pageRef}
+        style={{
+          height: "calc(100vh - 60px)",
+          paddingBottom: "10px",
+        }}
+      >
         <AnimatePresence>
-          {messages.length === 0 ? (
+          {messagesData.length === 0 ? (
             <motion.div
               key="welcome"
               initial={{ opacity: 0, y: 20 }}
@@ -212,7 +283,6 @@ const ChatUI = () => {
               >
                 <img src={sharpeLogo} alt="" className="w-10 h-10" />
               </motion.div>
-
               <motion.h1
                 className="text-2xl font-bold mb-2 text-center"
                 initial={{ y: 20, opacity: 0 }}
@@ -221,139 +291,111 @@ const ChatUI = () => {
               >
                 Hey there! Welcome to Brownian
               </motion.h1>
-
               <motion.p
                 className="text-neutral-400 text-center text-[16px] px-8 mb-6"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                Got something on your mind? Just ask away, and let’s get the
+                Got something on your mind? Just ask away, and let's get the
                 conversation going!
               </motion.p>
             </motion.div>
           ) : (
-            messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className={`mb-3 flex ${
-                  message.type === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`flex max-w-[100%] items-start ${
-                    message.type === "user" ? "flex-row-reverse" : "flex-row"
-                  }`}
+            <Messages>
+              <MessagesTitle style={{ marginBottom: "10px" }}>
+                {currentDate}
+              </MessagesTitle>
+              {messagesData.map((message, index) => (
+                <Message
+                  colors={{
+                    bubbleSentMd: "#007AFF",
+                  }}
+                  key={index}
+                  type={message.type}
+                  name={message.name}
+                  text={message.text}
+                  style={{ fontSize: "16px" }}
+                  avatar={
+                    message.type === "received" && (
+                      <img
+                        alt="avatar"
+                        src={sharpeLogo}
+                        className="w-8 h-8 rounded-full p-[3px] border border-neutral-900"
+                      />
+                    )
+                  }
+                />
+              ))}
+              {isLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex mb-3"
                 >
-                  <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      message.type === "user"
-                        ? "bg-[#181818] ml-2"
-                        : "bg-gradient-to-r from-[#181818] to-black mr-2"
-                    }`}
-                  >
-                    {message.type === "user" ? (
-                      <FaRegUser size={13} />
-                    ) : (
-                      <img src={sharpeLogo} alt="" />
-                    )}
-                  </div>
-                  <div
-                    className={`p-2 max-w-[80%] break-words border border-neutral-900 text-[12px] rounded-lg ${
-                      message.type === "user"
-                        ? "bg-gradient-to-l from-[#181818] to-black"
-                        : "bg-gradient-to-r from-[#181818] to-black"
-                    }`}
-                  >
-                    {message.type === "user"
-                      ? message.text
-                      : convertTextToJSX(message.text)}
-                  </div>
-                </div>
-              </motion.div>
-            ))
+                  <Message
+                    type="received"
+                    text={
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1 py-1">
+                        {[0, 1, 2].map((index) => (
+                          <motion.div
+                            key={index}
+                            className="w-1 h-1 bg-white rounded-full"
+                            animate={{
+                              y: ["0%", "-50%", "0%"],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              delay: index * 0.2,
+                            }}
+                          />
+                        ))}
+                        </div>
+                      </div>
+                    }
+                    avatar={
+                      <img
+                        alt="avatar"
+                        src={sharpeLogo}
+                        className="w-6 h-6 rounded-full border border-neutral-800"
+                      />
+                    }
+                  />
+                </motion.div>
+              )}
+            </Messages>
           )}
         </AnimatePresence>
-        {isTyping && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="flex mb-3"
-          >
-            <motion.div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#181818] to-black flex items-center justify-center mr-2">
-              <img src={sharpeLogo} alt="" />
-            </motion.div>
-            <div className="p-2 border flex items-center border-neutral-900 text-[14px] rounded-lg bg-gradient-to-r from-[#181818] to-black">
-              <div className="flex items-center space-x-2">
-                <div className="flex space-x-1">
-                  {[0, 1, 2].map((index) => (
-                    <motion.div
-                      key={index}
-                      className="w-1 h-1 bg-white rounded-full"
-                      animate={{
-                        y: ["0%", "-50%", "0%"],
-                      }}
-                      transition={{
-                        duration: 0.6,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: index * 0.2,
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      <div className="p-2">
-        <div className="bg-[#161616] rounded-full px-3 py-2 flex items-center border border-neutral-800">
-          <input
-            type="text"
-            value={inputText}
-            onKeyPress={handleKeyPress}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ask anything..."
-            className="flex-grow text-[14px] bg-transparent border-none text-white outline-none placeholder-neutral-500 placeholder:text-[14px]"
-          />
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            disabled={inputText === ""}
-            onClick={handleSendMessage}
-            className={`rounded-full p-1 transition-colors ${
-              inputText === ""
-                ? "bg-[#676767] cursor-not-allowed"
-                : "bg-gradient-to-r from-[#f0f0f0] to-white cursor-pointer"
-            }`}
-          >
-            <IoArrowUpOutline
-              color={inputText === "" ? "#2b2a2a" : "black"}
-              size={14}
-            />
-          </motion.button>
-          {messages.length > 0 && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleClearHistory}
-              className={`rounded-full p-1 ml-1 transition-colors ${"bg-gradient-to-r from-[#f0f0f0] to-white cursor-pointer"}`}
+        <Messagebar
+          style={{ bottom: "75px", background: "transparent", fontSize: "16px" }}
+          placeholder="Message"
+          value={messageText}
+          onInput={(e) => setMessageText(e.target.value)}
+          right={
+            <Link
+              onClick={isClickable && !isLoading ? handleSendClick : undefined}
+              toolbar
+              style={{
+                opacity: inputOpacity,
+                cursor: isClickable && !isLoading ? "pointer" : "default",
+              }}
             >
-              <IoTrashOutline color={"black"} size={14} />
-            </motion.button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default ChatUI;
+              <Icon
+                ios={
+                  <ArrowUpCircleFill
+                    className="w-7 h-7"
+                    style={{ color: "#fff" }}
+                  />
+                }
+              />
+            </Link>
+          }
+        />
+      </Page>
+    );
+}
