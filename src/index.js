@@ -13,13 +13,13 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     {/* <StateProvider> */}
-    <App theme="ios">
     <TabProvider>
-      <AppRoot>
-        <TelegramMiniApp />
-      </AppRoot>
+      <App theme="ios">
+        <AppRoot>
+          <TelegramMiniApp />
+        </AppRoot>
+      </App>
     </TabProvider>
-    </App>
 
     {/* </StateProvider> */}
   </React.StrictMode>
