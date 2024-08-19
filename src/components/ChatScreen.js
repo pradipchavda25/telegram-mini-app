@@ -373,7 +373,7 @@ export default function ChatUI() {
         </AnimatePresence>
         <Messagebar
           style={{ bottom: "75px", background: "transparent", fontSize: "16px" }}
-          placeholder="Message"
+          placeholder="Ask anything..."
           value={messageText}
           onInput={(e) => setMessageText(e.target.value)}
           right={
