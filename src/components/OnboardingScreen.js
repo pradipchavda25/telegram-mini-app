@@ -94,9 +94,9 @@ const OnboardingScreen = ({ taskStatusData }) => {
 
   useEffect(() => {
     if (!webApp) {
-      console.warn('WebApp is not available. Haptic feedback may not work.');
+      console.warn("WebApp is not available. Haptic feedback may not work.");
     } else if (!webApp.HapticFeedback) {
-      console.warn('HapticFeedback is not available in this WebApp instance.');
+      console.warn("HapticFeedback is not available in this WebApp instance.");
     }
   }, [webApp]);
 
@@ -107,8 +107,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
       setTasks((prevTasks) =>
         prevTasks.map((task) => ({
           ...task,
-          completed:
-            task.taskId in taskStatusData ? false : false,
+          completed: task.taskId in taskStatusData ? false : false,
         }))
       );
 
@@ -165,37 +164,34 @@ const OnboardingScreen = ({ taskStatusData }) => {
         switch (type) {
           case "success":
             webApp.HapticFeedback.notificationOccurred("success");
-            console.log('Success haptic feedback triggered');
             break;
           case "error":
             webApp.HapticFeedback.notificationOccurred("error");
-            console.log('Error haptic feedback triggered');
             break;
           case "warning":
             webApp.HapticFeedback.notificationOccurred("warning");
-            console.log('Warning haptic feedback triggered');
             break;
           case "impact":
             webApp.HapticFeedback.impactOccurred("medium");
-            console.log('Impact haptic feedback triggered');
+            break;
+          case "heavy":
+            webApp.HapticFeedback.impactOccurred("heavy");
             break;
           default:
             webApp.HapticFeedback.selectionChanged();
-            console.log('Selection changed haptic feedback triggered');
         }
       } catch (error) {
-        console.error('Error triggering haptic feedback:', error);
+        console.error("Error triggering haptic feedback:", error);
       }
     } else {
-      console.warn('HapticFeedback is not available');
+      console.warn("HapticFeedback is not available");
     }
   };
 
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
-    triggerHapticFeedback("impact"); // Trigger haptic feedback when starting to check
-    console.log('Check click initiated');
+    triggerHapticFeedback("heavy"); // Trigger haptic feedback when starting to check
 
     try {
       const { success, message, taskId } = await verifyTask(
@@ -225,7 +221,6 @@ const OnboardingScreen = ({ taskStatusData }) => {
         });
         setShowConfetti(true);
         triggerHapticFeedback("success"); // Trigger success haptic feedback
-        console.log('Task completed successfully');
 
         setTimeout(() => {
           setIsModalOpen(false);
@@ -242,7 +237,6 @@ const OnboardingScreen = ({ taskStatusData }) => {
             `Unable to verify task: ${selectedTask.name}. Please try again.`,
         });
         triggerHapticFeedback("error"); // Trigger warning haptic feedback
-        console.log('Task not completed');
       }
     } catch (error) {
       console.error(`Error verifying task: ${selectedTask.name}`, error);
@@ -253,7 +247,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
         message: `An error occurred while verifying the task. Please try again later.`,
       });
       triggerHapticFeedback("error"); // Trigger error haptic feedback
-      console.log('Error occurred during task verification');
+      console.log("Error occurred during task verification");
     }
     setIsChecking(false);
   };
@@ -272,7 +266,6 @@ const OnboardingScreen = ({ taskStatusData }) => {
     setIsModalOpen(true);
     setShowCheckButton(false);
     triggerHapticFeedback("impact");
-    console.log('Modal opened');
   };
 
   useEffect(() => {

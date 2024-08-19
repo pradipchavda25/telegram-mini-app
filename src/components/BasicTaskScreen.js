@@ -330,7 +330,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
             title: "Task Not Completed",
             message: "Discord server not joined!",
           });
-          triggerHapticFeedback("warning");
+          triggerHapticFeedback("error");
         }
       } else {
         // For other task types, keep the existing verification logic
