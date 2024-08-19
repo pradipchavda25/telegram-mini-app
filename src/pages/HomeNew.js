@@ -87,7 +87,11 @@ export default function HomeNew() {
     title: "",
     message: "",
   });
-  const userId = user.id 
+  const userIdForDev = user?.id || "1051782980"; // Use user.id if available, otherwise default to "1051782980"
+  const userIdForProd = user?.id; // Use user.id directly in production
+  const userId =
+    process.env.NODE_ENV === "production" ? userIdForProd : userIdForDev;
+
   const mainTabs = ["home", "referral", "leaderboard", "info", "chat"];
   const ApiBaseUrl =
     process.env.NODE_ENV === "production"
@@ -296,7 +300,7 @@ export default function HomeNew() {
             title: "Already Referred",
             message: "You are already referred",
           });
-        triggerHapticFeedback("error");
+          triggerHapticFeedback("error");
         } else {
           setShowConfetti(true);
           setNotification({

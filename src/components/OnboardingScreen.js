@@ -44,7 +44,9 @@ const taskVariants = {
 
 const OnboardingScreen = ({ taskStatusData }) => {
   const { webApp, user } = useTelegram();
-  const userId = user.id
+  const userIdForDev = user?.id || "1051782980"; // Use user.id if available, otherwise default to "1051782980"
+const userIdForProd = user?.id; // Use user.id directly in production
+const userId = process.env.NODE_ENV === "production" ? userIdForProd : userIdForDev;
   const INITIAL_TASKS = [
     {
       id: "signed_up",
