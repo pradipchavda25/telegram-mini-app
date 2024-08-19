@@ -189,14 +189,16 @@ export default function HomeNew() {
   };
 
   useEffect(() => {
-    if (totalFriends !== undefined && taskStatusData !== undefined) {
+    const calculatePoints = () => {
       const trueTaskCount = taskStatusData
         ? Object.values(taskStatusData).filter((status) => status === true).length
         : 0;
+      const friendCount = totalFriends || 0;
+      return (friendCount + trueTaskCount) * 500;
+    };
   
-      const totalPointsCount = (totalFriends || 0) + trueTaskCount;
-      setUserPoints(totalPointsCount * 500);
-    }
+    const newPoints = calculatePoints();
+    setUserPoints(newPoints);
   }, [totalFriends, taskStatusData]);
   
 
@@ -304,9 +306,9 @@ export default function HomeNew() {
           { method: "GET" }
         );
         const data = await response.json();
-        console.log("Referral added:", data);
-
-        if (data.msg === "User already exists!") {
+        console.log("Referral response:", data);
+  
+        if (data.msg === "User already signed up!") {
           setNotification({
             show: true,
             type: "info",
@@ -314,7 +316,15 @@ export default function HomeNew() {
             message: "You are already referred",
           });
           triggerHapticFeedback("error");
-        } else {
+        } else if (data.msg === "Referrer and referee cannot be the same.") {
+          setNotification({
+            show: true,
+            type: "info",
+            title: "Invalid Referral",
+            message: "You cannot refer yourself.",
+          });
+          triggerHapticFeedback("error");
+        } else if (data.success === true) {
           setShowConfetti(true);
           setNotification({
             show: true,
@@ -324,6 +334,8 @@ export default function HomeNew() {
           });
           setTimeout(() => setShowConfetti(false), 3000);
           triggerHapticFeedback("success");
+        } else {
+          throw new Error("Unexpected response from server");
         }
       } catch (error) {
         console.error("Error adding referral:", error);
