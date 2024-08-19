@@ -189,8 +189,21 @@ export default function HomeNew() {
   };
 
   useEffect(() => {
+    if (totalFriends !== undefined && taskStatusData !== undefined) {
+      const trueTaskCount = taskStatusData
+        ? Object.values(taskStatusData).filter((status) => status === true).length
+        : 0;
+  
+      const totalPointsCount = (totalFriends || 0) + trueTaskCount;
+      setUserPoints(totalPointsCount * 500);
+    }
+  }, [totalFriends, taskStatusData]);
+  
+
+  useEffect(() => {
     if (currentTab === "home" && isReferralHandled && !showLogo) {
       fetchTaskStatus();
+      fetchReferralData();
     }
   }, [currentTab, isReferralHandled, showLogo]);
 
@@ -228,7 +241,7 @@ export default function HomeNew() {
     console.log("Fetching data...");
     await Promise.all([
       fetchTaskStatus(),
-      fetchUserPoints(),
+      // fetchUserPoints(),
       fetchReferralData(),
     ]);
   };

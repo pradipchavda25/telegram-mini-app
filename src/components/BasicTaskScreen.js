@@ -288,7 +288,7 @@ const userId = process.env.NODE_ENV === "production" ? userIdForProd : userIdFor
             basictasks: prev.basictasks + 1,
           }));
 
-          await fetchUserPoints();
+          // await fetchUserPoints();
 
           setNotification({
             show: true,
@@ -332,7 +332,7 @@ const userId = process.env.NODE_ENV === "production" ? userIdForProd : userIdFor
             basictasks: prev.basictasks + 1,
           }));
 
-          await fetchUserPoints();
+          // await fetchUserPoints();
 
           setNotification({
             show: true,
