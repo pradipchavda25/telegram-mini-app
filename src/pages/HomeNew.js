@@ -87,7 +87,7 @@ export default function HomeNew() {
     title: "",
     message: "",
   });
-  const userId = user ? user.id : "1051782980";
+  const userId = user.id 
   const mainTabs = ["home", "referral", "leaderboard", "info", "chat"];
   const ApiBaseUrl =
     process.env.NODE_ENV === "production"

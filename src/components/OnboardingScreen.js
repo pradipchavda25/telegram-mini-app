@@ -44,7 +44,7 @@ const taskVariants = {
 
 const OnboardingScreen = ({ taskStatusData }) => {
   const { webApp, user } = useTelegram();
-  const userId = user ? user.id : "1051782980"; // Default userId if not available
+  const userId = user.id
   const INITIAL_TASKS = [
     {
       id: "signed_up",

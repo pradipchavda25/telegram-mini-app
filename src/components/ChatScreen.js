@@ -171,7 +171,7 @@ export default function ChatUI() {
   const [messagesData, setMessagesData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useTelegram();
-  const userId = user ? user.id : "1051782980";
+  const userId = user.id 
   const ApiBaseUrl =
     process.env.NODE_ENV === "production"
       ? process.env.REACT_APP_PUBLIC_API_URL
