@@ -256,94 +256,99 @@ export default function ChatUI() {
       return part.value;
     });
 
-    return (
-      <Page
-        className="ios:bg-black ios:dark:bg-black"
-        ref={pageRef}
-        style={{
-          height: "calc(100vh - 75px)",
-          paddingBottom: "10px",
-        }}
-      >
-        <AnimatePresence>
-          {messagesData.length === 0 ? (
+  return (
+    <Page
+      className="ios:bg-black ios:dark:bg-black"
+      ref={pageRef}
+      style={{
+        height: "calc(100vh - 75px)",
+        paddingBottom: "10px",
+      }}
+    >
+      <AnimatePresence>
+        {messagesData.length === 0 ? (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center justify-center h-full"
+          >
             <motion.div
-              key="welcome"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center h-full"
+              className="w-16 h-16 border border-neutral-900 bg-gradient-to-r from-[#121212] to-[#000000] rounded-full flex items-center justify-center mb-4"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
             >
-              <motion.div
-                className="w-16 h-16 border border-neutral-900 bg-gradient-to-r from-[#121212] to-[#000000] rounded-full flex items-center justify-center mb-4"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-              >
-                <img src={sharpeLogo} alt="" className="w-10 h-10" />
-              </motion.div>
-              <motion.h1
-                className="text-2xl text-white font-bold mb-2 text-center"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                Hey there! Welcome to Brownian
-              </motion.h1>
-              <motion.p
-                className="text-neutral-400 text-center text-[16px] px-8 mb-6"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                Got something on your mind? Just ask away, and let's get the
-                conversation going!
-              </motion.p>
+              <img src={sharpeLogo} alt="" className="w-10 h-10" />
             </motion.div>
-          ) : (
-            <Messages>
-              <MessagesTitle style={{ marginBottom: "10px" }}>
-                {currentDate}
-              </MessagesTitle>
-              {messagesData.map((message, index) => (
+            <motion.h1
+              className="text-2xl text-white font-bold mb-2 text-center"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              Hey there! Welcome to Brownian
+            </motion.h1>
+            <motion.p
+              className="text-neutral-400 text-center text-[16px] px-8 mb-6"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
+              Got something on your mind? Just ask away, and let's get the
+              conversation going!
+            </motion.p>
+          </motion.div>
+        ) : (
+          <Messages>
+            <MessagesTitle
+              colors={{
+                titleMd: "text-md-dark-on-surface-variant",
+              }}
+              style={{ marginBottom: "10px" }}
+            >
+              {currentDate}
+            </MessagesTitle>
+            {messagesData.map((message, index) => (
+              <Message
+                colors={{
+                  bubbleSentMd: "#007AFF",
+                  bubbleReceivedIos: "bg-[#252525]",
+                }}
+                key={index}
+                type={message.type}
+                name={message.name}
+                text={message.text}
+                style={{ fontSize: "16px", color: "white" }}
+                avatar={
+                  message.type === "received" && (
+                    <img
+                      alt="avatar"
+                      src={sharpeLogo}
+                      className="w-8 h-8 rounded-full p-[3px] border border-neutral-900"
+                    />
+                  )
+                }
+              />
+            ))}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="flex mb-3"
+              >
                 <Message
+                  type="received"
                   colors={{
-                    bubbleSentMd: "#007AFF",
-                    bubbleReceivedIos: 'bg-[#252525]'
+                    bubbleReceivedIos: "bg-[#252525]",
                   }}
-                  key={index}
-                  type={message.type}
-                  name={message.name}
-                  text={message.text}
-                  style={{ fontSize: "16px", color: 'white' }}
-                  avatar={
-                    message.type === "received" && (
-                      <img
-                        alt="avatar"
-                        src={sharpeLogo}
-                        className="w-8 h-8 rounded-full p-[3px] border border-neutral-900"
-                      />
-                    )
-                  }
-                />
-              ))}
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex mb-3"
-                >
-                  <Message
-                    type="received"
-                    colors={{
-                      bubbleReceivedIos: 'bg-[#252525]'
-                    }}
-                    text={
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1 py-1">
+                  text={
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1 py-1">
                         {[0, 1, 2].map((index) => (
                           <motion.div
                             key={index}
@@ -359,52 +364,58 @@ export default function ChatUI() {
                             }}
                           />
                         ))}
-                        </div>
                       </div>
-                    }
-                    avatar={
-                      <img
-                        alt="avatar"
-                        src={sharpeLogo}
-                        className="w-6 h-6 rounded-full border border-neutral-800"
-                      />
-                    }
-                  />
-                </motion.div>
-              )}
-            </Messages>
-          )}
-        </AnimatePresence>
-        <Messagebar
-          style={{ bottom: "75px", background: "#000", fontSize: "16px", color: '#fff', borderColor: '#1a1a1a' }}
-          placeholder="Ask anything..."
-          value={messageText}
-          colors={{
-            bgIos: "#252525",
-            borderIos: ' border-[#c8c8cd] border-opacity-30'
-          }}
-          outline={false}
-          onInput={(e) => setMessageText(e.target.value)}
-          right={
-            <Link
-              onClick={isClickable && !isLoading ? handleSendClick : undefined}
-              toolbar
-              style={{
-                opacity: inputOpacity,
-                cursor: isClickable && !isLoading ? "pointer" : "default",
-              }}
-            >
-              <Icon
-                ios={
-                  <ArrowUpCircleFill
-                    className="w-7 h-7"
-                    style={{ color: "#fff" }}
-                  />
-                }
-              />
-            </Link>
-          }
-        />
-      </Page>
-    );
+                    </div>
+                  }
+                  avatar={
+                    <img
+                      alt="avatar"
+                      src={sharpeLogo}
+                      className="w-6 h-6 rounded-full border border-neutral-800"
+                    />
+                  }
+                />
+              </motion.div>
+            )}
+          </Messages>
+        )}
+      </AnimatePresence>
+      <Messagebar
+        style={{
+          bottom: "75px",
+          background: "#000",
+          fontSize: "16px",
+          color: "#fff",
+          borderColor: "#1a1a1a",
+        }}
+        placeholder="Ask anything..."
+        value={messageText}
+        colors={{
+          bgIos: "#252525",
+          borderIos: " border-[#c8c8cd] border-opacity-30",
+        }}
+        outline={false}
+        onInput={(e) => setMessageText(e.target.value)}
+        right={
+          <Link
+            onClick={isClickable && !isLoading ? handleSendClick : undefined}
+            toolbar
+            style={{
+              opacity: inputOpacity,
+              cursor: isClickable && !isLoading ? "pointer" : "default",
+            }}
+          >
+            <Icon
+              ios={
+                <ArrowUpCircleFill
+                  className="w-7 h-7"
+                  style={{ color: "#fff" }}
+                />
+              }
+            />
+          </Link>
+        }
+      />
+    </Page>
+  );
 }
