@@ -372,9 +372,14 @@ export default function ChatUI() {
           )}
         </AnimatePresence>
         <Messagebar
-          style={{ bottom: "75px", background: "#000", fontSize: "16px" }}
+          style={{ bottom: "75px", background: "#000", fontSize: "16px", color: '#fff', borderColor: '#1a1a1a' }}
           placeholder="Ask anything..."
           value={messageText}
+          colors={{
+            bgIos: "#252525",
+            borderIos: ' border-[#c8c8cd] border-opacity-30'
+          }}
+          outline={false}
           onInput={(e) => setMessageText(e.target.value)}
           right={
             <Link
