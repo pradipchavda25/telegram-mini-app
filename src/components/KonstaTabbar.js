@@ -32,6 +32,7 @@ export default function KonstaTabbar({ currentTab, handleScreenChange }) {
         bgMaterial: '#101010',
       }}
       style={{
+        height: '75px',
         paddingBottom: '10px',
         '--k-tabbar-link-active-color': '#fff',
         '--k-tabbar-link-inactive-color': '#999',

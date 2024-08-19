@@ -261,7 +261,7 @@ export default function ChatUI() {
         className="ios:bg-black ios:dark:bg-black"
         ref={pageRef}
         style={{
-          height: "calc(100vh - 60px)",
+          height: "calc(100vh - 75px)",
           paddingBottom: "10px",
         }}
       >
@@ -372,7 +372,7 @@ export default function ChatUI() {
           )}
         </AnimatePresence>
         <Messagebar
-          style={{ bottom: "75px", background: "transparent", fontSize: "16px" }}
+          style={{ bottom: "75px", background: "#000", fontSize: "16px" }}
           placeholder="Ask anything..."
           value={messageText}
           onInput={(e) => setMessageText(e.target.value)}
