@@ -296,6 +296,7 @@ export default function HomeNew() {
             title: "Already Referred",
             message: "You are already referred",
           });
+        triggerHapticFeedback("error");
         } else {
           setShowConfetti(true);
           setNotification({
@@ -305,6 +306,7 @@ export default function HomeNew() {
             message: "You have successfully joined using a referral link!",
           });
           setTimeout(() => setShowConfetti(false), 3000);
+          triggerHapticFeedback("success");
         }
       } catch (error) {
         console.error("Error adding referral:", error);
@@ -315,6 +317,7 @@ export default function HomeNew() {
           message:
             "There was an error processing your referral. Please try again.",
         });
+        triggerHapticFeedback("error");
       }
     }
     setIsReferralHandled(true);
