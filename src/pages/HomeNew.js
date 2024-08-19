@@ -28,6 +28,7 @@ import { BsChatRightText } from "react-icons/bs";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import KonstaTabbar from "../components/KonstaTabbar";
 import triggerHapticFeedback from "../utils/hapticUtils";
+import { Dialog, DialogButton } from "konsta/react";
 
 const tabs = [
   { id: "home", text: "Home", Icon: IoHomeOutline },
@@ -191,16 +192,16 @@ export default function HomeNew() {
   useEffect(() => {
     const calculatePoints = () => {
       const trueTaskCount = taskStatusData
-        ? Object.values(taskStatusData).filter((status) => status === true).length
+        ? Object.values(taskStatusData).filter((status) => status === true)
+            .length
         : 0;
       const friendCount = totalFriends || 0;
       return (friendCount + trueTaskCount) * 500;
     };
-  
+
     const newPoints = calculatePoints();
     setUserPoints(newPoints);
   }, [totalFriends, taskStatusData]);
-  
 
   useEffect(() => {
     if (currentTab === "home" && isReferralHandled && !showLogo) {
@@ -307,7 +308,7 @@ export default function HomeNew() {
         );
         const data = await response.json();
         console.log("Referral response:", data);
-  
+
         if (data.msg === "User already signed up!") {
           setNotification({
             show: true,
@@ -356,42 +357,70 @@ export default function HomeNew() {
 
   const ReferralPopup = ({ onConfirm, onReject }) => {
     return (
-      <motion.div
-        className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <motion.div
-          className="bg-gradient-to-b border border-neutral-800 from-[#181818] to-black p-4 rounded-lg shadow-lg w-[300px]"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-        >
-          <h2 className="text-lg font-bold mb-2 text-white">
-            Join with Referral
-          </h2>
-          <p className="mb-3 text-[14px] text-gray-300">
-            Do you want to join using this referral link?
-          </p>
-          <div className="flex justify-end space-x-1">
-            <button
-              onClick={onReject}
-              className="px-3 py-1 cursor-pointer font-medium text-[13px] bg-[#2d2d2d] text-[#fff] border border-neutral-800 rounded-[4px]"
+      // <motion.div
+      //   className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+      //   initial={{ opacity: 0 }}
+      //   animate={{ opacity: 1 }}
+      //   exit={{ opacity: 0 }}
+      //   transition={{ duration: 0.3 }}
+      // >
+      //   <motion.div
+      //     className="bg-gradient-to-b border border-neutral-800 from-[#181818] to-black p-4 rounded-lg shadow-lg w-[300px]"
+      //     initial={{ scale: 0.8, opacity: 0 }}
+      //     animate={{ scale: 1, opacity: 1 }}
+      //     exit={{ scale: 0.8, opacity: 0 }}
+      //     transition={{ duration: 0.3, ease: "easeInOut" }}
+      //   >
+      //     <h2 className="text-lg font-bold mb-2 text-white">
+      //       Join with Referral
+      //     </h2>
+      //     <p className="mb-3 text-[14px] text-gray-300">
+      //       Do you want to join using this referral link?
+      //     </p>
+      //     <div className="flex justify-end space-x-1">
+      //       <button
+      //         onClick={onReject}
+      //         className="px-3 py-1 cursor-pointer font-medium text-[13px] bg-[#2d2d2d] text-[#fff] border border-neutral-800 rounded-[4px]"
+      //       >
+      //         Decline
+      //       </button>
+      //       <button
+      //         onClick={onConfirm}
+      //         className="px-3 py-1 cursor-pointer font-medium text-[13px] bg-[#fff] text-[#000] border border-neutral-800 rounded-[4px]"
+      //       >
+      //         Accept
+      //       </button>
+      //     </div>
+      //   </motion.div>
+      // </motion.div>
+      <Dialog
+        colors={{
+          bgIos: "bg-neutral-800",
+          contentTextIos: "text-md-dark-on-surface-variant",
+          titleIos: "text-md-dark-on-surface-variant",
+        }}
+        opened={showReferralPopup}
+        onBackdropClick={() => setShowReferralPopup(false)}
+        title="Join with Referral"
+        content="Do you want to join using this referral link?"
+        buttons={
+          <>
+            <DialogButton
+              colors={{ textIos: "text-white" }}
+              onClick={() => handleReferralConfirmation(false)}
             >
-              Decline
-            </button>
-            <button
-              onClick={onConfirm}
-              className="px-3 py-1 cursor-pointer font-medium text-[13px] bg-[#fff] text-[#000] border border-neutral-800 rounded-[4px]"
+              No
+            </DialogButton>
+            <DialogButton
+              colors={{ textIos: "text-white" }}
+              strong
+              onClick={() => handleReferralConfirmation(true)}
             >
-              Accept
-            </button>
-          </div>
-        </motion.div>
-      </motion.div>
+              Yes
+            </DialogButton>
+          </>
+        }
+      />
     );
   };
 
@@ -475,12 +504,6 @@ export default function HomeNew() {
           />
         </>
       )}
-      {showReferralPopup && (
-        <ReferralPopup
-          onConfirm={() => handleReferralConfirmation(true)}
-          onReject={() => handleReferralConfirmation(false)}
-        />
-      )}
 
       <AnimatePresence>
         {notification.show && (
@@ -517,6 +540,12 @@ export default function HomeNew() {
           </motion.div>
         )}
       </AnimatePresence>
+      {showReferralPopup && (
+        <ReferralPopup
+        // onConfirm={() => handleReferralConfirmation(true)}
+        // onReject={() => handleReferralConfirmation(false)}
+        />
+      )}
     </div>
   );
 }
