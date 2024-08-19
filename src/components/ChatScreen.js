@@ -310,12 +310,13 @@ export default function ChatUI() {
                 <Message
                   colors={{
                     bubbleSentMd: "#007AFF",
+                    bubbleReceivedIos: 'bg-[#252525]'
                   }}
                   key={index}
                   type={message.type}
                   name={message.name}
                   text={message.text}
-                  style={{ fontSize: "16px" }}
+                  style={{ fontSize: "16px", color: 'white' }}
                   avatar={
                     message.type === "received" && (
                       <img
@@ -337,6 +338,9 @@ export default function ChatUI() {
                 >
                   <Message
                     type="received"
+                    colors={{
+                      bubbleReceivedIos: 'bg-[#252525]'
+                    }}
                     text={
                       <div className="flex items-center space-x-2">
                         <div className="flex space-x-1 py-1">
