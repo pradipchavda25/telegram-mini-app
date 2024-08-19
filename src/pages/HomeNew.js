@@ -27,6 +27,7 @@ import ChatUI from "../components/ChatScreen";
 import { BsChatRightText } from "react-icons/bs";
 import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import KonstaTabbar from "../components/KonstaTabbar";
+import triggerHapticFeedback from "../utils/hapticUtils";
 
 const tabs = [
   { id: "home", text: "Home", Icon: IoHomeOutline },
@@ -88,9 +89,10 @@ export default function HomeNew() {
   });
   const userId = user ? user.id : "1051782980";
   const mainTabs = ["home", "referral", "leaderboard", "info", "chat"];
-  const ApiBaseUrl = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_PUBLIC_API_URL 
-  : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
+  const ApiBaseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_PUBLIC_API_URL
+      : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
 
   useEffect(() => {
     const checkStartParam = () => {
@@ -164,6 +166,7 @@ export default function HomeNew() {
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
+      triggerHapticFeedback("impact");
       if (mainTabs.includes(newScreen)) {
         setScreenHistory([newScreen]);
       } else {
@@ -242,14 +245,11 @@ export default function HomeNew() {
 
   const fetchUserPoints = async () => {
     try {
-      const response = await fetch(
-        `${ApiBaseUrl}/get_points`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ unique_id: userId }),
-        }
-      );
+      const response = await fetch(`${ApiBaseUrl}/get_points`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unique_id: userId }),
+      });
       const data = await response.json();
       if (data) {
         setUserPoints(data.points);

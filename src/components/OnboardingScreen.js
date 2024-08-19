@@ -21,6 +21,7 @@ import { useTab } from "../context/TabContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { MdOutlineLogout } from "react-icons/md";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
+import triggerHapticFeedback from "../utils/hapticUtils";
 
 const TASK_TYPES = {
   SIGNUP: "signup",
@@ -158,41 +159,11 @@ const OnboardingScreen = ({ taskStatusData }) => {
     }
   };
 
-  const triggerHapticFeedback = (type) => {
-    if (webApp && webApp.HapticFeedback) {
-      try {
-        switch (type) {
-          case "success":
-            webApp.HapticFeedback.notificationOccurred("success");
-            break;
-          case "error":
-            webApp.HapticFeedback.notificationOccurred("error");
-            break;
-          case "warning":
-            webApp.HapticFeedback.notificationOccurred("warning");
-            break;
-          case "impact":
-            webApp.HapticFeedback.impactOccurred("medium");
-            break;
-          case "heavy":
-            webApp.HapticFeedback.impactOccurred("heavy");
-            break;
-          default:
-            webApp.HapticFeedback.selectionChanged();
-        }
-      } catch (error) {
-        console.error("Error triggering haptic feedback:", error);
-      }
-    } else {
-      console.warn("HapticFeedback is not available");
-    }
-  };
 
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
-    triggerHapticFeedback("heavy"); // Trigger haptic feedback when starting to check
-
+    triggerHapticFeedback("impact"); 
     try {
       const { success, message, taskId } = await verifyTask(
         selectedTask.verifier,

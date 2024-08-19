@@ -20,6 +20,7 @@ import useWindowSize from "react-use/lib/useWindowSize";
 import { useTab } from "../context/TabContext";
 import { AnimatePresence, motion } from "framer-motion";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
+import triggerHapticFeedback from "../utils/hapticUtils";
 
 const TASK_TYPES = {
   TELEGRAM: "telegramJoin",
@@ -260,27 +261,6 @@ const BasicTaskScreen = ({ taskStatusData }) => {
         success: false,
         message: `Error verifying ${taskType}. Please try again.`,
       };
-    }
-  };
-
-  const triggerHapticFeedback = (type) => {
-    if (webApp && webApp.HapticFeedback) {
-      switch (type) {
-        case "success":
-          webApp.HapticFeedback.notificationOccurred("success");
-          break;
-        case "error":
-          webApp.HapticFeedback.notificationOccurred("error");
-          break;
-        case "warning":
-          webApp.HapticFeedback.notificationOccurred("warning");
-          break;
-        case "impact":
-          webApp.HapticFeedback.impactOccurred("medium");
-          break;
-        default:
-          webApp.HapticFeedback.selectionChanged();
-      }
     }
   };
 
