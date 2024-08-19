@@ -166,7 +166,7 @@ export default function HomeNew() {
 
   const handleScreenChange = (newScreen) => {
     if (newScreen !== currentTab) {
-      triggerHapticFeedback("impact");
+      triggerHapticFeedback("success");
       if (mainTabs.includes(newScreen)) {
         setScreenHistory([newScreen]);
       } else {
