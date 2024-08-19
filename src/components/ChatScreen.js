@@ -196,12 +196,12 @@ export default function ChatUI() {
   const handleSendClick = async () => {
     const text = messageText.replace(/\n/g, "<br>").trim();
     if (text.length === 0) return;
-
+  
     const newMessage = { text, type: "sent" };
     setMessagesData([...messagesData, newMessage]);
     setMessageText("");
     setIsLoading(true);
-
+  
     try {
       const response = await fetch(`${ApiBaseUrl}/rag`, {
         method: "POST",
@@ -213,16 +213,29 @@ export default function ChatUI() {
           message: text,
         }),
       });
-
-      const data = await response.json();
-      const botResponse = {
-        type: "received",
-        text: convertTextToJSX(data.response),
-        name: "Brownian AI",
-        avatar: "../images/image.png",
-      };
-
-      setMessagesData((prevMessages) => [...prevMessages, botResponse]);
+  
+      if (response.status === 429) {
+        const errorData = await response.json();
+        const errorMessage = {
+          type: "received",
+          text: (
+            <span style={{ color: "#cb2e2e" }}>{errorData.message}</span>
+          ),
+          name: "Brownian AI",
+          avatar: "../images/image.png",
+        };
+        setMessagesData((prevMessages) => [...prevMessages, errorMessage]);
+      } else {
+        const data = await response.json();
+        const botResponse = {
+          type: "received",
+          text: convertTextToJSX(data.response),
+          name: "Brownian AI",
+          avatar: "../images/image.png",
+        };
+  
+        setMessagesData((prevMessages) => [...prevMessages, botResponse]);
+      }
     } catch (error) {
       console.error("Error fetching response:", error);
       const errorMessage = {
@@ -236,6 +249,7 @@ export default function ChatUI() {
       setIsLoading(false);
     }
   };
+  
 
   const inputOpacity = messageText ? 1 : 0.3;
   const isClickable = messageText.trim().length > 0;
