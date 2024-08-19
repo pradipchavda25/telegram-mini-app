@@ -86,7 +86,7 @@ const userId = process.env.NODE_ENV === "production" ? userIdForProd : userIdFor
       });
       const data = await response.json();
       if (data) {
-        setUserPoints(data.points);
+        // setUserPoints(data.points);
       } else {
         throw new Error(data.message || "Failed to fetch user points");
       }
