@@ -108,7 +108,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
       setTasks((prevTasks) =>
         prevTasks.map((task) => ({
           ...task,
-          completed: task.taskId in taskStatusData ? false : false,
+          completed: task.taskId in taskStatusData ? taskStatusData[task.taskId] : false,
         }))
       );
 
