@@ -284,7 +284,7 @@ export default function ChatUI() {
                 <img src={sharpeLogo} alt="" className="w-10 h-10" />
               </motion.div>
               <motion.h1
-                className="text-2xl font-bold mb-2 text-center"
+                className="text-2xl text-white font-bold mb-2 text-center"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
