@@ -45,10 +45,11 @@ const taskVariants = {
 const BasicTaskScreen = ({ taskStatusData }) => {
   const { webApp, user } = useTelegram();
   const userId = user ? user.id : "1051782980"; // Default userId if not available
-  const ApiBaseUrl = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_PUBLIC_API_URL 
-  : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
-  
+  const ApiBaseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_PUBLIC_API_URL
+      : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
+
   const INITIAL_TASKS = [
     {
       id: "twitter_sharpe_ai",
@@ -164,14 +165,11 @@ const BasicTaskScreen = ({ taskStatusData }) => {
 
   const fetchUserPoints = async () => {
     try {
-      const response = await fetch(
-        `${ApiBaseUrl}/get_points`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ unique_id: userId }),
-        }
-      );
+      const response = await fetch(`${ApiBaseUrl}/get_points`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unique_id: userId }),
+      });
       const data = await response.json();
       if (data) {
         setUserPoints(data.points);
@@ -216,8 +214,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
 
       switch (taskType) {
         case TASK_TYPES.TELEGRAM:
-          url =
-            `${ApiBaseUrl}/verify_telegram`;
+          url = `${ApiBaseUrl}/verify_telegram`;
           options.body = JSON.stringify({ user_id: userId, unique_id: userId });
           break;
         case TASK_TYPES.DISCORD:
@@ -266,9 +263,31 @@ const BasicTaskScreen = ({ taskStatusData }) => {
     }
   };
 
+  const triggerHapticFeedback = (type) => {
+    if (webApp && webApp.HapticFeedback) {
+      switch (type) {
+        case "success":
+          webApp.HapticFeedback.notificationOccurred("success");
+          break;
+        case "error":
+          webApp.HapticFeedback.notificationOccurred("error");
+          break;
+        case "warning":
+          webApp.HapticFeedback.notificationOccurred("warning");
+          break;
+        case "impact":
+          webApp.HapticFeedback.impactOccurred("medium");
+          break;
+        default:
+          webApp.HapticFeedback.selectionChanged();
+      }
+    }
+  };
+
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
+    triggerHapticFeedback("impact");
 
     try {
       if (selectedTask.verifier === TASK_TYPES.DISCORD) {
@@ -296,6 +315,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
             message: "Discord server joined successfully!",
           });
           setShowConfetti(true);
+          triggerHapticFeedback("success");
 
           setTimeout(() => {
             setIsModalOpen(false);
@@ -310,6 +330,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
             title: "Task Not Completed",
             message: "Discord server not joined!",
           });
+          triggerHapticFeedback("error");
         }
       } else {
         // For other task types, keep the existing verification logic
@@ -339,6 +360,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
               message || `Task "${selectedTask.name}" completed successfully!`,
           });
           setShowConfetti(true);
+          triggerHapticFeedback("success");
 
           setTimeout(() => {
             setIsModalOpen(false);
@@ -354,6 +376,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
               message ||
               `Unable to verify task: ${selectedTask.name}. Please try again.`,
           });
+          triggerHapticFeedback("error");
         }
       }
     } catch (error) {
@@ -364,6 +387,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
         title: "Error",
         message: `An error occurred while verifying the task. Please try again later.`,
       });
+      triggerHapticFeedback("error");
     }
     setIsChecking(false);
   };
@@ -381,6 +405,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
     setSelectedTask(task);
     setIsModalOpen(true);
     setShowCheckButton(false);
+    triggerHapticFeedback("impact");
   };
 
   useEffect(() => {
@@ -429,7 +454,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                 transition: { duration: 2, repeat: Infinity },
               }}
             >
-              <Icon color={'white'} />
+              <Icon color={"white"} />
             </motion.div>
           </motion.div>
           <div>
@@ -554,7 +579,7 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 0.2, type: "spring" }}
                         >
-                          <selectedTask.icon size={30} color={'white'} />
+                          <selectedTask.icon size={30} color={"white"} />
                         </motion.div>
                         <motion.div
                           className="flex flex-col justify-center items-center gap-1"

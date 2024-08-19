@@ -69,20 +69,18 @@ const OnboardingScreen = ({ taskStatusData }) => {
   const [showCheckButton, setShowCheckButton] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const { setUserPoints, setCompletedTasks } = useTab();
-  const ApiBaseUrl = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_PUBLIC_API_URL 
-  : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
+  const ApiBaseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.REACT_APP_PUBLIC_API_URL
+      : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
 
   const fetchUserPoints = async () => {
     try {
-      const response = await fetch(
-        `${ApiBaseUrl}/get_points`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ unique_id: userId }),
-        }
-      );
+      const response = await fetch(`${ApiBaseUrl}/get_points`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unique_id: userId }),
+      });
       const data = await response.json();
       if (data) {
         setUserPoints(data.points);
@@ -101,7 +99,8 @@ const OnboardingScreen = ({ taskStatusData }) => {
       setTasks((prevTasks) =>
         prevTasks.map((task) => ({
           ...task,
-          completed: task.taskId in taskStatusData ? taskStatusData[task.taskId] : false,
+          completed:
+            task.taskId in taskStatusData ? taskStatusData[task.taskId] : false,
         }))
       );
 
@@ -155,17 +154,17 @@ const OnboardingScreen = ({ taskStatusData }) => {
   const triggerHapticFeedback = (type) => {
     if (webApp && webApp.HapticFeedback) {
       switch (type) {
-        case 'success':
-          webApp.HapticFeedback.notificationOccurred('success');
+        case "success":
+          webApp.HapticFeedback.notificationOccurred("success");
           break;
-        case 'error':
-          webApp.HapticFeedback.notificationOccurred('error');
+        case "error":
+          webApp.HapticFeedback.notificationOccurred("error");
           break;
-        case 'warning':
-          webApp.HapticFeedback.notificationOccurred('warning');
+        case "warning":
+          webApp.HapticFeedback.notificationOccurred("warning");
           break;
-        case 'impact':
-          webApp.HapticFeedback.impactOccurred('medium');
+        case "impact":
+          webApp.HapticFeedback.impactOccurred("medium");
           break;
         default:
           webApp.HapticFeedback.selectionChanged();
@@ -176,8 +175,8 @@ const OnboardingScreen = ({ taskStatusData }) => {
   const handleCheckClick = async () => {
     if (!selectedTask) return;
     setIsChecking(true);
-    triggerHapticFeedback('impact'); // Trigger haptic feedback when starting to check
-  
+    triggerHapticFeedback("impact"); // Trigger haptic feedback when starting to check
+
     try {
       const { success, message, taskId } = await verifyTask(
         selectedTask.verifier,
@@ -194,9 +193,9 @@ const OnboardingScreen = ({ taskStatusData }) => {
           ...prev,
           basictasks: prev.basictasks + 1,
         }));
-  
+
         await fetchUserPoints();
-  
+
         setNotification({
           show: true,
           type: "success",
@@ -205,8 +204,8 @@ const OnboardingScreen = ({ taskStatusData }) => {
             message || `Task "${selectedTask.name}" completed successfully!`,
         });
         setShowConfetti(true);
-        triggerHapticFeedback('success'); // Trigger success haptic feedback
-  
+        triggerHapticFeedback("success"); // Trigger success haptic feedback
+
         setTimeout(() => {
           setIsModalOpen(false);
           setShowCheckButton(false);
@@ -221,7 +220,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
             message ||
             `Unable to verify task: ${selectedTask.name}. Please try again.`,
         });
-        triggerHapticFeedback('warning'); // Trigger warning haptic feedback
+        triggerHapticFeedback("error"); // Trigger warning haptic feedback
       }
     } catch (error) {
       console.error(`Error verifying task: ${selectedTask.name}`, error);
@@ -231,10 +230,10 @@ const OnboardingScreen = ({ taskStatusData }) => {
         title: "Error",
         message: `An error occurred while verifying the task. Please try again later.`,
       });
-      triggerHapticFeedback('error'); // Trigger error haptic feedback
+      triggerHapticFeedback("error"); // Trigger error haptic feedback
     }
     setIsChecking(false);
-  };  
+  };
 
   const handleButtonClick = (link) => {
     if (webApp && webApp.openLink) {
@@ -249,7 +248,7 @@ const OnboardingScreen = ({ taskStatusData }) => {
     setSelectedTask(task);
     setIsModalOpen(true);
     setShowCheckButton(false);
-    triggerHapticFeedback('impact'); 
+    triggerHapticFeedback("impact");
   };
 
   useEffect(() => {
