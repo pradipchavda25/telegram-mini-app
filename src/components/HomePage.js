@@ -234,8 +234,8 @@ const HomeScreen = ({
             },
             {
               name: "Daily Task",
-              progress: "0/2 tasks done",
-              reward: 1000,
+              progress: "0/7 tasks done",
+              reward: 700,
               tab: "dailytasks",
               icon: TbCalendarClock,
             },

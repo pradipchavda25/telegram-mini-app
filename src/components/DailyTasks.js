@@ -52,7 +52,61 @@ const DailyTasks = ({ taskStatusData }) => {
     {
       id: "signed_up",
       name: "Retweet Sharpe AI on X",
-      reward: 500,
+      reward: 100,
+      icon: MdLockOutline,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
+    },
+    {
+      id: "signed_up",
+      name: "Like this post",
+      reward: 100,
+      icon: MdLockOutline,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
+    },
+    {
+      id: "signed_up",
+      name: "Write a tweet about $BRO",
+      reward: 100,
+      icon: MdLockOutline,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
+    },
+    {
+      id: "signed_up",
+      name: "Send $BRO to Binance",
+      reward: 100,
+      icon: MdLockOutline,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
+    },
+    {
+      id: "signed_up",
+      name: "Send $BRO to Bybit",
+      reward: 100,
+      icon: MdLockOutline,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
+    },
+    {
+      id: "signed_up",
+      name: "Send $BRO to OKX",
+      reward: 100,
+      icon: MdLockOutline,
+      modalButtonText: "Sign up",
+      verifier: TASK_TYPES.SIGNUP,
+      taskId: "signed_up",
+    },
+    {
+      id: "signed_up",
+      name: "Send $BRO to Kucoin",
+      reward: 100,
       icon: MdLockOutline,
       modalButtonText: "Sign up",
       verifier: TASK_TYPES.SIGNUP,
@@ -270,24 +324,26 @@ const DailyTasks = ({ taskStatusData }) => {
         custom={index}
         whileHover={{
           scale: task.completed ? 1 : 1,
-          boxShadow: task.completed ? "0px 0px 8px rgba(255, 255, 255, 0.2)" : "none",
+          boxShadow: task.completed
+            ? "0px 0px 8px rgba(255, 255, 255, 0.2)"
+            : "none",
           transition: { duration: 0.2 },
         }}
         whileTap={{ scale: 0.99 }}
       >
         <div className="flex flex-row items-center gap-2">
           <motion.div
-            className="bg-[#131313] border border-neutral-800 p-[6px] rounded-md"
-            whileHover={task.completed ? { rotate: 360 } : {}}
-            transition={{ duration: 0.5 }}
+            className={`bg-[#131313] border border-neutral-800 p-[6px] rounded-md opacity-50`}
+            // whileHover={task.completed ? { rotate: 360 } : {}}
+            // transition={{ duration: 0.5 }}
           >
             <div>
-              <Icon color={"white"} />
+              <Icon color={task.completed ? "white" : "gray"} />
             </div>
           </motion.div>
           <div>
             <motion.p
-              className="font-medium text-white text-[14px] pr-4"
+              className={`font-medium text-neutral-500 text-[14px] pr-4 opacity-75`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -307,17 +363,23 @@ const DailyTasks = ({ taskStatusData }) => {
           </motion.div>
         ) : (
           <motion.span
-            className="text-center flex items-center text-white bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px]"
+            className={`text-center flex items-center text-white bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px] ${
+              task.completed ? "" : "opacity-50"
+            }`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: task.completed ? 1.05 : 1 }}
           >
             +{task.reward}
             <img
               src={sharpeLogo}
               alt=""
-              style={{ height: "22px", width: "22px" }}
+              style={{
+                height: "22px",
+                width: "22px",
+                opacity: 0.5,
+              }}
             />
           </motion.span>
         )}

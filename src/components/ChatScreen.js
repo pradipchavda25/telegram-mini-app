@@ -318,7 +318,7 @@ const userId = process.env.NODE_ENV === "production" ? userIdForProd : userIdFor
             </motion.p>
           </motion.div>
         ) : (
-          <Messages>
+          <Messages style={{ flexGrow: 1, overflowY: 'auto' }}>
             <MessagesTitle
               colors={{
                 titleMd: "text-md-dark-on-surface-variant",
@@ -424,7 +424,7 @@ const userId = process.env.NODE_ENV === "production" ? userIdForProd : userIdFor
             <Icon
               ios={
                 <ArrowUpCircleFill
-                  className="w-7 h-7"
+                  className="w-8 h-8"
                   style={{ color: "#fff" }}
                 />
               }
