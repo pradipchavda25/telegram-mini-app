@@ -611,10 +611,8 @@ export default function ChatUI({ onScreenChange }) {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useTelegram();
   const { setCurrentTab } = useTab();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-  console.log('messagesData', messagesData);
-  
-  const userIdForDev = user?.id || "1051782989"; // Use user.id if available, otherwise default to "1051782980"
+
+  const userIdForDev = user?.id || "1051782982"; // Use user.id if available, otherwise default to "1051782980"
   const userIdForProd = user?.id; // Use user.id directly in production
   const userId =
     process.env.NODE_ENV === "production" ? userIdForProd : userIdForDev;
@@ -638,19 +636,6 @@ export default function ChatUI({ onScreenChange }) {
     scrollToBottom();
     initiallyScrolled.current = true;
   }, [messagesData]);
-
-  useEffect(() => {
-    const handleKeyboardShow = () => setKeyboardVisible(true);
-    const handleKeyboardHide = () => setKeyboardVisible(false);
-
-    window.addEventListener("keyboardWillShow", handleKeyboardShow);
-    window.addEventListener("keyboardWillHide", handleKeyboardHide);
-
-    return () => {
-      window.removeEventListener("keyboardWillShow", handleKeyboardShow);
-      window.removeEventListener("keyboardWillHide", handleKeyboardHide);
-    };
-  }, []);
 
   const handleSendClick = async () => {
     const text = messageText.replace(/\n/g, "<br>").trim();
@@ -736,18 +721,9 @@ export default function ChatUI({ onScreenChange }) {
     });
 
   return (
-    <Page
-      className="ios:bg-black ios:dark:bg-black"
-      style={{
-        paddingBottom: keyboardVisible ? "60px" : "0", 
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-      }}
-      ref={pageRef}
-    >
+    <Page className="ios:bg-black ios:dark:bg-black" ref={pageRef}>
       <Navbar
-        colors={{ textIos: "text-white", bgIos: "bg-black" }}
+        colors={{ textIos: "text-white", bgIos: 'bg-black' }}
         style={{ borderBottom: "1px solid #383838" }}
         transparent
         className="top-0 sticky"
@@ -883,16 +859,9 @@ export default function ChatUI({ onScreenChange }) {
           toolbarIconIos: "fill-md-dark-primary",
         }}
         style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          background: '#000',
-          fontSize: '16px',
-          color: '#fff',
-          borderColor: '#1a1a1a',
-          paddingBottom: keyboardVisible ? 'env(safe-area-inset-bottom)' : '0',
+          fontSize: "16px",
+          color: "#fff",
+          borderColor: "#1a1a1a",
         }}
         placeholder="Ask Anything..."
         value={messageText}
