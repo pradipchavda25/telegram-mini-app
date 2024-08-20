@@ -463,7 +463,11 @@ export default function HomeNew() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-neutral-950">
+    <div
+      className={`flex flex-col bg-neutral-950 ${
+        currentTab !== "chat" ? "h-screen" : ""
+      }`}
+    >
       {showLogo || !isInitialized ? (
         <motion.div
           className="logo-div flex flex-1 justify-center flex-col items-center"
@@ -498,12 +502,12 @@ export default function HomeNew() {
           >
             {renderContent()}
           </motion.div>
-          {currentTab !== "chat" &&
-          <KonstaTabbar
-            currentTab={currentTab}
-            handleScreenChange={handleScreenChange}
-          />
-        }
+          {currentTab !== "chat" && (
+            <KonstaTabbar
+              currentTab={currentTab}
+              handleScreenChange={handleScreenChange}
+            />
+          )}
         </>
       )}
 
