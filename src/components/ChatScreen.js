@@ -721,12 +721,12 @@ export default function ChatUI({ onScreenChange }) {
     });
 
   return (
-    <Page className="ios:bg-black ios:dark:bg-black flex flex-col h-screen" ref={pageRef}>
+    <Page className="ios:bg-black ios:dark:bg-black" ref={pageRef}>
       <Navbar
         colors={{ textIos: "text-white", bgIos: 'bg-black' }}
         style={{ borderBottom: "1px solid #383838" }}
         transparent
-        className="flex-shrink-0"
+        className="top-0 sticky"
         right={
           <Link
             navbar
@@ -782,7 +782,6 @@ export default function ChatUI({ onScreenChange }) {
           </motion.p>
         </motion.div>
       ) : (
-        <div className="flex-grow overflow-auto">
         <Messages>
           <MessagesTitle>{currentDate}</MessagesTitle>
           {messagesData.map((message, index) => (
@@ -851,7 +850,6 @@ export default function ChatUI({ onScreenChange }) {
             </motion.div>
           )}
         </Messages>
-        </div>
       )}
       <Messagebar
         colors={{
@@ -864,10 +862,7 @@ export default function ChatUI({ onScreenChange }) {
           fontSize: "16px",
           color: "#fff",
           borderColor: "#1a1a1a",
-          position: 'fixed',
-          bottom: 0,
         }}
-        className="flex-shrink-0 sticky bottom-0 pb-safe"
         placeholder="Ask Anything..."
         value={messageText}
         onInput={(e) => setMessageText(e.target.value)}

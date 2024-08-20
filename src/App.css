@@ -2,19 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-}
-
-html {
-    height: -webkit-fill-available;
-}
-
-.pb-safe {
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
 .tabbar-item-no-bg>div {
     background: none !important;
 }
