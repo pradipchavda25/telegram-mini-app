@@ -498,10 +498,12 @@ export default function HomeNew() {
           >
             {renderContent()}
           </motion.div>
+          {currentTab !== "chat" &&
           <KonstaTabbar
             currentTab={currentTab}
             handleScreenChange={handleScreenChange}
           />
+        }
         </>
       )}
 
