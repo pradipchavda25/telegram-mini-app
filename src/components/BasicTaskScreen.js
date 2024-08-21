@@ -401,11 +401,15 @@ const BasicTaskScreen = ({ taskStatusData }) => {
     dispatch({ type: "SET_IS_CHECKING", payload: false });
   };
 
-  const handleButtonClick = (link) => {
+  const handleButtonClick = (task) => {
     if (webApp && webApp.openLink) {
-      webApp.openLink(link);
+      if (task.verifier === TASK_TYPES.TELEGRAM) {
+        webApp.openTelegramLink(task.link);
+      } else {
+        webApp.openLink(task.link);
+      }
     } else {
-      window.open(link, "_blank");
+      window.open(task.link, "_blank");
     }
     dispatch({ type: "SET_SHOW_CHECK_BUTTON", payload: true });
   };
@@ -628,9 +632,8 @@ const BasicTaskScreen = ({ taskStatusData }) => {
                             >
                               <Button
                                 className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#2d2d2d] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                                onClick={() =>
-                                  handleButtonClick(state.selectedTask.link)
-                                }
+                                onClick={() => handleButtonClick(state.selectedTask)}
+
                               >
                                 {state.selectedTask.modalButtonText}
                               </Button>
