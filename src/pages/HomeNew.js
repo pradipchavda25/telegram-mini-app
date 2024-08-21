@@ -189,19 +189,47 @@ export default function HomeNew() {
     }
   };
 
+  const taskStatusDataPoints = {
+    signed_up: 500,
+    liked_tweet: 100,
+    retweeted: 100,
+    tweet_bro: 100,
+    followed_Brownianxyz: 500,
+    followed_HiveIntellegence: 200,
+    followed_JoinFirefly: 200,
+    followed_SharpeIntern: 200,
+    followed_SharpeSignals: 200,
+    followed_SharpeLabs: 500,
+    join_sharpe_discord: 200,
+    join_sharpe_telegram: 200,
+    join_sharpe_telegram_ac: 200,
+    join_sharpe_youtube: 200,
+    join_brownian_telegram: 200,
+    join_brownian_telegram_ac: 200,
+    join_brownian_youtube: 200,
+    added_bro_x_username: 500,
+    added_bro_tg_username: 500,
+  }
+
   useEffect(() => {
     const calculatePoints = () => {
-      const trueTaskCount = taskStatusData
-        ? Object.values(taskStatusData).filter((status) => status === true)
-            .length
-        : 0;
-      const friendCount = totalFriends || 0;
-      return (friendCount + trueTaskCount) * 500;
+      // Calculate points from completed tasks
+      const taskPoints = Object.keys(taskStatusData).reduce((total, task) => {
+        if (taskStatusData[task] && taskStatusDataPoints[task]) {
+          return total + taskStatusDataPoints[task];
+        }
+        return total;
+      }, 0);
+  
+      const friendPoints = (totalFriends || 0) * 500;
+  
+      return taskPoints + friendPoints;
     };
-
+  
     const newPoints = calculatePoints();
     setUserPoints(newPoints);
   }, [totalFriends, taskStatusData]);
+  
 
   useEffect(() => {
     if (currentTab === "home" && isReferralHandled && !showLogo) {

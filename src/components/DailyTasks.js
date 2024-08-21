@@ -5,27 +5,20 @@ import {
   Skeleton,
   Spinner,
 } from "@telegram-apps/telegram-ui";
-import React, { useCallback, useEffect, useState } from "react";
-import UserInfo from "../components/UserInfo";
-import { FaTelegramPlane, FaDiscord, FaRegCheckCircle } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import React, { useCallback, useEffect, useMemo, useReducer } from "react";
+import { FaRegCheckCircle } from "react-icons/fa";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { ModalClose } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalClose/ModalClose";
-import { IoClose, IoDiamondOutline } from "react-icons/io5";
+import { IoClose } from "react-icons/io5";
 import Notification from "./notification/Notification";
 import useTelegram from "../context/TelegramContext";
 import Confetti from "react-confetti-boom";
-// import Confetti from 'react-confetti'
-import useWindowSize from "react-use/lib/useWindowSize";
 import { useTab } from "../context/TabContext";
 import { AnimatePresence, motion } from "framer-motion";
-import { MdLockOutline, MdOutlineLogout } from "react-icons/md";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import triggerHapticFeedback from "../utils/hapticUtils";
-
-const TASK_TYPES = {
-  SIGNUP: "signup",
-};
+import { MdLockOutline, MdOutlineLogout } from "react-icons/md";
+import { FaXTwitter } from "react-icons/fa6";
 
 const taskVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -42,242 +35,298 @@ const taskVariants = {
   }),
 };
 
+//    //   {
+//     //     "liked_tweet": false,
+//     //     "retweeted": false,
+//     //     "tweet_bro": false,
+//     // }
+
+const TASK_TYPES = {
+  TWITTER: "twitterFollow",
+};
+
+const INITIAL_TASKS = [
+  {
+    id: "like_tweet",
+    name: "Like this tweet on X",
+    reward: 100,
+    icon: FaXTwitter,
+    modalButtonText: "Like",
+    link: "https://twitter.com/intent/like?tweet_id=1825515038532075844",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "liked_tweet",
+  },
+  {
+    id: "retweeted",
+    name: "Retweet and post on X",
+    reward: 100,
+    icon: FaXTwitter,
+    modalButtonText: "Re Tweet",
+    link: "https://twitter.com/intent/retweet?tweet_id=1825515038532075844",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "retweeted",
+  },
+  {
+    id: "tweet_bro",
+    name: "Write a tweet about $BRO",
+    reward: 100,
+    icon: FaXTwitter,
+    modalButtonText: "Write",
+    link: "https://twitter.com/intent/tweet?text=I’m%20officially%20a%20%24BRO%20🤙.%20Join%20the%20movement%21",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "tweet_bro",
+  },
+  {
+    id: "signed_up4",
+    name: "Send $BRO 🤙 to Binance",
+    reward: 100,
+    icon: MdLockOutline,
+    lock: true,
+    modalButtonText: "Sign up",
+    link: "https://twitter.com/SharpeSignals",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "signed_up4",
+  },
+  {
+    id: "signed_up3",
+    name: "Send $BRO 🤙 to Bybit",
+    reward: 100,
+    icon: MdLockOutline,
+    modalButtonText: "Sign up",
+    link: "https://twitter.com/SharpeSignals",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "signed_up3",
+    lock: true,
+  },
+  {
+    id: "signed_up2",
+    name: "Send $BRO 🤙 to OKX",
+    reward: 100,
+    icon: MdLockOutline,
+    modalButtonText: "Sign up",
+    link: "https://twitter.com/SharpeSignals",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "signed_up2",
+    lock: true,
+  },
+  {
+    id: "signed_up1",
+    name: "Send $BRO 🤙 to Kucoin",
+    reward: 100,
+    icon: MdLockOutline,
+    modalButtonText: "Sign up",
+    link: "https://twitter.com/SharpeSignals",
+    verifier: TASK_TYPES.TWITTER,
+    taskId: "signed_up1",
+    lock: true,
+  },
+];
+
+const INITIAL_STATE = {
+  tasks: INITIAL_TASKS,
+  skeletonVisible: true,
+  isChecking: false,
+  notification: { show: false, type: "", title: "", message: "" },
+  showConfetti: false,
+  isModalOpen: false,
+  showCheckButton: false,
+  selectedTask: null,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_TASKS":
+      return { ...state, tasks: action.payload };
+    case "SET_SKELETON_VISIBLE":
+      return { ...state, skeletonVisible: action.payload };
+    case "SET_NOTIFICATION":
+      return { ...state, notification: action.payload };
+    case "SET_SHOW_CONFETTI":
+      return { ...state, showConfetti: action.payload };
+    case "SET_IS_MODAL_OPEN":
+      return { ...state, isModalOpen: action.payload };
+    case "SET_SHOW_CHECK_BUTTON":
+      return { ...state, showCheckButton: action.payload };
+    case "SET_SELECTED_TASK":
+      return { ...state, selectedTask: action.payload };
+    default:
+      return state;
+  }
+}
+
 const DailyTasks = ({ taskStatusData }) => {
   const { webApp, user } = useTelegram();
-  const userIdForDev = user?.id || "1051782980"; // Use user.id if available, otherwise default to "1051782980"
-  const userIdForProd = user?.id; // Use user.id directly in production
-  const userId =
-    process.env.NODE_ENV === "production" ? userIdForProd : userIdForDev;
-  const INITIAL_TASKS = [
-    {
-      id: "signed_up",
-      name: "Retweet Sharpe AI on X",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-    {
-      id: "signed_up",
-      name: "Like this post",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-    {
-      id: "signed_up",
-      name: "Write a tweet about $BRO",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-    {
-      id: "signed_up",
-      name: "Send $BRO to Binance",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-    {
-      id: "signed_up",
-      name: "Send $BRO to Bybit",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-    {
-      id: "signed_up",
-      name: "Send $BRO to OKX",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-    {
-      id: "signed_up",
-      name: "Send $BRO to Kucoin",
-      reward: 100,
-      icon: MdLockOutline,
-      modalButtonText: "Sign up",
-      verifier: TASK_TYPES.SIGNUP,
-      taskId: "signed_up",
-    },
-  ];
-  const [tasks, setTasks] = useState(INITIAL_TASKS);
-  const [skeletonVisible, setSkeletonVisible] = useState(true);
-  const [isChecking, setIsChecking] = useState(false);
-  const [notification, setNotification] = useState({
-    show: false,
-    type: "",
-    title: "",
-    message: "",
-  });
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showCheckButton, setShowCheckButton] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
   const { setUserPoints, setCompletedTasks } = useTab();
-  const ApiBaseUrl =
-    process.env.NODE_ENV === "production"
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  // const animation = useAnimation();
+
+  const userId = useMemo(() => {
+    return process.env.NODE_ENV === "production"
+      ? user?.id
+      : user?.id || "1051782980";
+  }, [user]);
+
+  const ApiBaseUrl = useMemo(() => {
+    return process.env.NODE_ENV === "production"
       ? process.env.REACT_APP_PUBLIC_API_URL
       : process.env.REACT_APP_PUBLIC_LOCAL_API_URL;
+  }, []);
 
-  const fetchUserPoints = async () => {
-    try {
-      const response = await fetch(`${ApiBaseUrl}/get_points`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ unique_id: userId }),
-      });
-      const data = await response.json();
-      if (data) {
-        // setUserPoints(data.points);
-      } else {
-        throw new Error(data.message || "Failed to fetch user points");
+  const sortedTasks = useMemo(() => {
+    // Separate locked and unlocked tasks
+    const unlockedTasks = state.tasks.filter(task => !task.lock);
+    const lockedTasks = state.tasks.filter(task => task.lock);
+  
+    // Sort unlocked tasks based on the completed status
+    const sortedUnlockedTasks = unlockedTasks.sort((a, b) => {
+      if (a.completed === b.completed) return 0;
+      return a.completed ? 1 : -1;
+    });
+  
+    // Combine sorted unlocked tasks with locked tasks at the bottom
+    return [...sortedUnlockedTasks, ...lockedTasks];
+  }, [state.tasks]);
+  
+
+  const fetchTaskStatus = useCallback(
+    async (userId) => {
+      try {
+        const response = await fetch(
+          `${ApiBaseUrl}/get_tasks?unique_id=${userId}`,
+          {
+            method: "GET",
+          }
+        );
+        return await response.json();
+      } catch (error) {
+        console.error("Error fetching task status:", error);
+        return null;
       }
-    } catch (error) {
-      console.error("Error fetching user points:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!webApp) {
-      console.warn("WebApp is not available. Haptic feedback may not work.");
-    } else if (!webApp.HapticFeedback) {
-      console.warn("HapticFeedback is not available in this WebApp instance.");
-    }
-  }, [webApp]);
+    },
+    [ApiBaseUrl]
+  );
 
   useEffect(() => {
     const updateTasksStatus = async () => {
-      setSkeletonVisible(true);
+      dispatch({ type: "SET_SKELETON_VISIBLE", payload: true });
 
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => ({
+      dispatch({
+        type: "SET_TASKS",
+        payload: INITIAL_TASKS.map((task) => ({
           ...task,
           completed:
             task.taskId in taskStatusData ? taskStatusData[task.taskId] : false,
-        }))
-      );
+        })),
+      });
 
-      setSkeletonVisible(false);
+      dispatch({ type: "SET_SKELETON_VISIBLE", payload: false });
     };
 
     updateTasksStatus();
-  }, [userId]);
+  }, [userId, taskStatusData]);
 
-  const sortedTasks = [...tasks].sort((a, b) => {
-    if (a.completed === b.completed) return 0;
-    return a.completed ? 1 : -1;
-  });
+  const verifyTask = useCallback(
+    async (taskType, userId, taskId) => {
+      try {
+        const url = `${ApiBaseUrl}/verify_tasks`;
+        const options = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ unique_id: userId, task_id: taskId }),
+        };
 
-  const verifyTask = async (taskType, userId, taskId) => {
-    try {
-      let url = "";
-      let options = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      };
+        const response = await fetch(url, options);
+        const data = await response.json();
 
-      switch (taskType) {
-        case TASK_TYPES.SIGNUP:
-          url = `${ApiBaseUrl}/verify_tasks`;
-          options.body = JSON.stringify({ unique_id: userId, task_id: taskId });
-          break;
-        default:
-          throw new Error("Invalid task type");
-      }
-
-      const response = await fetch(url, options);
-      const data = await response.json();
-
-      if (taskType === TASK_TYPES.SIGNUP) {
         return {
           success: data.status === "success",
-          message: data.message || "Task Completed Successfully.",
+          message: "Task Completed Successfully",
+          taskId: taskId,
+        };
+      } catch (error) {
+        console.error(`Error verifying ${taskType}:`, error);
+        return {
+          success: false,
+          message: `Error verifying ${taskType}. Please try again.`,
           taskId: taskId,
         };
       }
-    } catch (error) {
-      console.error(`Error verifying ${taskType}:`, error);
-      return {
-        success: false,
-        message: `Error verifying ${taskType}. Please try again.`,
-      };
-    }
-  };
+    },
+    [ApiBaseUrl]
+  );
 
   const handleCheckClick = async () => {
-    if (!selectedTask) return;
-    setIsChecking(true);
+    if (!state.selectedTask) return;
+    dispatch({ type: "SET_IS_CHECKING", payload: true });
     triggerHapticFeedback("impact");
+
     try {
       const { success, message, taskId } = await verifyTask(
-        selectedTask.verifier,
+        state.selectedTask.verifier,
         userId,
-        selectedTask.taskId
+        state.selectedTask.taskId
       );
       if (success) {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === selectedTask.id ? { ...task, completed: true } : task
-          )
-        );
+        dispatch({
+          type: "SET_TASKS",
+          payload: state.tasks.map((task) =>
+            task.id === state.selectedTask.id
+              ? { ...task, completed: true }
+              : task
+          ),
+        });
         setCompletedTasks((prev) => ({
           ...prev,
           basictasks: prev.basictasks + 1,
         }));
 
-        // await fetchUserPoints();
-
-        setNotification({
-          show: true,
-          type: "success",
-          title: "Success",
-          message:
-            message || `Task "${selectedTask.name}" completed successfully!`,
+        dispatch({
+          type: "SET_NOTIFICATION",
+          payload: {
+            show: true,
+            type: "success",
+            title: "Success",
+            message:
+              message ||
+              `Task "${state.selectedTask.name}" completed successfully!`,
+          },
         });
-        setShowConfetti(true);
-        triggerHapticFeedback("success"); // Trigger success haptic feedback
+        dispatch({ type: "SET_SHOW_CONFETTI", payload: true });
+        triggerHapticFeedback("success");
 
         setTimeout(() => {
-          setIsModalOpen(false);
-          setShowCheckButton(false);
-          setSelectedTask(null);
+          dispatch({ type: "SET_IS_MODAL_OPEN", payload: false });
+          dispatch({ type: "SET_SHOW_CHECK_BUTTON", payload: false });
+          dispatch({ type: "SET_SELECTED_TASK", payload: null });
         }, 1500);
       } else {
-        setNotification({
-          show: true,
-          type: "warning",
-          title: "Task Not Completed",
-          message:
-            message ||
-            `Unable to verify task: ${selectedTask.name}. Please try again.`,
+        dispatch({
+          type: "SET_NOTIFICATION",
+          payload: {
+            show: true,
+            type: "warning",
+            title: "Task Not Completed",
+            message:
+              message ||
+              `Unable to verify task: ${state.selectedTask.name}. Please try again.`,
+          },
         });
-        triggerHapticFeedback("error"); // Trigger warning haptic feedback
+        triggerHapticFeedback("error");
       }
     } catch (error) {
-      console.error(`Error verifying task: ${selectedTask.name}`, error);
-      setNotification({
-        show: true,
-        type: "error",
-        title: "Error",
-        message: `An error occurred while verifying the task. Please try again later.`,
+      console.error(`Error verifying task: ${state.selectedTask.name}`, error);
+      dispatch({
+        type: "SET_NOTIFICATION",
+        payload: {
+          show: true,
+          type: "error",
+          title: "Error",
+          message: `An error occurred while verifying the task. Please try again later.`,
+        },
       });
-      triggerHapticFeedback("error"); // Trigger error haptic feedback
-      console.log("Error occurred during task verification");
+      triggerHapticFeedback("error");
     }
-    setIsChecking(false);
+    dispatch({ type: "SET_IS_CHECKING", payload: false });
   };
 
   const handleButtonClick = (link) => {
@@ -286,64 +335,80 @@ const DailyTasks = ({ taskStatusData }) => {
     } else {
       window.open(link, "_blank");
     }
-    setShowCheckButton(true);
+    dispatch({ type: "SET_SHOW_CHECK_BUTTON", payload: true });
   };
 
   const handleOpenModal = (task) => {
-    setSelectedTask(task);
-    setIsModalOpen(true);
-    setShowCheckButton(false);
+    dispatch({ type: "SET_SELECTED_TASK", payload: task });
+    dispatch({ type: "SET_IS_MODAL_OPEN", payload: true });
+    dispatch({ type: "SET_SHOW_CHECK_BUTTON", payload: false });
     triggerHapticFeedback("impact");
   };
 
   useEffect(() => {
-    if (showConfetti) {
+    if (state.showConfetti) {
       const timer = setTimeout(() => {
-        setShowConfetti(false);
+        dispatch({ type: "SET_SHOW_CONFETTI", payload: false });
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [showConfetti]);
+  }, [state.showConfetti]);
 
   useEffect(() => {
-    if (skeletonVisible) {
+    if (state.skeletonVisible) {
       const timer = setTimeout(() => {
-        setSkeletonVisible(false);
+        dispatch({ type: "SET_SKELETON_VISIBLE", payload: false });
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [skeletonVisible]);
+  }, [state.skeletonVisible]);
 
   const renderTaskContent = (task, index) => {
     const Icon = task.icon;
     return (
       <motion.div
-        style={{ opacity: "0.5", filter: "grayscale(100%)" }}
-        className={`bg-gradient-to-r from-[#181818] to-black border rounded-md border-neutral-800 p-2 mb-2 flex justify-between items-center`}
-        variants={taskVariants}
+        className={`bg-gradient-to-r from-[#181818] to-black border rounded-md border-neutral-800 p-2 mb-2 flex justify-between items-center ${
+          task.completed ? "opacity-70" : ""
+        }`}
+        variants={task.lock ? {} : taskVariants}
         custom={index}
-        whileHover={{
-          scale: task.completed ? 1 : 1,
-          boxShadow: task.completed
-            ? "0px 0px 8px rgba(255, 255, 255, 0.2)"
-            : "none",
-          transition: { duration: 0.2 },
-        }}
-        whileTap={{ scale: 0.99 }}
+        whileHover={
+          task.lock
+            ? {}
+            : {
+                scale: 1,
+                boxShadow: "0px 0px 8px rgba(255, 255, 255, 0.2)",
+                transition: { duration: 0.2 },
+              }
+        }
+        whileTap={task.lock ? {} : { scale: 0.99 }}
       >
         <div className="flex flex-row items-center gap-2">
           <motion.div
-            className={`bg-[#131313] border border-neutral-800 p-[6px] rounded-md opacity-50`}
-            // whileHover={task.completed ? { rotate: 360 } : {}}
-            // transition={{ duration: 0.5 }}
+            className={`bg-[#131313] border border-neutral-800 p-[6px] rounded-md ${
+              task.lock ? "opacity-40" : ""
+            } `}
+            whileHover={task.lock ? {} : { rotate: 360 }}
+            transition={{ duration: 0.5 }}
           >
-            <div>
-              <Icon color={task.completed ? "white" : "gray"} />
-            </div>
+            <motion.div
+              animate={
+                task.lock
+                  ? {}
+                  : {
+                      scale: [1, 1.2, 1],
+                      transition: { duration: 2, repeat: Infinity },
+                    }
+              }
+            >
+              <Icon color={"white"} />
+            </motion.div>
           </motion.div>
           <div>
             <motion.p
-              className={`font-medium text-neutral-500 text-[14px] pr-4 opacity-75`}
+              className={`font-normal  text-[14px] pr-4 ${
+                task.lock ? "text-neutral-500" : "text-white"
+              }`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -363,23 +428,19 @@ const DailyTasks = ({ taskStatusData }) => {
           </motion.div>
         ) : (
           <motion.span
-            className={`text-center flex items-center text-white bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px] ${
-              task.completed ? "" : "opacity-50"
+            className={`text-center flex items-center bg-[#1d1d1d] rounded-full text-[14px] px-[8px] py-[4px] ${
+              task.lock ? "text-neutral-500" : "text-white"
             }`}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            whileHover={{ scale: task.completed ? 1.05 : 1 }}
+            whileHover={task.lock ? {} : { scale: 1.05 }}
           >
             +{task.reward}
             <img
               src={sharpeLogo}
               alt=""
-              style={{
-                height: "22px",
-                width: "22px",
-                opacity: 0.5,
-              }}
+              style={{ height: "22px", width: "22px", opacity: task.lock ? '40%' : '100%' }}
             />
           </motion.span>
         )}
@@ -394,7 +455,6 @@ const DailyTasks = ({ taskStatusData }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      {/* <UserInfo /> */}
       <motion.div
         className="px-2 pb-2 mt-3"
         variants={{
@@ -425,7 +485,7 @@ const DailyTasks = ({ taskStatusData }) => {
                 duration: 0.8,
               }}
             >
-              <Skeleton className="rounded-md" visible={skeletonVisible}>
+              {/* <Skeleton className="rounded-md" visible={state.skeletonVisible}> */}
                 {task.completed ? (
                   renderTaskContent(task, index)
                 ) : (
@@ -444,32 +504,35 @@ const DailyTasks = ({ taskStatusData }) => {
                         }
                       />
                     }
-                    open={isModalOpen && selectedTask?.id === task.id}
+                    open={
+                      state.isModalOpen && state.selectedTask?.id === task.id
+                    }
                     onOpenChange={(open) => {
-                      setIsModalOpen(open);
-                      if (!open) setSelectedTask(null);
+                      dispatch({ type: "SET_IS_MODAL_OPEN", payload: open });
+                      if (!open)
+                        dispatch({ type: "SET_SELECTED_TASK", payload: null });
                     }}
                     trigger={
-                      <div
+                      <motion.div
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        // onClick={() => handleOpenModal(task)}
+                        onClick={task.lock ? null : () => handleOpenModal(task)}
                       >
                         {renderTaskContent(task, index)}
-                      </div>
+                      </motion.div>
                     }
                   >
-                    {selectedTask && (
+                    {state.selectedTask && (
                       <Placeholder className="px-4 pt-4">
-                        <div
+                        <motion.div
                           className="bg-[#131313] border border-neutral-800 p-3 rounded-md"
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 0.2, type: "spring" }}
                         >
-                          <selectedTask.icon size={30} color={"white"} />
-                        </div>
+                          <state.selectedTask.icon size={30} color={"white"} />
+                        </motion.div>
                         <motion.div
                           className="flex flex-col justify-center items-center gap-1"
                           initial={{ y: 20, opacity: 0 }}
@@ -477,14 +540,14 @@ const DailyTasks = ({ taskStatusData }) => {
                           transition={{ delay: 0.3 }}
                         >
                           <p className="font-semibold text-[16px] text-white text-center">
-                            {selectedTask.name}
+                            {state.selectedTask.name}
                           </p>
                           <motion.span
                             className="text-center flex items-center text-white border bg-[#131313] border-neutral-800 rounded-full text-[14px] px-[8px] py-[4px]"
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.2 }}
                           >
-                            +{selectedTask.reward}
+                            +{state.selectedTask.reward}
                             {/* <IoDiamondOutline size={10} /> */}
                             <img
                               src={sharpeLogo}
@@ -499,7 +562,7 @@ const DailyTasks = ({ taskStatusData }) => {
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: 0.4 }}
                         >
-                          {/* {!showCheckButton ? (
+                          {!state.showCheckButton ? (
                             <motion.div
                               className="flex-grow flex"
                               whileHover={{ scale: 1.02 }}
@@ -508,60 +571,65 @@ const DailyTasks = ({ taskStatusData }) => {
                               <Button
                                 className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#2d2d2d] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
                                 onClick={() =>
-                                  handleButtonClick(selectedTask.link)
+                                  handleButtonClick(state.selectedTask.link)
                                 }
                               >
-                                {selectedTask.modalButtonText}
+                                {state.selectedTask.modalButtonText}
                               </Button>
                             </motion.div>
-                          ) : ( */}
-                          <motion.div
-                            className="flex-grow flex"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <Button
-                              onClick={handleCheckClick}
-                              className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#191919] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
-                              disabled={isChecking}
+                          ) : (
+                            <motion.div
+                              className="flex-grow flex"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
                             >
-                              {isChecking ? (
-                                <Spinner size="s" className="text-[#fff]" />
-                              ) : (
-                                "Check"
-                              )}
-                            </Button>
-                          </motion.div>
-                          {/* )} */}
+                              <Button
+                                onClick={handleCheckClick}
+                                className="flex-grow flex flex-row justify-center gap-1 items-center cursor-pointer text-[13px] px-2 font-normal bg-[#191919] text-[#fff] py-[8px] border border-neutral-800 rounded-[4px]"
+                                disabled={state.isChecking}
+                              >
+                                {state.isChecking ? (
+                                  <Spinner size="s" className="text-[#fff]" />
+                                ) : (
+                                  "Check"
+                                )}
+                              </Button>
+                            </motion.div>
+                          )}
                         </motion.div>
                       </Placeholder>
                     )}
                   </Modal>
                 )}
-              </Skeleton>
+              {/* </Skeleton> */}
             </motion.div>
           ))}
         </AnimatePresence>
       </motion.div>
       <AnimatePresence>
-        {notification.show && (
+        {state.notification.show && (
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
           >
             <Notification
-              show={notification.show}
-              setShow={(show) => setNotification((prev) => ({ ...prev, show }))}
-              type={notification.type}
-              title={notification.title}
-              message={notification.message}
+              show={state.notification.show}
+              setShow={(show) =>
+                dispatch({
+                  type: "SET_NOTIFICATION",
+                  payload: { ...state.notification, show },
+                })
+              }
+              type={state.notification.type}
+              title={state.notification.title}
+              message={state.notification.message}
             />
           </motion.div>
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {showConfetti && (
+        {state.showConfetti && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

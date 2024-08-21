@@ -11,16 +11,34 @@ import { IoDiamondOutline } from "react-icons/io5";
 import sharpeLogo from "../images/sharpe-white-logo.svg";
 import useTelegram from "../context/TelegramContext";
 import Slider from "./Slider";
+import { Preloader } from "konsta/react";
 
 const basicTasks = [
-  "followed_Brownianxyz",
-  "joined_discord",
-  "followed_JoinFirefly",
-  "followed_SharpeSignals",
-  "followed_HiveIntellegence",
-  "followed_SharpeLabs",
-  "followed_SharpeIntern",
-  "followed_telegram",
+  {
+    followed_Brownianxyz: 500,
+    followed_HiveIntellegence: 200,
+    followed_JoinFirefly: 200,
+    followed_SharpeIntern: 200,
+    followed_SharpeSignals: 200,
+    followed_SharpeLabs: 500,
+    join_sharpe_discord: 200,
+    join_sharpe_telegram: 200,
+    join_sharpe_telegram_ac: 200,
+    join_sharpe_youtube: 200,
+    join_brownian_telegram: 200,
+    join_brownian_telegram_ac: 200,
+    join_brownian_youtube: 200,
+    added_bro_x_username: 500,
+    added_bro_tg_username: 500,
+  }
+];
+
+const dailyTasks = [
+  {
+    liked_tweet: 100,
+    retweeted: 100,
+    tweet_bro: 100,
+  }
 ];
 
 const onBoardingTasks = ["signed_up"];
@@ -33,29 +51,60 @@ const HomeScreen = ({
 }) => {
   const { setCurrentTab, completedTasks } = useTab();
   const { webApp, startParam } = useTelegram();
-  console.log("totalFriends", totalFriends);
+  console.log("taskStatusData",userPoints, taskStatusData);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalBasicTasks, setTotalBasicTasks] = useState(0);
+  const [completedBasicTasks, setCompletedBasicTasks] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [totalDailyTasks, setTotalDailyTasks] = useState(0);
+  const [completedDailyTasks, setCompletedDailyTasks] = useState(0);
+  const [totalOnboardingTasks, setTotalOnboardingTasks] = useState(0);
+  const [completedOnboardingTasks, setCompletedOnboardingTasks] = useState(0);
+  const [trueTaskCount, setTrueTaskCount] = useState(0);
+  const [totalDailyTasksPoints, setTotalDailyTasksPoints] = useState(0);
 
-  const totalBasicTasks = basicTasks.length;
-  const completedBasicTasks = taskStatusData
-    ? basicTasks.filter((task) => taskStatusData[task]).length
-    : 0;
-  
-  const totalOnboardingTasks = onBoardingTasks.length;
-  const completedOnboardingTasks = taskStatusData
-    ? onBoardingTasks.filter((task) => taskStatusData[task]).length
-    : 0;
-  
-  const trueTaskCount = taskStatusData
-    ? Object.values(taskStatusData).filter((status) => status === true).length
-    : 0;
+  useEffect(() => {
+    if (totalFriends && taskStatusData) {
+      setIsLoading(true);
+      
+      // Perform calculations
+      setTotalBasicTasks(Object.keys(basicTasks[0]).length);
+      setCompletedBasicTasks(Object.keys(basicTasks[0]).filter((task) => taskStatusData[task]).length);
+      setTotalPoints(Object.values(basicTasks[0]).reduce((sum, points) => sum + points, 0));
+      
+      setTotalDailyTasks(Object.keys(dailyTasks[0]).length);
+      setCompletedDailyTasks(Object.keys(dailyTasks[0]).filter((task) => taskStatusData[task]).length);
+      
+      setTotalOnboardingTasks(onBoardingTasks.length);
+      setCompletedOnboardingTasks(taskStatusData ? onBoardingTasks.filter((task) => taskStatusData[task]).length : 0);
+      
+      setTrueTaskCount(taskStatusData ? Object.values(taskStatusData).filter((status) => status === true).length : 0);
+      
+      setTotalDailyTasksPoints(Object.values(dailyTasks[0]).reduce((sum, points) => sum + points, 0));
+
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+  }, [totalFriends, taskStatusData]);
+
 
   const navigateToAnotherScreen = (tabName) => {
     onScreenChange(tabName);
     setCurrentTab(tabName);
   };
 
+  useEffect(() => {
+    if (totalFriends && taskStatusData) {
+      setIsLoading(false);
+    }
+  }, [totalFriends, taskStatusData]);
+
   const stats = [
-    { name: "Quest Completed", value: `${trueTaskCount ? trueTaskCount : '-'}` },
+    {
+      name: "Quest Completed",
+      value: `${trueTaskCount ? trueTaskCount : "-"}`,
+    },
     { name: "BROs Invited", value: `${totalFriends ? totalFriends : "-"}` },
   ];
 
@@ -86,6 +135,12 @@ const HomeScreen = ({
       animate="visible"
       variants={containerVariants}
     >
+       {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Preloader colors={{iconIos: 'text-primary'}} />
+        </div>
+      ) : (
+        <>
       {/* <UserInfo onScreenChange={onScreenChange} userPoints={userPoints} /> */}
       <motion.div
         className="bg-[#0c0c0c] border rounded-[8px] border-neutral-950 m-4"
@@ -163,7 +218,7 @@ const HomeScreen = ({
                 <img
                   src={sharpeLogo}
                   alt=""
-                  style={{ height: "36px", width: "36px", marginTop: '4px' }}
+                  style={{ height: "36px", width: "36px", marginTop: "4px" }}
                 />
               </motion.p>
             </div>
@@ -228,14 +283,14 @@ const HomeScreen = ({
             {
               name: "Basic Task",
               progress: `${completedBasicTasks}/${totalBasicTasks} tasks done`,
-              reward: `${totalBasicTasks * 500}`,
+              reward: `${totalPoints}`,
               tab: "basictasks",
               icon: GoTasklist,
             },
             {
               name: "Daily Task",
-              progress: "0/7 tasks done",
-              reward: 700,
+              progress:  `${completedDailyTasks}/${totalDailyTasks} tasks done`,
+              reward: totalDailyTasksPoints,
               tab: "dailytasks",
               icon: TbCalendarClock,
             },
@@ -285,6 +340,8 @@ const HomeScreen = ({
           })}
         </AnimatePresence>
       </motion.div>
+      </>
+      )}
     </motion.div>
   );
 };
